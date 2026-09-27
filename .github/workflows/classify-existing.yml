@@ -1,0 +1,36 @@
+name: Classify Existing Universe
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['triggers/run-classify-existing.txt']
+permissions:
+  contents: read
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download run 5 immutable Universe artifact
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,urllib.request,zipfile
+          api="https://api.github.com/repos/Dzammbo/Intuition_collector/actions/runs/36311337088/artifacts"
+          req=urllib.request.Request(api,headers={"User-Agent":"intuition-classifier"})
+          with urllib.request.urlopen(req,timeout=30) as r: meta=json.load(r)
+          a=next(x for x in meta["artifacts"] if x["name"]=="universe")
+          req=urllib.request.Request(a["archive_download_url"],headers={"User-Agent":"intuition-classifier"})
+          with urllib.request.urlopen(req,timeout=60) as r: data=r.read()
+          open("source.zip","wb").write(data)
+          with zipfile.ZipFile("source.zip") as z:
+              z.extract("universe.json",".")
+          PY
+      - name: Classify immutable snapshot
+        run: python3 classify_universe.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: final-universe-2026-09-27
+          path: classified-universe.json
+          retention-days: 7
