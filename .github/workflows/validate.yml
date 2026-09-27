@@ -65,6 +65,7 @@ jobs:
                   for forbidden in ("vercel", "railway", "selectel"):
                       assert forbidden not in body.lower(), (path, forbidden)
           private_workflows = sorted(p.name for p in Path("state/.github/workflows").glob("*.yml"))
+          assert private_workflows in ([], ["telegram-native-publish.yml"]), private_workflows
           print({"private_workflows_pending_migration": private_workflows})
           PY
       - name: Verify private repository write permission
