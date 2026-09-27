@@ -33,8 +33,27 @@ jobs:
           test -n "${BETSAPI_TOKEN:-}" || { echo "MISSING: BETS_API"; exit 1; }
           echo "PRESENT: JARVIS_PRIVATE_REPO_TOKEN"
           echo "PRESENT: BETS_API"
-          test -n "${TELEGRAM_BOT_TOKEN:-}" && echo "PRESENT: TELEGRAM_BOT_TOKEN" || echo "OPTIONAL_MISSING: TELEGRAM_BOT_TOKEN"
-          test -n "${TELEGRAM_CHAT_ID:-}" && echo "PRESENT: TELEGRAM_CHAT_ID" || echo "OPTIONAL_MISSING: TELEGRAM_CHAT_ID"
+          test -n "${TELEGRAM_BOT_TOKEN:-}" || { echo "MISSING: TELEGRAM_BOT_TOKEN"; exit 1; }
+          test -n "${TELEGRAM_CHAT_ID:-}" || { echo "MISSING: TELEGRAM_CHAT_ID"; exit 1; }
+          echo "PRESENT: TELEGRAM_BOT_TOKEN"
+          echo "PRESENT: TELEGRAM_CHAT_ID"
+      - name: Verify Telegram bot and target without publishing
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          token = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = os.environ["TELEGRAM_CHAT_ID"]
+          def call(method, payload=None):
+              url = f"https://api.telegram.org/bot{token}/{method}"
+              data = urllib.parse.urlencode(payload or {}).encode()
+              with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=25) as response:
+                  body = json.load(response)
+              assert body.get("ok") is True, method
+              return body["result"]
+          bot = call("getMe")
+          chat = call("getChat", {"chat_id": chat_id})
+          print({"bot_username": bot.get("username"), "chat_type": chat.get("type"), "chat_title": chat.get("title")})
+          PY
       - uses: actions/checkout@v4
         with:
           path: ops
