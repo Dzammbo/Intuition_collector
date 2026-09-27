@@ -1,2 +1,2 @@
-2026-09-27T19:15:00+03:00
-reason=validate-complete-russian-presentation-layer-v2
+2026-09-27T18:42:00+03:00
+reason=validate-intermediate-in-play-results-contract
