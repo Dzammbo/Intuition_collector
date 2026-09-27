@@ -24,10 +24,15 @@ jobs:
           set -euo pipefail
           test -n "${BETSAPI_TOKEN:-}"
           python3 collector.py
+      - name: Build technical eligibility
+        if: success()
+        run: python3 technical_eligibility.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: universe
-          path: universe.json
+          path: |
+            universe.json
+            technically-eligible.json
           if-no-files-found: error
           retention-days: 1
