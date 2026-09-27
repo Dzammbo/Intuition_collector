@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "status": "WORKING_COPY_OF_PRIVATE_CANON",
+  "source_run_id": 36311337088,
+  "leagues": [
+    {
+      "sport_id": 1,
+      "league_id": 637,
+      "league_name": "El Salvador Reserves League",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 428,
+      "league_name": "Germany Oberliga Baden-Wuerttemberg",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 43,
+      "league_name": "Germany Oberliga Hamburg",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 93,
+      "league_name": "Germany Oberliga NOFV Nord",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 25,
+      "league_name": "Slovakia 3. Liga",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 45,
+      "league_name": "Spain Tercera Group 10",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 40,
+      "league_name": "Spain Tercera Group 17",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 184,
+      "league_name": "Sweden 2.div Södra Svealand",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 15114,
+      "league_name": "Brazil Campeonato Gaucho 3",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 44399,
+      "league_name": "China U20 League",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 43712,
+      "league_name": "Finland U21 League",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 391,
+      "league_name": "Germany Oberliga Schleswig-Holstein",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 25002,
+      "league_name": "Guatemala Segunda Division",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3055,
+      "league_name": "Italy Eccellenza",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 27993,
+      "league_name": "Mexico Liga TDP",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 40953,
+      "league_name": "Mexico U21 League",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 384,
+      "league_name": "Norway Division 3 Group 5",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 31,
+      "league_name": "Poland III Liga",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 67,
+      "league_name": "Spain Tercera Group 5",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41,
+      "league_name": "Spain Tercera Group 6",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 201,
+      "league_name": "Spain Tercera Group 8",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 208,
+      "league_name": "Sweden 2.div Norra Götaland",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 593,
+      "league_name": "Sweden 2.div Norra Svealand",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 164,
+      "league_name": "Sweden 2.div Södra Götaland",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3742,
+      "league_name": "Thailand Division 3",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 469,
+      "league_name": "Austria Landesliga",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 29018,
+      "league_name": "Belgium Second Amateur Division ACFF",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 29019,
+      "league_name": "Belgium Second Amateur Division VFV A",
+      "tier": "EXCLUDE"
+    }
+  ]
+}
