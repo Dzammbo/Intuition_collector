@@ -1,0 +1,24 @@
+name: Classify L1 Market Artifact
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: l1-market-scan-2026-09-27
+          github-token: ${{ github.token }}
+          run-id: 36312903767
+      - name: Classify saved L1 responses
+        run: python3 classify_l1_market.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: l1-market-classified-2026-09-27
+          path: l1-market-classified.json
+          retention-days: 7
