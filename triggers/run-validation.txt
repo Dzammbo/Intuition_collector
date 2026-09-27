@@ -1,2 +1,2 @@
-2026-09-27T18:12:00+03:00
-reason=verify-telegram-public-channel
+2026-09-27T18:27:00+03:00
+reason=validate-final-card-check-schema-fix
