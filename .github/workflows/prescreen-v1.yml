@@ -1,0 +1,27 @@
+name: Reproducible CORE Pre-Screen
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-prescreen-v1.txt']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  prescreen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: l1-market-scan-2026-09-27
+          github-token: ${{ github.token }}
+          run-id: 36312903767
+      - run: python3 market_normalizer_v1.py
+      - run: python3 prescreen_v1.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prescreen-v1-2026-09-27
+          path: |
+            market-normalized-v1.json
+            prescreen-v1.json
+          retention-days: 7
