@@ -1,1 +1,496 @@
-{"schema_version":1,"sport_id":18,"allowed_leagues":[{"sport_id":18,"league_id":244,"league_name":"WNBA"},{"sport_id":18,"league_id":262,"league_name":"El Salvador Liga Mayor"},{"sport_id":18,"league_id":339,"league_name":"Philippines NCAA"},{"sport_id":18,"league_id":413,"league_name":"Vietnam VBA"},{"sport_id":18,"league_id":452,"league_name":"Brazil FPB"},{"sport_id":18,"league_id":1094,"league_name":"Tunisia League"},{"sport_id":18,"league_id":1116,"league_name":"Greece Cup Women"},{"sport_id":18,"league_id":1126,"league_name":"Belgium Div 1 Women"},{"sport_id":18,"league_id":1287,"league_name":"Lithuania LKL"},{"sport_id":18,"league_id":1302,"league_name":"Germany Pro A"},{"sport_id":18,"league_id":1303,"league_name":"Spain Super Cup Women"},{"sport_id":18,"league_id":1321,"league_name":"Germany Bundesliga"},{"sport_id":18,"league_id":1325,"league_name":"Poland 1st Division"},{"sport_id":18,"league_id":1382,"league_name":"Puerto Rico Superior Nacional Women"},{"sport_id":18,"league_id":1425,"league_name":"Israel Winner Basket Cup"},{"sport_id":18,"league_id":1523,"league_name":"Denmark Basketligaen"},{"sport_id":18,"league_id":1560,"league_name":"France LFB Women"},{"sport_id":18,"league_id":1566,"league_name":"Poland BLK Women"},{"sport_id":18,"league_id":1576,"league_name":"Chile LNB"},{"sport_id":18,"league_id":1581,"league_name":"VTB United League"},{"sport_id":18,"league_id":1583,"league_name":"Italy Lega 1"},{"sport_id":18,"league_id":1590,"league_name":"Germany Pro B South"},{"sport_id":18,"league_id":1591,"league_name":"Italy Serie A2"},{"sport_id":18,"league_id":1596,"league_name":"Poland Super Cup"},{"sport_id":18,"league_id":1679,"league_name":"Poland 1 Liga Women"},{"sport_id":18,"league_id":1701,"league_name":"Adriatic WABA Women"},{"sport_id":18,"league_id":1703,"league_name":"Portugal Super Cup Women"},{"sport_id":18,"league_id":1718,"league_name":"Sweden Basketligan"},{"sport_id":18,"league_id":1740,"league_name":"Austria Bundesliga"},{"sport_id":18,"league_id":1774,"league_name":"Hungary A Div. Women"},{"sport_id":18,"league_id":1788,"league_name":"Slovakia Extraliga"},{"sport_id":18,"league_id":1793,"league_name":"Croatia A1 Liga"},{"sport_id":18,"league_id":1796,"league_name":"Germany Pro B North"},{"sport_id":18,"league_id":1817,"league_name":"Serbia 1ZLS Women"},{"sport_id":18,"league_id":1942,"league_name":"Mexico LNBP"},{"sport_id":18,"league_id":2379,"league_name":"Israel Premier League Women"},{"sport_id":18,"league_id":2774,"league_name":"Switzerland LNA"},{"sport_id":18,"league_id":2861,"league_name":"Kosovo Superliga"},{"sport_id":18,"league_id":6937,"league_name":"FIBA Intercontinental Cup"},{"sport_id":18,"league_id":7489,"league_name":"Sweden Superettan"},{"sport_id":18,"league_id":8126,"league_name":"Austria AWBL Women"},{"sport_id":18,"league_id":9270,"league_name":"Dominican Republic TBS"},{"sport_id":18,"league_id":9429,"league_name":"UAE Federation Cup"},{"sport_id":18,"league_id":10769,"league_name":"Philippines MPBL"},{"sport_id":18,"league_id":12372,"league_name":"Latvia-Estonia BL"},{"sport_id":18,"league_id":16613,"league_name":"Kenya Premier League Women"},{"sport_id":18,"league_id":24198,"league_name":"Greece Super Cup"},{"sport_id":18,"league_id":24354,"league_name":"Switzerland SB League Women"},{"sport_id":18,"league_id":26061,"league_name":"Switzerland NLB"},{"sport_id":18,"league_id":27426,"league_name":"Norway Ligaen"},{"sport_id":18,"league_id":27428,"league_name":"Denmark Basketligaen Women"},{"sport_id":18,"league_id":28234,"league_name":"ENBL"},{"sport_id":18,"league_id":31224,"league_name":"British NBL Div 1 Trophy"},{"sport_id":18,"league_id":32129,"league_name":"West Asia Super League"},{"sport_id":18,"league_id":35820,"league_name":"Italy National Serie B"},{"sport_id":18,"league_id":36838,"league_name":"Netherlands Eredivisie Women"},{"sport_id":18,"league_id":37315,"league_name":"Spain Liga ACB"},{"sport_id":18,"league_id":38234,"league_name":"Copa Espana"},{"sport_id":18,"league_id":38374,"league_name":"Spain Primera FEB"},{"sport_id":18,"league_id":38801,"league_name":"British SLB"},{"sport_id":18,"league_id":38810,"league_name":"Adriatic League 2 Women"},{"sport_id":18,"league_id":39138,"league_name":"Turkiye BSL"},{"sport_id":18,"league_id":39140,"league_name":"Turkiye TKBSL Women"},{"sport_id":18,"league_id":39145,"league_name":"Turkiye TBL"},{"sport_id":18,"league_id":39165,"league_name":"Czechia NBL"},{"sport_id":18,"league_id":39184,"league_name":"Czechia ZBL Women"},{"sport_id":18,"league_id":39188,"league_name":"Czechia Liga 1"},{"sport_id":18,"league_id":40941,"league_name":"Malta Super Cup Women"},{"sport_id":18,"league_id":41767,"league_name":"Malta Super Cup"},{"sport_id":18,"league_id":42445,"league_name":"France Ligue A"}]}
+{
+  "schema_version": 1,
+  "sport_id": 18,
+  "allowed_leagues": [
+    {
+      "sport_id": 18,
+      "league_id": 244,
+      "league_name": "WNBA",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 262,
+      "league_name": "El Salvador Liga Mayor",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 339,
+      "league_name": "Philippines NCAA",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 413,
+      "league_name": "Vietnam VBA",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 452,
+      "league_name": "Brazil FPB",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1094,
+      "league_name": "Tunisia League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1116,
+      "league_name": "Greece Cup Women",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1126,
+      "league_name": "Belgium Div 1 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1287,
+      "league_name": "Lithuania LKL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1302,
+      "league_name": "Germany Pro A",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1303,
+      "league_name": "Spain Super Cup Women",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1321,
+      "league_name": "Germany Bundesliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1325,
+      "league_name": "Poland 1st Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1382,
+      "league_name": "Puerto Rico Superior Nacional Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1425,
+      "league_name": "Israel Winner Basket Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1523,
+      "league_name": "Denmark Basketligaen",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1560,
+      "league_name": "France LFB Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1566,
+      "league_name": "Poland BLK Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1576,
+      "league_name": "Chile LNB",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1581,
+      "league_name": "VTB United League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1583,
+      "league_name": "Italy Lega 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1590,
+      "league_name": "Germany Pro B South",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1591,
+      "league_name": "Italy Serie A2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1596,
+      "league_name": "Poland Super Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1679,
+      "league_name": "Poland 1 Liga Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1701,
+      "league_name": "Adriatic WABA Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1703,
+      "league_name": "Portugal Super Cup Women",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1718,
+      "league_name": "Sweden Basketligan",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1740,
+      "league_name": "Austria Bundesliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1774,
+      "league_name": "Hungary A Div. Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1788,
+      "league_name": "Slovakia Extraliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1793,
+      "league_name": "Croatia A1 Liga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1796,
+      "league_name": "Germany Pro B North",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1817,
+      "league_name": "Serbia 1ZLS Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 1942,
+      "league_name": "Mexico LNBP",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 2379,
+      "league_name": "Israel Premier League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 2774,
+      "league_name": "Switzerland LNA",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 2861,
+      "league_name": "Kosovo Superliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 6937,
+      "league_name": "FIBA Intercontinental Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 7489,
+      "league_name": "Sweden Superettan",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 8126,
+      "league_name": "Austria AWBL Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 9270,
+      "league_name": "Dominican Republic TBS",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 9429,
+      "league_name": "UAE Federation Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 10769,
+      "league_name": "Philippines MPBL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 12372,
+      "league_name": "Latvia-Estonia BL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 16613,
+      "league_name": "Kenya Premier League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 24198,
+      "league_name": "Greece Super Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 24354,
+      "league_name": "Switzerland SB League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 26061,
+      "league_name": "Switzerland NLB",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 27426,
+      "league_name": "Norway Ligaen",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 27428,
+      "league_name": "Denmark Basketligaen Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 28234,
+      "league_name": "ENBL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 31224,
+      "league_name": "British NBL Div 1 Trophy",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 32129,
+      "league_name": "West Asia Super League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 35820,
+      "league_name": "Italy National Serie B",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 36838,
+      "league_name": "Netherlands Eredivisie Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 37315,
+      "league_name": "Spain Liga ACB",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 38234,
+      "league_name": "Copa Espana",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 38374,
+      "league_name": "Spain Primera FEB",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 38801,
+      "league_name": "British SLB",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 38810,
+      "league_name": "Adriatic League 2 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 39138,
+      "league_name": "Turkiye BSL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 39140,
+      "league_name": "Turkiye TKBSL Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 39145,
+      "league_name": "Turkiye TBL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 39165,
+      "league_name": "Czechia NBL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 39184,
+      "league_name": "Czechia ZBL Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 39188,
+      "league_name": "Czechia Liga 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 40941,
+      "league_name": "Malta Super Cup Women",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 41767,
+      "league_name": "Malta Super Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 42445,
+      "league_name": "France Ligue A",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    }
+  ]
+}
