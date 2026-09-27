@@ -1,0 +1,24 @@
+name: Select Deep Research Candidates
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-deep-selection.txt']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  select:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: prescreen-v2-2026-09-27
+          github-token: ${{ github.token }}
+          run-id: 36315612608
+      - run: python3 select_deep_candidates.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deep-research-candidates-2026-09-27
+          path: deep-research-candidates.json
+          retention-days: 7
