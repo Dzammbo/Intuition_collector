@@ -1,28 +1,55 @@
 name: Collect CORE Event View
+
 on:
-  push:
-    branches: [main]
-    paths: ['triggers/run-event-view.txt']
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: GitHub Actions run id of the completed Collect Universe workflow
+        required: true
+        type: string
+      date_moscow:
+        description: Canonical Moscow day in YYYY-MM-DD format
+        required: true
+        type: string
+
 permissions:
   contents: read
   actions: read
+
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       BETSAPI_TOKEN: ${{ secrets.BETS_API }}
     steps:
       - uses: actions/checkout@v4
+      - name: Validate explicit inputs
+        run: |
+          set -euo pipefail
+          [[ "${{ inputs.source_run_id }}" =~ ^[0-9]+$ ]]
+          [[ "${{ inputs.date_moscow }}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
       - uses: actions/download-artifact@v4
         with:
           name: universe
           github-token: ${{ github.token }}
-          run-id: 36312014705
+          run-id: ${{ inputs.source_run_id }}
+      - name: Verify CORE input
+        run: |
+          set -euo pipefail
+          test -f classified-universe.json
+          python3 - <<'PY'
+          import json
+          d = json.load(open("classified-universe.json"))
+          core = d.get("events", {}).get("CORE")
+          assert isinstance(core, list) and core
+          print({"core": len(core)})
+          PY
       - run: python3 collect_event_view.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: event-view-core-2026-09-27
+          name: event-view-core-${{ inputs.date_moscow }}
           path: event-view-core.json
+          if-no-files-found: error
           retention-days: 7
