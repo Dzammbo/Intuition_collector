@@ -4,11 +4,14 @@ tiers={}
 for p in glob.glob("config/league_allowset_v1/*.json"):
  try:
   d=json.load(open(p))
-  for x in d.get("allowed_leagues",[]):
-   tiers[(int(x["sport_id"]),int(x["league_id"]))]=(x["tier"],x.get("tier_reason"))
+  rows=d.get("allowed_leagues",[]) + d.get("leagues",[])
+  for x in rows:
+   tier=x.get("tier")
+   if tier in ("CORE","SECONDARY","EXCLUDE"):
+    tiers[(int(x["sport_id"]),int(x["league_id"]))]=(tier,x.get("tier_reason"))
  except Exception:
   pass
-b={"CORE":[],"SECONDARY":[],"UNCLASSIFIED_LEAGUE":[]}
+b={"CORE":[],"SECONDARY":[],"EXCLUDE":[],"UNCLASSIFIED_LEAGUE":[]}
 for e in u["window_events"]:
  sid=int(e.get("sport_id") or 0); league=e.get("league") or {}
  try: lid=int(league.get("id"))
