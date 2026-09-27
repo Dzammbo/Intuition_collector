@@ -1,2 +1,2 @@
-2026-09-27T18:03:00+03:00
-reason=verify-public-operations-migration
+2026-09-27T18:12:00+03:00
+reason=verify-telegram-public-channel
