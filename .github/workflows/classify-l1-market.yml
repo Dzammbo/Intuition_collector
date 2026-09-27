@@ -1,6 +1,9 @@
 name: Classify L1 Market Artifact
 on:
   workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ['triggers/run-l1-classify.txt']
 permissions:
   contents: read
   actions: read
