@@ -1,0 +1,67 @@
+name: Rerender Results
+
+on:
+  workflow_dispatch:
+    inputs:
+      date_moscow:
+        description: YYYY-MM-DD
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths: [triggers/run-rerender-results.txt]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-rerender-results
+  cancel-in-progress: false
+
+jobs:
+  rerender:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PRIVATE_REPO_TOKEN: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+    steps:
+      - name: Verify private repository token
+        run: test -n "${PRIVATE_REPO_TOKEN:-}" || { echo "JARVIS_PRIVATE_REPO_TOKEN secret is missing"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          path: ops
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - name: Resolve report date
+        id: request
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            D="${{ inputs.date_moscow }}"
+          else
+            D=$(grep -Eo '^[0-9]{4}-[0-9]{2}-[0-9]{2}' ops/triggers/run-rerender-results.txt | head -1)
+          fi
+          [[ "$D" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          echo "date=$D" >> "$GITHUB_OUTPUT"
+      - name: Rerender
+        working-directory: state
+        run: |
+          set -euo pipefail
+          D="${{ steps.request.outputs.date }}"
+          test -f "settlements/$D.json"
+          python3 scripts/build_bankroll_performance.py
+          python3 scripts/render_settlement_report.py --date "$D"
+      - name: Commit presentation state to private repository
+        working-directory: state
+        run: |
+          set -euo pipefail
+          git config user.name "jarvis-intuition-bot"
+          git config user.email "jarvis-intuition-bot@users.noreply.github.com"
+          git add performance/ telegram_reports/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Rerender Jarvis Intuition results"
+          git pull --rebase origin main
+          git push origin HEAD:main
