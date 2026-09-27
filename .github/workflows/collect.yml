@@ -1,0 +1,24 @@
+name: Collect Universe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETSAPI_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect
+        run: |
+          test -n "${BETSAPI_TOKEN:-}"
+          python3 collector.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: universe
+          path: universe.json
+          if-no-files-found: error
+          retention-days: 1
