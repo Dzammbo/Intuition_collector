@@ -22,7 +22,7 @@ for r in d["records"]:
  elif isinstance(o,dict):
   cls="NONEMPTY_UNPARSED"
  else: cls="OTHER_SCHEMA"
- rows.append({"event_id":r["event_id"],"sport_id":r["sport_id"],"league":r["league"],"home":r["home"],"away":r["away"],"class":cls,"top_type":type(o).__name__,"top_keys":list(o.keys())[:30] if isinstance(o,dict) else []})
+ rows.append({"event_id":r["event_id"],"sport_id":r["sport_id"],"league":r["league"],"home":r["home"],"away":r["away"],"class":cls,"top_type":type(o).__name__,"top_keys":list(o.keys())[:30] if isinstance(o,dict) else [],"sample":o if isinstance(o,(dict,list)) else str(o)})
 c=Counter(x["class"] for x in rows);sp=defaultdict(Counter)
 for x in rows:sp[str(x["sport_id"])][x["class"]]+=1
 out={"input_no_odds":len(rows),"counts":dict(c),"by_sport":{k:dict(v) for k,v in sp.items()},"records":rows}
