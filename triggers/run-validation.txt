@@ -1,2 +1,2 @@
-2026-09-27T19:03:00+03:00
-reason=validate-compact-financial-results-and-postponed-status
+2026-09-27T19:12:00+03:00
+reason=validate-locked-current-results-reference-template
