@@ -1,0 +1,75 @@
+name: Daily Settlement
+
+on:
+  workflow_dispatch:
+    inputs:
+      date_moscow:
+        description: YYYY-MM-DD, blank means yesterday in Moscow
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths: [triggers/run-settlement-check.txt]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-daily-settlement
+  cancel-in-progress: true
+
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+      PRIVATE_REPO_TOKEN: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+    steps:
+      - name: Verify required secrets
+        run: |
+          set -euo pipefail
+          test -n "${BETSAPI_TOKEN:-}" || { echo "BETS_API secret is missing"; exit 1; }
+          test -n "${PRIVATE_REPO_TOKEN:-}" || { echo "JARVIS_PRIVATE_REPO_TOKEN secret is missing"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          path: ops
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - name: Resolve settlement date
+        id: request
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            D=$(grep -Eo '^[0-9]{4}-[0-9]{2}-[0-9]{2}' ops/triggers/run-settlement-check.txt | head -1 || true)
+          else
+            D="${{ inputs.date_moscow }}"
+          fi
+          if [ -z "$D" ]; then D=$(TZ=Europe/Moscow date -d yesterday +%F); fi
+          [[ "$D" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          echo "date=$D" >> "$GITHUB_OUTPUT"
+      - name: Settle and render
+        working-directory: state
+        run: |
+          set -euo pipefail
+          D="${{ steps.request.outputs.date }}"
+          python3 scripts/settle_daily_batches.py --date-moscow "$D"
+          test -f "settlements/$D.json"
+          python3 scripts/build_shadow_diagnostics.py --date "$D"
+          python3 scripts/build_bankroll_performance.py
+          python3 scripts/render_settlement_report.py --date "$D"
+      - name: Commit state to private repository
+        working-directory: state
+        run: |
+          set -euo pipefail
+          git config user.name "jarvis-intuition-bot"
+          git config user.email "jarvis-intuition-bot@users.noreply.github.com"
+          mkdir -p settlements telegram_reports
+          git add settlements/ diagnostics/ performance/ telegram_reports/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Settle Jarvis Intuition daily batches"
+          git pull --rebase origin main
+          git push origin HEAD:main
