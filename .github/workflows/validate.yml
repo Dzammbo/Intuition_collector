@@ -40,15 +40,20 @@ jobs:
       - name: Verify Telegram bot and target without publishing
         run: |
           python3 - <<'PY'
-          import json, os, urllib.parse, urllib.request
+          import json, os, urllib.error, urllib.parse, urllib.request
           token = os.environ["TELEGRAM_BOT_TOKEN"]
           chat_id = os.environ["TELEGRAM_CHAT_ID"]
           def call(method, payload=None):
               url = f"https://api.telegram.org/bot{token}/{method}"
               data = urllib.parse.urlencode(payload or {}).encode()
-              with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=25) as response:
-                  body = json.load(response)
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=25) as response:
+                      body = json.load(response)
+              except urllib.error.HTTPError as exc:
+                  detail = json.loads(exc.read().decode("utf-8"))
+                  raise SystemExit(f"Telegram {method} failed: {detail.get('description', 'HTTP error')}")
               assert body.get("ok") is True, method
+              print(f"TELEGRAM_OK: {method}")
               return body["result"]
           bot = call("getMe")
           chat = call("getChat", {"chat_id": chat_id})
