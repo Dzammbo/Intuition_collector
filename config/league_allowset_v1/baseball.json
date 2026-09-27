@@ -1,1 +1,41 @@
-{"schema_version":1,"sport_id":16,"allowed_leagues":[{"sport_id":16,"league_id":225,"league_name":"MLB"},{"sport_id":16,"league_id":347,"league_name":"Japan NPB"},{"sport_id":16,"league_id":1346,"league_name":"Germany 1.Bundesliga Süd"},{"sport_id":16,"league_id":11235,"league_name":"CPBL"},{"sport_id":16,"league_id":46537,"league_name":"Asian Games"}]}
+{
+  "schema_version": 1,
+  "sport_id": 16,
+  "allowed_leagues": [
+    {
+      "sport_id": 16,
+      "league_id": 225,
+      "league_name": "MLB",
+      "tier": "CORE",
+      "tier_reason": "MAJOR_PROFESSIONAL_BASEBALL"
+    },
+    {
+      "sport_id": 16,
+      "league_id": 347,
+      "league_name": "Japan NPB",
+      "tier": "CORE",
+      "tier_reason": "MAJOR_PROFESSIONAL_BASEBALL"
+    },
+    {
+      "sport_id": 16,
+      "league_id": 1346,
+      "league_name": "Germany 1.Bundesliga Süd",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 16,
+      "league_id": 11235,
+      "league_name": "CPBL",
+      "tier": "CORE",
+      "tier_reason": "MAJOR_PROFESSIONAL_BASEBALL"
+    },
+    {
+      "sport_id": 16,
+      "league_id": 46537,
+      "league_name": "Asian Games",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    }
+  ]
+}
