@@ -22,9 +22,31 @@ jobs:
     timeout-minutes: 10
     env:
       PRIVATE_REPO_TOKEN: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
     steps:
-      - name: Verify private repository token
-        run: test -n "${PRIVATE_REPO_TOKEN:-}" || { echo "JARVIS_PRIVATE_REPO_TOKEN secret is missing"; exit 1; }
+      - name: Verify required public repository secrets
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in PRIVATE_REPO_TOKEN BETSAPI_TOKEN TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID; do
+            if [ -z "${!name:-}" ]; then
+              case "$name" in
+                PRIVATE_REPO_TOKEN) echo "MISSING: JARVIS_PRIVATE_REPO_TOKEN" ;;
+                BETSAPI_TOKEN) echo "MISSING: BETS_API" ;;
+                *) echo "MISSING: $name" ;;
+              esac
+              missing=1
+            else
+              case "$name" in
+                PRIVATE_REPO_TOKEN) echo "PRESENT: JARVIS_PRIVATE_REPO_TOKEN" ;;
+                BETSAPI_TOKEN) echo "PRESENT: BETS_API" ;;
+                *) echo "PRESENT: $name" ;;
+              esac
+            fi
+          done
+          exit "$missing"
       - uses: actions/checkout@v4
         with:
           path: ops
