@@ -1,6 +1,6 @@
 name: L1 Broad Signal Market Scan
 on:
-  workflow_dispatch:
+  workflow_dispatch: {}
 permissions:
   contents: read
   actions: read
