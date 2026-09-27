@@ -18,10 +18,12 @@ jobs:
           run-id: 36312903767
       - run: python3 market_normalizer_v1.py
       - run: python3 prescreen_v1.py
+      - run: python3 breakdown_prescreen_v2.py
       - uses: actions/upload-artifact@v4
         with:
           name: prescreen-v2-2026-09-27
           path: |
             market-normalized-v1.json
             prescreen-v2.json
+            prescreen-v2-trigger-breakdown.json
           retention-days: 7
