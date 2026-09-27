@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      BETSAPI_TOKEN: ${{ secrets.BETSAPI_TOKEN }}
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
     steps:
       - uses: actions/checkout@v4
       - name: Collect
