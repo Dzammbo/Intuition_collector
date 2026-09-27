@@ -1,1 +1,167 @@
-{"schema_version":1,"sport_id":17,"allowed_leagues":[{"sport_id":17,"league_id":128,"league_name":"KHL"},{"sport_id":17,"league_id":765,"league_name":"Kazakhstan Open Champs"},{"sport_id":17,"league_id":781,"league_name":"Latvia Premjerliga"},{"sport_id":17,"league_id":829,"league_name":"Belarus Extraliga"},{"sport_id":17,"league_id":865,"league_name":"Slovakia Extraliga"},{"sport_id":17,"league_id":868,"league_name":"Hungary Erste Liga"},{"sport_id":17,"league_id":870,"league_name":"Russia VHL"},{"sport_id":17,"league_id":878,"league_name":"Switzerland NLA"},{"sport_id":17,"league_id":923,"league_name":"Germany Eishockey Liga 2"},{"sport_id":17,"league_id":944,"league_name":"Poland Ekstraliga"},{"sport_id":17,"league_id":1058,"league_name":"Sweden HockeyAllsvenskan"},{"sport_id":17,"league_id":1059,"league_name":"France Ligue Magnus"},{"sport_id":17,"league_id":1072,"league_name":"Austria EHL"},{"sport_id":17,"league_id":1093,"league_name":"Finland SM Liiga"},{"sport_id":17,"league_id":1099,"league_name":"Germany Eishockey Liga"},{"sport_id":17,"league_id":1291,"league_name":"Challenge Cup"},{"sport_id":17,"league_id":1324,"league_name":"Danish Metal Ligaen"},{"sport_id":17,"league_id":1993,"league_name":"Swedish Hockey League Women"},{"sport_id":17,"league_id":2602,"league_name":"Switzerland NLB"},{"sport_id":17,"league_id":8187,"league_name":"Norway 1st Division"},{"sport_id":17,"league_id":31172,"league_name":"Finland Naisten Liiga Women"},{"sport_id":17,"league_id":39192,"league_name":"Czechia Extraliga"},{"sport_id":17,"league_id":39210,"league_name":"Czechia 2. Liga"}]}
+{
+  "schema_version": 1,
+  "sport_id": 17,
+  "allowed_leagues": [
+    {
+      "sport_id": 17,
+      "league_id": 128,
+      "league_name": "KHL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 765,
+      "league_name": "Kazakhstan Open Champs",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 781,
+      "league_name": "Latvia Premjerliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 829,
+      "league_name": "Belarus Extraliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 865,
+      "league_name": "Slovakia Extraliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 868,
+      "league_name": "Hungary Erste Liga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 870,
+      "league_name": "Russia VHL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 878,
+      "league_name": "Switzerland NLA",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 923,
+      "league_name": "Germany Eishockey Liga 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 944,
+      "league_name": "Poland Ekstraliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1058,
+      "league_name": "Sweden HockeyAllsvenskan",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1059,
+      "league_name": "France Ligue Magnus",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1072,
+      "league_name": "Austria EHL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1093,
+      "league_name": "Finland SM Liiga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1099,
+      "league_name": "Germany Eishockey Liga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1291,
+      "league_name": "Challenge Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1324,
+      "league_name": "Danish Metal Ligaen",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1993,
+      "league_name": "Swedish Hockey League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 2602,
+      "league_name": "Switzerland NLB",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 8187,
+      "league_name": "Norway 1st Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 31172,
+      "league_name": "Finland Naisten Liiga Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 39192,
+      "league_name": "Czechia Extraliga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 39210,
+      "league_name": "Czechia 2. Liga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    }
+  ]
+}
