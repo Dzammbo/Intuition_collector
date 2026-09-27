@@ -1,0 +1,36 @@
+name: L1 Broad Signal Market Scan
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download latest classified Universe artifact
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,urllib.request,zipfile,os
+          api="https://api.github.com/repos/Dzammbo/Intuition_collector/actions/runs/36312014705/artifacts"
+          h={"Authorization":f"Bearer {os.environ['GH_TOKEN']}","Accept":"application/vnd.github+json","User-Agent":"intuition-l1"}
+          with urllib.request.urlopen(urllib.request.Request(api,headers=h),timeout=30) as r:m=json.load(r)
+          a=next(x for x in m["artifacts"] if x["name"]=="universe")
+          with urllib.request.urlopen(urllib.request.Request(a["archive_download_url"],headers=h),timeout=60) as r:data=r.read()
+          open("u.zip","wb").write(data)
+          with zipfile.ZipFile("u.zip") as z:z.extract("classified-universe.json",".")
+          PY
+      - name: Run L1 market scan
+        run: python3 l1_market_scan.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: l1-market-scan-2026-09-27
+          path: l1-market-raw.json
+          retention-days: 7
