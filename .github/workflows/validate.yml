@@ -1,0 +1,64 @@
+name: Validate Public Operations
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'collector.py'
+      - 'classify_universe.py'
+      - 'collect_event_view.py'
+      - 'l1_market_scan.py'
+      - 'config/**'
+      - 'triggers/run-validation.txt'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PRIVATE_REPO_TOKEN: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+    steps:
+      - name: Verify private repository token
+        run: test -n "${PRIVATE_REPO_TOKEN:-}" || { echo "JARVIS_PRIVATE_REPO_TOKEN secret is missing"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          path: ops
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - name: Validate public workflow contracts
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("ops")
+          workflows = root / ".github" / "workflows"
+          required = {
+              "collect.yml", "collect-event-view.yml", "l1-market-scan.yml",
+              "check-final-card-settlement.yml", "daily-settlement.yml",
+              "rerender-results.yml", "telegram-native-publish.yml", "validate.yml",
+          }
+          present = {p.name for p in workflows.glob("*.yml")}
+          assert present == required, (present, required)
+          for path in workflows.glob("*.yml"):
+              body = path.read_text(encoding="utf-8")
+              assert "runs-on: ubuntu-latest" in body, path
+              assert "self-hosted" not in body, path
+              for forbidden in ("vercel", "railway", "selectel"):
+                  assert forbidden not in body.lower(), (path, forbidden)
+          private_workflows = list(Path("state/.github/workflows").glob("*.yml"))
+          assert not private_workflows, private_workflows
+          PY
+      - name: Validate private state contracts
+        working-directory: state
+        run: |
+          python3 scripts/validate_repository.py
+          python3 -m compileall -q collectors models scripts tests
+          python3 -m unittest discover -s tests -p 'test_*.py'
