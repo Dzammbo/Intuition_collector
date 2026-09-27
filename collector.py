@@ -27,9 +27,12 @@ def collect_feed(sid,day):
   total_pages=pager.get("total_pages") or pager.get("last_page")
   if total_pages is not None:
    try:
-    if page>=int(total_pages):break
+    if page>=int(total_pages):
+     if reported is None or len(events)>=reported: break
    except: pass
-  if not rows or len(rows)<50: break
+  if not rows: break
+  if reported is not None and len(events)>=reported: break
+  if len(rows)<50 and reported is None: break
   page+=1
   if page>100: raise RuntimeError("pagination_guard")
  return {"sport_id":int(sid),"sport":SPORTS[sid],"day_utc":day,"pages":page,"reported_total":reported,"rows":len(events),"events":events}
