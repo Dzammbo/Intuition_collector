@@ -20,8 +20,8 @@ jobs:
       - run: python3 prescreen_v1.py
       - uses: actions/upload-artifact@v4
         with:
-          name: prescreen-v1-2026-09-27
+          name: prescreen-v2-2026-09-27
           path: |
             market-normalized-v1.json
-            prescreen-v1.json
+            prescreen-v2.json
           retention-days: 7
