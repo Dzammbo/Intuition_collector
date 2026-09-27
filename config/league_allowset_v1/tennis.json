@@ -211,6 +211,13 @@
       "league_name": "W35 Reims",
       "tier": "CORE",
       "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 38251,
+      "league_name": "Challenger Saint-Tropez",
+      "tier": "CORE",
+      "tier_reason": "ATP_CHALLENGER"
     }
   ]
 }
