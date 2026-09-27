@@ -1,0 +1,87 @@
+name: Native Telegram Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      report:
+        description: Path inside private state repository
+        required: true
+        type: string
+      kind:
+        description: PREMATCH, MIDDAY, FINAL, or RESULTS
+        required: true
+        type: choice
+        options: [PREMATCH, MIDDAY, FINAL, RESULTS]
+      date:
+        description: YYYY-MM-DD
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths: [triggers/run-telegram-publish.txt]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-native-telegram-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PRIVATE_REPO_TOKEN: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Verify required secrets
+        run: |
+          set -euo pipefail
+          test -n "${PRIVATE_REPO_TOKEN:-}" || { echo "JARVIS_PRIVATE_REPO_TOKEN secret is missing"; exit 1; }
+          test -n "${TELEGRAM_BOT_TOKEN:-}" || { echo "TELEGRAM_BOT_TOKEN secret is missing"; exit 1; }
+          test -n "${TELEGRAM_CHAT_ID:-}" || { echo "TELEGRAM_CHAT_ID secret is missing"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          path: ops
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - name: Resolve explicit publication request
+        id: request
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            REPORT="${{ inputs.report }}"
+            KIND="${{ inputs.kind }}"
+            DATE="${{ inputs.date }}"
+          else
+            REPORT=$(sed -n '1p' ops/triggers/run-telegram-publish.txt)
+            KIND=$(sed -n '2p' ops/triggers/run-telegram-publish.txt)
+            DATE=$(sed -n '3p' ops/triggers/run-telegram-publish.txt)
+          fi
+          [[ "$REPORT" != /* && "$REPORT" != *".."* ]]
+          [[ "$DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          case "$KIND" in PREMATCH|MIDDAY|FINAL|RESULTS) ;; *) echo "Unsupported kind: $KIND"; exit 2;; esac
+          test -f "state/$REPORT"
+          echo "report=$REPORT" >> "$GITHUB_OUTPUT"
+          echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+      - name: Publish explicitly requested report
+        working-directory: state
+        run: |
+          python3 scripts/publish_telegram.py             --report "${{ steps.request.outputs.report }}"             --kind "${{ steps.request.outputs.kind }}"             --date "${{ steps.request.outputs.date }}"
+      - name: Commit publication markers to private repository
+        working-directory: state
+        run: |
+          set -euo pipefail
+          git config user.name "jarvis-intuition-bot"
+          git config user.email "jarvis-intuition-bot@users.noreply.github.com"
+          git add telegram_publications/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Record Telegram publication"
+          git pull --rebase origin main
+          git push origin HEAD:main
