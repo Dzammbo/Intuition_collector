@@ -13,18 +13,21 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
-      - name: Download latest classified Universe artifact
+      - name: Download classified Universe artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: universe
+          github-token: ${{ github.token }}
+          run-id: 36312014705
+      - name: Verify classified snapshot
         run: |
-          set -euo pipefail
+          test -f classified-universe.json
           python3 - <<'PY'
-          import json,urllib.request,zipfile,os
-          api="https://api.github.com/repos/Dzammbo/Intuition_collector/actions/runs/36312014705/artifacts"
-          h={"Authorization":f"Bearer {os.environ['GH_TOKEN']}","Accept":"application/vnd.github+json","User-Agent":"intuition-l1"}
-          with urllib.request.urlopen(urllib.request.Request(api,headers=h),timeout=30) as r:m=json.load(r)
-          a=next(x for x in m["artifacts"] if x["name"]=="universe")
-          with urllib.request.urlopen(urllib.request.Request(a["archive_download_url"],headers=h),timeout=60) as r:data=r.read()
-          open("u.zip","wb").write(data)
-          with zipfile.ZipFile("u.zip") as z:z.extract("classified-universe.json",".")
+          import json
+          d=json.load(open("classified-universe.json"))
+          assert d["window_event_count"]==1475
+          assert len(d["events"]["CORE"])==582
+          print({"window":d["window_event_count"],"core":len(d["events"]["CORE"])})
           PY
       - name: Run L1 market scan
         run: python3 l1_market_scan.py
