@@ -1,2 +1,2 @@
-2026-09-27T10:03:45Z
-reason=fresh_universe_core_secondary_classification
+2026-09-27T10:16:35Z
+reason=fresh_final_universe_after_registry_completion
