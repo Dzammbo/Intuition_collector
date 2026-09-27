@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "status": "WORKING_COPY_OF_PRIVATE_CANON",
+  "source_run_id": 36311337088,
+  "leagues": [
+    {
+      "sport_id": 1,
+      "league_id": 41458,
+      "league_name": "Brazil Campeonato Alagoano U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41422,
+      "league_name": "Brazil Campeonato Carioca U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 115,
+      "league_name": "Brazil Campeonato Paulista U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 46373,
+      "league_name": "Brazil Campeonato Sergipano U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 635,
+      "league_name": "Chile Tercera",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 363,
+      "league_name": "Europe Friendlies",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2964,
+      "league_name": "Germany Oberliga Bremen",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1057,
+      "league_name": "Germany Oberliga Hessen",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1313,
+      "league_name": "Israel Liga Bet North",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 38035,
+      "league_name": "Mexico Liga MX U19",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 37741,
+      "league_name": "Mexico Liga MX U19 Femenil",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 46296,
+      "league_name": "Mexico Primera Premier",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 69,
+      "league_name": "Spain Tercera Group 12",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39,
+      "league_name": "Spain Tercera Group 4",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 585,
+      "league_name": "Sweden 2.div Västra Götaland",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 26,
+      "league_name": "U19 International",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 45867,
+      "league_name": "U20 Africa Cup of Nations Qual",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 8267,
+      "league_name": "Belgium Second Amateur Division VFV B",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41531,
+      "league_name": "Brazil Campeonato Brasiliense B",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41306,
+      "league_name": "Brazil Campeonato Cearense C",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41477,
+      "league_name": "Brazil Campeonato Mineiro 3",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 9451,
+      "league_name": "Brazil Campeonato Mineiro U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41808,
+      "league_name": "Brazil Campeonato Paraense A3",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41448,
+      "league_name": "Brazil Campeonato Paranaense 3",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 13926,
+      "league_name": "Club Friendly List",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3025,
+      "league_name": "Cosafa U20 Cup",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30798,
+      "league_name": "Croatia 3.NL",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 12665,
+      "league_name": "Cyprus Division 3",
+      "tier": "EXCLUDE"
+    }
+  ]
+}
