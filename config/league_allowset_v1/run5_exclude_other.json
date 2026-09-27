@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "status": "WORKING_COPY_OF_PRIVATE_CANON",
+  "source_run_id": 36311337088,
+  "leagues": [
+    {
+      "sport_id": 13,
+      "league_id": 40260,
+      "league_name": "UTR Pro College Station",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 41124,
+      "league_name": "UTR Pro College Station Women",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46559,
+      "league_name": "UTR Pro Norfolk",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 2136,
+      "league_name": "Finland SM-Liiga U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 12393,
+      "league_name": "Quebec Major Junior Hockey League",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 31217,
+      "league_name": "AHL Pre-Season",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 661,
+      "league_name": "Austria EBYSL U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 27292,
+      "league_name": "Norway Elite U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 41423,
+      "league_name": "Switzerland U21 Elite",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 682,
+      "league_name": "Russia MHL",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 8114,
+      "league_name": "WHL",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 12137,
+      "league_name": "Kazakhstan MHL",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 1491,
+      "league_name": "Slovakia Extraliga U20",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 14,
+      "league_name": "Club Friendlies",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 41315,
+      "league_name": "Chile Liga Desarrollo U21",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 5725,
+      "league_name": "FIBA 3x3 Challenger",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 499,
+      "league_name": "Club Friendlies Women",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 33507,
+      "league_name": "Korea College",
+      "tier": "EXCLUDE"
+    }
+  ]
+}
