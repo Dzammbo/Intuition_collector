@@ -1,0 +1,28 @@
+name: Collect CORE Event View
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-event-view.txt']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: universe
+          github-token: ${{ github.token }}
+          run-id: 36312014705
+      - run: python3 collect_event_view.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: event-view-core-2026-09-27
+          path: event-view-core.json
+          retention-days: 7
