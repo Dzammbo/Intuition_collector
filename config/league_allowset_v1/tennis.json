@@ -1,1 +1,216 @@
-{"schema_version":1,"sport_id":13,"allowed_leagues":[{"sport_id":13,"league_id":324,"league_name":"Challenger Curitiba"},{"sport_id":13,"league_id":12250,"league_name":"Laver Cup"},{"sport_id":13,"league_id":12252,"league_name":"ATP Chengdu"},{"sport_id":13,"league_id":12292,"league_name":"ATP Chengdu MD"},{"sport_id":13,"league_id":12870,"league_name":"Challenger Mouilleron le Captif"},{"sport_id":13,"league_id":12980,"league_name":"Challenger Buenos Aires"},{"sport_id":13,"league_id":13655,"league_name":"Challenger Columbus"},{"sport_id":13,"league_id":25583,"league_name":"Billie Jean King Cup"},{"sport_id":13,"league_id":26250,"league_name":"Challenger Porto"},{"sport_id":13,"league_id":28012,"league_name":"Challenger Bari"},{"sport_id":13,"league_id":34485,"league_name":"Challenger Genoa"},{"sport_id":13,"league_id":38267,"league_name":"ATP Hangzhou"},{"sport_id":13,"league_id":38270,"league_name":"ATP Hangzhou MD"},{"sport_id":13,"league_id":39795,"league_name":"Challenger San Diego"},{"sport_id":13,"league_id":40978,"league_name":"WTA Porto"},{"sport_id":13,"league_id":41638,"league_name":"WTA Tolentino"},{"sport_id":13,"league_id":41640,"league_name":"WTA Tolentino WD"},{"sport_id":13,"league_id":41688,"league_name":"WTA Jingshan"},{"sport_id":13,"league_id":41705,"league_name":"WTA Jingshan WD"},{"sport_id":13,"league_id":46557,"league_name":"WTA Ankara"},{"sport_id":13,"league_id":46563,"league_name":"M15 Forbach"},{"sport_id":13,"league_id":46576,"league_name":"W50 Berkeley"},{"sport_id":13,"league_id":46581,"league_name":"M25 Setubal"},{"sport_id":13,"league_id":46593,"league_name":"M15 Columbia"},{"sport_id":13,"league_id":46595,"league_name":"W15 Belem"},{"sport_id":13,"league_id":46597,"league_name":"W50 Berkeley WD"},{"sport_id":13,"league_id":46599,"league_name":"M15 Curitiba"},{"sport_id":13,"league_id":46640,"league_name":"WTA Adana"},{"sport_id":13,"league_id":46645,"league_name":"W75 Quinta Do Lago"},{"sport_id":13,"league_id":46646,"league_name":"W35 Reims"}]}
+{
+  "schema_version": 1,
+  "sport_id": 13,
+  "allowed_leagues": [
+    {
+      "sport_id": 13,
+      "league_id": 324,
+      "league_name": "Challenger Curitiba",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12250,
+      "league_name": "Laver Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12252,
+      "league_name": "ATP Chengdu",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12292,
+      "league_name": "ATP Chengdu MD",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12870,
+      "league_name": "Challenger Mouilleron le Captif",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12980,
+      "league_name": "Challenger Buenos Aires",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 13655,
+      "league_name": "Challenger Columbus",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 25583,
+      "league_name": "Billie Jean King Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 26250,
+      "league_name": "Challenger Porto",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 28012,
+      "league_name": "Challenger Bari",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 34485,
+      "league_name": "Challenger Genoa",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 38267,
+      "league_name": "ATP Hangzhou",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 38270,
+      "league_name": "ATP Hangzhou MD",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 39795,
+      "league_name": "Challenger San Diego",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 40978,
+      "league_name": "WTA Porto",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 41638,
+      "league_name": "WTA Tolentino",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 41640,
+      "league_name": "WTA Tolentino WD",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 41688,
+      "league_name": "WTA Jingshan",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 41705,
+      "league_name": "WTA Jingshan WD",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46557,
+      "league_name": "WTA Ankara",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46563,
+      "league_name": "M15 Forbach",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46576,
+      "league_name": "W50 Berkeley",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46581,
+      "league_name": "M25 Setubal",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46593,
+      "league_name": "M15 Columbia",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46595,
+      "league_name": "W15 Belem",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46597,
+      "league_name": "W50 Berkeley WD",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46599,
+      "league_name": "M15 Curitiba",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46640,
+      "league_name": "WTA Adana",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46645,
+      "league_name": "W75 Quinta Do Lago",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46646,
+      "league_name": "W35 Reims",
+      "tier": "CORE",
+      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+    }
+  ]
+}
