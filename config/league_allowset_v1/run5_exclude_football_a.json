@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "status": "WORKING_COPY_OF_PRIVATE_CANON",
+  "source_run_id": 36311337088,
+  "leagues": [
+    {
+      "sport_id": 1,
+      "league_id": 605,
+      "league_name": "Italy Serie D",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 18748,
+      "league_name": "Greece Gamma Ethniki",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39892,
+      "league_name": "Czechia 4. Liga",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 536,
+      "league_name": "USA College Championship",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1123,
+      "league_name": "Serbia Srpska Liga",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 10552,
+      "league_name": "Poland IV Liga",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 13799,
+      "league_name": "Argentina Torneo Regional Amateur",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 670,
+      "league_name": "Germany Oberliga Westfalen",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2756,
+      "league_name": "Luxembourg Promotion D’Honneur",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39106,
+      "league_name": "Türkiye 3.Lig Group 2",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30915,
+      "league_name": "Bolivia Copa Simon Bolivar",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 52,
+      "league_name": "Spain Tercera Group 1",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 46,
+      "league_name": "Spain Tercera Group 14",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 47,
+      "league_name": "Spain Tercera Group 9",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39119,
+      "league_name": "Türkiye 3.Lig Group 1",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 32,
+      "league_name": "Finland Kolmonen",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 104,
+      "league_name": "Germany Oberliga Mittelrhein",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 671,
+      "league_name": "Germany Oberliga Niederrhein",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 101,
+      "league_name": "Germany Oberliga Niedersachsen",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 496,
+      "league_name": "Hungary NB III",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 204,
+      "league_name": "Spain Tercera Group 13",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 205,
+      "league_name": "Spain Tercera Group 3",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39107,
+      "league_name": "Türkiye 3.Lig Group 3",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 16203,
+      "league_name": "Brazil Campeonato Carioca B2",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3579,
+      "league_name": "Netherlands Derde Divisie",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 53,
+      "league_name": "Spain Tercera Group 16",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 54,
+      "league_name": "Spain Tercera Group 18",
+      "tier": "EXCLUDE"
+    }
+  ]
+}
