@@ -2,6 +2,10 @@ name: Collect Universe
 
 on:
   workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - 'triggers/run-universe.txt'
 
 permissions:
   contents: read
