@@ -1,2 +1,2 @@
-2026-09-27T19:05:00+03:00
-reason=validate-russian-user-facing-language-contract
+2026-09-27T19:15:00+03:00
+reason=validate-complete-russian-presentation-layer-v2
