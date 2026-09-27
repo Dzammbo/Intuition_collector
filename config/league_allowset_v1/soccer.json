@@ -1,1 +1,1154 @@
-{"schema_version":1,"sport_id":1,"allowed_leagues":[{"sport_id":1,"league_id":15,"league_name":"China Division 1"},{"sport_id":1,"league_id":58,"league_name":"Russia Division 1"},{"sport_id":1,"league_id":61,"league_name":"Russia Cup Women"},{"sport_id":1,"league_id":73,"league_name":"Germany Regionalliga North East"},{"sport_id":1,"league_id":76,"league_name":"Switzerland 1.Liga Promotion"},{"sport_id":1,"league_id":84,"league_name":"Scotland Premier League Women"},{"sport_id":1,"league_id":85,"league_name":"Norway Division 1 Women"},{"sport_id":1,"league_id":86,"league_name":"Norway Division 2 Group 1"},{"sport_id":1,"league_id":88,"league_name":"Germany Regionalliga North"},{"sport_id":1,"league_id":92,"league_name":"Sweden 1.div Norra"},{"sport_id":1,"league_id":108,"league_name":"Brazil Paulista Cup"},{"sport_id":1,"league_id":111,"league_name":"Russia Division 2"},{"sport_id":1,"league_id":157,"league_name":"Portugal Campeonato Nacional"},{"sport_id":1,"league_id":160,"league_name":"Belarus Division 1"},{"sport_id":1,"league_id":161,"league_name":"Belgium Cup"},{"sport_id":1,"league_id":162,"league_name":"Sweden 1.div Södra"},{"sport_id":1,"league_id":165,"league_name":"England Super League Women"},{"sport_id":1,"league_id":170,"league_name":"Italy Serie C Group A"},{"sport_id":1,"league_id":171,"league_name":"Italy Serie C Group C"},{"sport_id":1,"league_id":176,"league_name":"Slovenia 2. SNL"},{"sport_id":1,"league_id":179,"league_name":"Austria Regionalliga West"},{"sport_id":1,"league_id":185,"league_name":"Norway Division 2 Group 2"},{"sport_id":1,"league_id":187,"league_name":"Sweden Damallsvenskan"},{"sport_id":1,"league_id":188,"league_name":"Ghana Premier League"},{"sport_id":1,"league_id":191,"league_name":"Finland Kakkonen Group C"},{"sport_id":1,"league_id":209,"league_name":"Morocco GNF 2"},{"sport_id":1,"league_id":211,"league_name":"Morocco GNF 1"},{"sport_id":1,"league_id":212,"league_name":"Argentina Primera B Metropolitana"},{"sport_id":1,"league_id":221,"league_name":"Spain Segunda"},{"sport_id":1,"league_id":232,"league_name":"Argentina Nacional B"},{"sport_id":1,"league_id":241,"league_name":"Argentina Primera C Metropolitana"},{"sport_id":1,"league_id":242,"league_name":"USA MLS"},{"sport_id":1,"league_id":246,"league_name":"Brazil Serie C"},{"sport_id":1,"league_id":250,"league_name":"International Match"},{"sport_id":1,"league_id":254,"league_name":"Colombia Primera A"},{"sport_id":1,"league_id":255,"league_name":"Colombia Primera B"},{"sport_id":1,"league_id":258,"league_name":"El Salvador Apertura"},{"sport_id":1,"league_id":259,"league_name":"USA NWSL Women"},{"sport_id":1,"league_id":260,"league_name":"Guatemala Primera Division"},{"sport_id":1,"league_id":261,"league_name":"Panama LPF"},{"sport_id":1,"league_id":328,"league_name":"Brazil Serie B"},{"sport_id":1,"league_id":382,"league_name":"Germany Regionalliga West"},{"sport_id":1,"league_id":411,"league_name":"Vietnam V-League 2"},{"sport_id":1,"league_id":425,"league_name":"Spain Copa del Rey"},{"sport_id":1,"league_id":431,"league_name":"Iceland Premier League Women"},{"sport_id":1,"league_id":434,"league_name":"Switzerland 1.Liga Classic"},{"sport_id":1,"league_id":438,"league_name":"Argentina Cup"},{"sport_id":1,"league_id":439,"league_name":"Northern Ireland Premier League Women"},{"sport_id":1,"league_id":443,"league_name":"Paraguay Division Intermedia"},{"sport_id":1,"league_id":447,"league_name":"Costa Rica Segunda"},{"sport_id":1,"league_id":487,"league_name":"Iran Div 1"},{"sport_id":1,"league_id":503,"league_name":"Ukraine Persha Liga"},{"sport_id":1,"league_id":512,"league_name":"Slovenia 3. SNL"},{"sport_id":1,"league_id":599,"league_name":"Spain Primera Women"},{"sport_id":1,"league_id":614,"league_name":"Portugal Cup"},{"sport_id":1,"league_id":620,"league_name":"Italy Serie C Group B"},{"sport_id":1,"league_id":659,"league_name":"Hungary NBI Women"},{"sport_id":1,"league_id":663,"league_name":"Austria League 1 Women"},{"sport_id":1,"league_id":674,"league_name":"Argentina Torneo A"},{"sport_id":1,"league_id":675,"league_name":"Bosnia & Herzegovina 1st League"},{"sport_id":1,"league_id":678,"league_name":"Nigeria Premier League"},{"sport_id":1,"league_id":686,"league_name":"Chile Segunda"},{"sport_id":1,"league_id":688,"league_name":"Jamaica Premier League"},{"sport_id":1,"league_id":808,"league_name":"Ivory Coast Premier Division"},{"sport_id":1,"league_id":869,"league_name":"Algeria Division 2"},{"sport_id":1,"league_id":887,"league_name":"Philippines PFL"},{"sport_id":1,"league_id":909,"league_name":"Hong Kong 1st Division"},{"sport_id":1,"league_id":912,"league_name":"Uruguay Segunda"},{"sport_id":1,"league_id":928,"league_name":"Guatemala Liga Nacional"},{"sport_id":1,"league_id":943,"league_name":"Portugal Campeonato Nacional Women"},{"sport_id":1,"league_id":1076,"league_name":"Chile Cup"},{"sport_id":1,"league_id":1375,"league_name":"Slovenia League Women"},{"sport_id":1,"league_id":1606,"league_name":"Serbia League Women"},{"sport_id":1,"league_id":1771,"league_name":"Germany DFB Pokal Women"},{"sport_id":1,"league_id":2320,"league_name":"Italy Serie A Women"},{"sport_id":1,"league_id":2336,"league_name":"Greece Super League Women"},{"sport_id":1,"league_id":2506,"league_name":"Republic of Ireland FAI Cup Women"},{"sport_id":1,"league_id":2515,"league_name":"Argentina Championship Women"},{"sport_id":1,"league_id":2858,"league_name":"Burundi Premier League"},{"sport_id":1,"league_id":2872,"league_name":"Romania Liga 1 Women"},{"sport_id":1,"league_id":3170,"league_name":"Egypt Cup"},{"sport_id":1,"league_id":3283,"league_name":"Tunisia League 2"},{"sport_id":1,"league_id":3355,"league_name":"South Africa Diski Challenge"},{"sport_id":1,"league_id":3722,"league_name":"Italy Serie B Women"},{"sport_id":1,"league_id":4076,"league_name":"Brazil Campeonato Gaucho 2"},{"sport_id":1,"league_id":4225,"league_name":"Dominican Republic Liga"},{"sport_id":1,"league_id":4403,"league_name":"Brazil Campeonato Mineiro 2"},{"sport_id":1,"league_id":5100,"league_name":"Croatia First League Women"},{"sport_id":1,"league_id":5104,"league_name":"Lithuania A Lyga Women"},{"sport_id":1,"league_id":6298,"league_name":"Mexico Liga MX Femenil"},{"sport_id":1,"league_id":6400,"league_name":"Ukraine Druha Liga"},{"sport_id":1,"league_id":6514,"league_name":"Uruguay Clausura"},{"sport_id":1,"league_id":6656,"league_name":"Wales Premier League Women"},{"sport_id":1,"league_id":6719,"league_name":"Bulgaria Third League"},{"sport_id":1,"league_id":8305,"league_name":"Gulf Cup"},{"sport_id":1,"league_id":8910,"league_name":"South Korea K League 1"},{"sport_id":1,"league_id":9453,"league_name":"Romania Liga 2 Women"},{"sport_id":1,"league_id":11505,"league_name":"Brazil Gaucho Women"},{"sport_id":1,"league_id":13579,"league_name":"El Salvador Liga Feminina"},{"sport_id":1,"league_id":13805,"league_name":"Andorra Second Division"},{"sport_id":1,"league_id":14717,"league_name":"CONCACAF Nations League"},{"sport_id":1,"league_id":14895,"league_name":"USA USL League One"},{"sport_id":1,"league_id":15849,"league_name":"Canada Premier League"},{"sport_id":1,"league_id":16320,"league_name":"North Macedonia League Women"},{"sport_id":1,"league_id":16412,"league_name":"Costa Rica Primera Division Women"},{"sport_id":1,"league_id":17450,"league_name":"Kenya League Women"},{"sport_id":1,"league_id":18497,"league_name":"Poland League Women"},{"sport_id":1,"league_id":18859,"league_name":"Greece Super League 2"},{"sport_id":1,"league_id":20487,"league_name":"Burkina Faso League"},{"sport_id":1,"league_id":21430,"league_name":"Uganda Super League Women"},{"sport_id":1,"league_id":21592,"league_name":"Peru Campeonato Nacional Women"},{"sport_id":1,"league_id":21839,"league_name":"UAE Second Division"},{"sport_id":1,"league_id":21843,"league_name":"Netherlands Eerste Divisie"},{"sport_id":1,"league_id":22042,"league_name":"Netherlands Eredivisie Women"},{"sport_id":1,"league_id":22512,"league_name":"Chile Primera Division Women"},{"sport_id":1,"league_id":24313,"league_name":"Hungary NBII Women"},{"sport_id":1,"league_id":25185,"league_name":"Honduras Liga de Ascenso"},{"sport_id":1,"league_id":25520,"league_name":"Tanzania First Division"},{"sport_id":1,"league_id":26206,"league_name":"Scotland Women Premier League 2"},{"sport_id":1,"league_id":26610,"league_name":"Denmark Division 2"},{"sport_id":1,"league_id":26931,"league_name":"Spain Primera Division RFEF Group 2"},{"sport_id":1,"league_id":26932,"league_name":"Spain Primera Division RFEF Group 1"},{"sport_id":1,"league_id":27268,"league_name":"Nicaragua Liga de Ascenso"},{"sport_id":1,"league_id":27730,"league_name":"Brazil Campeonato Capixaba Women"},{"sport_id":1,"league_id":30612,"league_name":"Bulgaria Second League"},{"sport_id":1,"league_id":30719,"league_name":"Croatia 1.NL"},{"sport_id":1,"league_id":30973,"league_name":"UEFA Nations League B"},{"sport_id":1,"league_id":30974,"league_name":"UEFA Nations League A"},{"sport_id":1,"league_id":30975,"league_name":"UEFA Nations League D"},{"sport_id":1,"league_id":30977,"league_name":"Spain Primera Federacion Women"},{"sport_id":1,"league_id":30979,"league_name":"Spain Segunda Federacion Women"},{"sport_id":1,"league_id":31275,"league_name":"Brazil Campeonato Paraibano 2"},{"sport_id":1,"league_id":31276,"league_name":"Brazil Campeonato Goiano 2"},{"sport_id":1,"league_id":31363,"league_name":"Poland Ekstraliga Women"},{"sport_id":1,"league_id":31442,"league_name":"England FA National League Cup Women"},{"sport_id":1,"league_id":32373,"league_name":"Mexico Liga MX"},{"sport_id":1,"league_id":32538,"league_name":"Bolivia Copa Division Profesional"},{"sport_id":1,"league_id":34432,"league_name":"Peru Liga 2"},{"sport_id":1,"league_id":34433,"league_name":"Ecuador LigaPro Serie B"},{"sport_id":1,"league_id":36477,"league_name":"Danish Womens Elitedivisionen"},{"sport_id":1,"league_id":37913,"league_name":"Danish Womens 1.Division"},{"sport_id":1,"league_id":38285,"league_name":"Brazil Copa Santa Catarina"},{"sport_id":1,"league_id":38655,"league_name":"Cambodia League Women"},{"sport_id":1,"league_id":39109,"league_name":"Türkiye 2 Lig Kirmizi"},{"sport_id":1,"league_id":39110,"league_name":"Türkiye 2 Lig Beyaz"},{"sport_id":1,"league_id":39187,"league_name":"Türkiye Womens League"},{"sport_id":1,"league_id":39267,"league_name":"ASEAN Championship"},{"sport_id":1,"league_id":39880,"league_name":"Czechia Div 2 Women"},{"sport_id":1,"league_id":39908,"league_name":"Czechia Div 1 Women"},{"sport_id":1,"league_id":40022,"league_name":"Serbia First League Women"},{"sport_id":1,"league_id":40397,"league_name":"Denmark Division 2 Women"},{"sport_id":1,"league_id":41110,"league_name":"Malawi League Women"},{"sport_id":1,"league_id":41389,"league_name":"Brazil Campeonato Catarinense Women"},{"sport_id":1,"league_id":41518,"league_name":"England FA WSL 2"},{"sport_id":1,"league_id":41622,"league_name":"Brazil Campeonato Baiano Women"},{"sport_id":1,"league_id":41623,"league_name":"Brazil Copa Parana"},{"sport_id":1,"league_id":41690,"league_name":"Brazil Campeonato Mineiro Women"},{"sport_id":1,"league_id":41756,"league_name":"Brazil Campeonato Goiano Women"},{"sport_id":1,"league_id":41758,"league_name":"Indonesia Championship"},{"sport_id":1,"league_id":44121,"league_name":"Iraq Premier League"},{"sport_id":1,"league_id":44880,"league_name":"Peru Copa de la Liga"},{"sport_id":1,"league_id":45953,"league_name":"Austria Regionalliga South"},{"sport_id":1,"league_id":46372,"league_name":"Mexico Liga Premier A"},{"sport_id":1,"league_id":46625,"league_name":"FIFA ASEAN Cup"}]}
+{
+  "schema_version": 1,
+  "sport_id": 1,
+  "allowed_leagues": [
+    {
+      "sport_id": 1,
+      "league_id": 15,
+      "league_name": "China Division 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 58,
+      "league_name": "Russia Division 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 61,
+      "league_name": "Russia Cup Women",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 73,
+      "league_name": "Germany Regionalliga North East",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 76,
+      "league_name": "Switzerland 1.Liga Promotion",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 84,
+      "league_name": "Scotland Premier League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 85,
+      "league_name": "Norway Division 1 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 86,
+      "league_name": "Norway Division 2 Group 1",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 88,
+      "league_name": "Germany Regionalliga North",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 92,
+      "league_name": "Sweden 1.div Norra",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 108,
+      "league_name": "Brazil Paulista Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 111,
+      "league_name": "Russia Division 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 157,
+      "league_name": "Portugal Campeonato Nacional",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 160,
+      "league_name": "Belarus Division 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 161,
+      "league_name": "Belgium Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 162,
+      "league_name": "Sweden 1.div Södra",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 165,
+      "league_name": "England Super League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 170,
+      "league_name": "Italy Serie C Group A",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 171,
+      "league_name": "Italy Serie C Group C",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 176,
+      "league_name": "Slovenia 2. SNL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 179,
+      "league_name": "Austria Regionalliga West",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 185,
+      "league_name": "Norway Division 2 Group 2",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 187,
+      "league_name": "Sweden Damallsvenskan",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 188,
+      "league_name": "Ghana Premier League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 191,
+      "league_name": "Finland Kakkonen Group C",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 209,
+      "league_name": "Morocco GNF 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 211,
+      "league_name": "Morocco GNF 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 212,
+      "league_name": "Argentina Primera B Metropolitana",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 221,
+      "league_name": "Spain Segunda",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 232,
+      "league_name": "Argentina Nacional B",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 241,
+      "league_name": "Argentina Primera C Metropolitana",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 242,
+      "league_name": "USA MLS",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 246,
+      "league_name": "Brazil Serie C",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 250,
+      "league_name": "International Match",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 254,
+      "league_name": "Colombia Primera A",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 255,
+      "league_name": "Colombia Primera B",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 258,
+      "league_name": "El Salvador Apertura",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 259,
+      "league_name": "USA NWSL Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 260,
+      "league_name": "Guatemala Primera Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 261,
+      "league_name": "Panama LPF",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 328,
+      "league_name": "Brazil Serie B",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 382,
+      "league_name": "Germany Regionalliga West",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 411,
+      "league_name": "Vietnam V-League 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 425,
+      "league_name": "Spain Copa del Rey",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 431,
+      "league_name": "Iceland Premier League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 434,
+      "league_name": "Switzerland 1.Liga Classic",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 438,
+      "league_name": "Argentina Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 439,
+      "league_name": "Northern Ireland Premier League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 443,
+      "league_name": "Paraguay Division Intermedia",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 447,
+      "league_name": "Costa Rica Segunda",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 487,
+      "league_name": "Iran Div 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 503,
+      "league_name": "Ukraine Persha Liga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 512,
+      "league_name": "Slovenia 3. SNL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 599,
+      "league_name": "Spain Primera Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 614,
+      "league_name": "Portugal Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 620,
+      "league_name": "Italy Serie C Group B",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 659,
+      "league_name": "Hungary NBI Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 663,
+      "league_name": "Austria League 1 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 674,
+      "league_name": "Argentina Torneo A",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 675,
+      "league_name": "Bosnia & Herzegovina 1st League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 678,
+      "league_name": "Nigeria Premier League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 686,
+      "league_name": "Chile Segunda",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 688,
+      "league_name": "Jamaica Premier League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 808,
+      "league_name": "Ivory Coast Premier Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 869,
+      "league_name": "Algeria Division 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 887,
+      "league_name": "Philippines PFL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 909,
+      "league_name": "Hong Kong 1st Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 912,
+      "league_name": "Uruguay Segunda",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 928,
+      "league_name": "Guatemala Liga Nacional",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 943,
+      "league_name": "Portugal Campeonato Nacional Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1076,
+      "league_name": "Chile Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1375,
+      "league_name": "Slovenia League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1606,
+      "league_name": "Serbia League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1771,
+      "league_name": "Germany DFB Pokal Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2320,
+      "league_name": "Italy Serie A Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2336,
+      "league_name": "Greece Super League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2506,
+      "league_name": "Republic of Ireland FAI Cup Women",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2515,
+      "league_name": "Argentina Championship Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2858,
+      "league_name": "Burundi Premier League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2872,
+      "league_name": "Romania Liga 1 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3170,
+      "league_name": "Egypt Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3283,
+      "league_name": "Tunisia League 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3355,
+      "league_name": "South Africa Diski Challenge",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3722,
+      "league_name": "Italy Serie B Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 4076,
+      "league_name": "Brazil Campeonato Gaucho 2",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 4225,
+      "league_name": "Dominican Republic Liga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 4403,
+      "league_name": "Brazil Campeonato Mineiro 2",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 5100,
+      "league_name": "Croatia First League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 5104,
+      "league_name": "Lithuania A Lyga Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 6298,
+      "league_name": "Mexico Liga MX Femenil",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 6400,
+      "league_name": "Ukraine Druha Liga",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 6514,
+      "league_name": "Uruguay Clausura",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 6656,
+      "league_name": "Wales Premier League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 6719,
+      "league_name": "Bulgaria Third League",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 8305,
+      "league_name": "Gulf Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 8910,
+      "league_name": "South Korea K League 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 9453,
+      "league_name": "Romania Liga 2 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 11505,
+      "league_name": "Brazil Gaucho Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 13579,
+      "league_name": "El Salvador Liga Feminina",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 13805,
+      "league_name": "Andorra Second Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 14717,
+      "league_name": "CONCACAF Nations League",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 14895,
+      "league_name": "USA USL League One",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 15849,
+      "league_name": "Canada Premier League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 16320,
+      "league_name": "North Macedonia League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 16412,
+      "league_name": "Costa Rica Primera Division Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 17450,
+      "league_name": "Kenya League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 18497,
+      "league_name": "Poland League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 18859,
+      "league_name": "Greece Super League 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 20487,
+      "league_name": "Burkina Faso League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 21430,
+      "league_name": "Uganda Super League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 21592,
+      "league_name": "Peru Campeonato Nacional Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 21839,
+      "league_name": "UAE Second Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 21843,
+      "league_name": "Netherlands Eerste Divisie",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 22042,
+      "league_name": "Netherlands Eredivisie Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 22512,
+      "league_name": "Chile Primera Division Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 24313,
+      "league_name": "Hungary NBII Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 25185,
+      "league_name": "Honduras Liga de Ascenso",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 25520,
+      "league_name": "Tanzania First Division",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 26206,
+      "league_name": "Scotland Women Premier League 2",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 26610,
+      "league_name": "Denmark Division 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 26931,
+      "league_name": "Spain Primera Division RFEF Group 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 26932,
+      "league_name": "Spain Primera Division RFEF Group 1",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 27268,
+      "league_name": "Nicaragua Liga de Ascenso",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 27730,
+      "league_name": "Brazil Campeonato Capixaba Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30612,
+      "league_name": "Bulgaria Second League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30719,
+      "league_name": "Croatia 1.NL",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30973,
+      "league_name": "UEFA Nations League B",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30974,
+      "league_name": "UEFA Nations League A",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30975,
+      "league_name": "UEFA Nations League D",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30977,
+      "league_name": "Spain Primera Federacion Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30979,
+      "league_name": "Spain Segunda Federacion Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 31275,
+      "league_name": "Brazil Campeonato Paraibano 2",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 31276,
+      "league_name": "Brazil Campeonato Goiano 2",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 31363,
+      "league_name": "Poland Ekstraliga Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 31442,
+      "league_name": "England FA National League Cup Women",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 32373,
+      "league_name": "Mexico Liga MX",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 32538,
+      "league_name": "Bolivia Copa Division Profesional",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 34432,
+      "league_name": "Peru Liga 2",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 34433,
+      "league_name": "Ecuador LigaPro Serie B",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 36477,
+      "league_name": "Danish Womens Elitedivisionen",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 37913,
+      "league_name": "Danish Womens 1.Division",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 38285,
+      "league_name": "Brazil Copa Santa Catarina",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 38655,
+      "league_name": "Cambodia League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39109,
+      "league_name": "Türkiye 2 Lig Kirmizi",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39110,
+      "league_name": "Türkiye 2 Lig Beyaz",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39187,
+      "league_name": "Türkiye Womens League",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39267,
+      "league_name": "ASEAN Championship",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39880,
+      "league_name": "Czechia Div 2 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 39908,
+      "league_name": "Czechia Div 1 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 40022,
+      "league_name": "Serbia First League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 40397,
+      "league_name": "Denmark Division 2 Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41110,
+      "league_name": "Malawi League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41389,
+      "league_name": "Brazil Campeonato Catarinense Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41518,
+      "league_name": "England FA WSL 2",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41622,
+      "league_name": "Brazil Campeonato Baiano Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41623,
+      "league_name": "Brazil Copa Parana",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41690,
+      "league_name": "Brazil Campeonato Mineiro Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41756,
+      "league_name": "Brazil Campeonato Goiano Women",
+      "tier": "SECONDARY",
+      "tier_reason": "WOMEN_LOWER_OR_SECONDARY_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41758,
+      "league_name": "Indonesia Championship",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 44121,
+      "league_name": "Iraq Premier League",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 44880,
+      "league_name": "Peru Copa de la Liga",
+      "tier": "CORE",
+      "tier_reason": "PRIMARY_OR_ESTABLISHED_PROFESSIONAL_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 45953,
+      "league_name": "Austria Regionalliga South",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 46372,
+      "league_name": "Mexico Liga Premier A",
+      "tier": "SECONDARY",
+      "tier_reason": "LOWER_TIER_OR_SEMIPRO_COVERAGE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 46625,
+      "league_name": "FIFA ASEAN Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "SECONDARY_CUP_OR_TOURNAMENT"
+    }
+  ]
+}
