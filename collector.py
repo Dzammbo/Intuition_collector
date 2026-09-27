@@ -5,7 +5,15 @@ BASE="https://api.b365api.com"
 def get(path,params,timeout=20):
  p=dict(params);p["token"]=os.environ["BETSAPI_TOKEN"]
  url=BASE+path+"?"+urllib.parse.urlencode(p)
- with urllib.request.urlopen(url,timeout=timeout) as r:return json.load(r)
+ last=None
+ for attempt in range(1,5):
+  try:
+   with urllib.request.urlopen(url,timeout=timeout) as r:return json.load(r)
+  except Exception as e:
+   last=e
+   if attempt<4:
+    time.sleep(1.5*attempt)
+ raise last
 def collect_feed(sid,day):
  events=[];page=1;reported=None
  while True:
