@@ -1,4 +1,0 @@
-2026-09-27T11:08:00Z
-source_universe_run=36312014705
-core=582
-batch_size=10
