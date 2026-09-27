@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "status": "WORKING_COPY_OF_PRIVATE_CANON",
+  "source_run_id": 36311337088,
+  "leagues": [
+    {
+      "sport_id": 1,
+      "league_id": 39907,
+      "league_name": "Czechia 5. Liga",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 507,
+      "league_name": "Denmark Series Group 1",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30688,
+      "league_name": "FIFA U20 World Cup Women",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1555,
+      "league_name": "Germany Oberliga NOFV Sud",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 11972,
+      "league_name": "Greece Super League U19",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2664,
+      "league_name": "Hong Kong 3rd Division",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1310,
+      "league_name": "Israel Liga Bet South",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 383,
+      "league_name": "Norway Division 3 Group 4",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 351,
+      "league_name": "Other Match",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 83,
+      "league_name": "Paraguay Reserve League",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 228,
+      "league_name": "Spain Tercera Group 11",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 38,
+      "league_name": "Spain Tercera Group 15",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 55,
+      "league_name": "Spain Tercera Group 2",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 513,
+      "league_name": "Sweden 2.div Norrland",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 34392,
+      "league_name": "Switzerland 2. Liga Interregional",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 34347,
+      "league_name": "Switzerland U19 Elite",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 2464,
+      "league_name": "U17 Euro W Ch.ship, QF",
+      "tier": "EXCLUDE"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 37609,
+      "league_name": "Uruguay Primera Division Amateur",
+      "tier": "EXCLUDE"
+    }
+  ]
+}
