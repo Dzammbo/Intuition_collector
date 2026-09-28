@@ -15,6 +15,12 @@ The repository contains collection code and public workflow definitions. Betting
 - `L1 Broad Signal Market Scan`
 - `Sync BetsAPI League Registry` - complete provider registry for all five supported sports
 
+The provider catalog is stored in `config/league_registry_v1/`. Runtime league
+classification uses the frozen exact-ID overlay in
+`config/league_allowset_v1/complete_registry_classification.json`. A genuinely
+new provider ID is quarantined without blocking the daily run and cannot be
+promoted automatically.
+
 ## Operational workflows
 
 - `Check Final Card Settlement`

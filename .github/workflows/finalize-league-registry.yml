@@ -1,0 +1,64 @@
+name: Finalize Complete League Registry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'triggers/run-finalize-league-registry.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ops
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - name: Build exact public and private registries
+        working-directory: ops
+        run: |
+          set -euo pipefail
+          python3 build_full_league_classification.py
+          CLASSIFICATION_STATUS=CANONICAL \
+          CLASSIFICATION_OUTPUT=../state/config/league_allowset_v1/complete_registry_classification.json \
+            python3 build_full_league_classification.py
+          python3 publish_full_league_registry.py --public-root . --private-root ../state
+      - name: Validate registry coverage
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          public = json.loads(Path("ops/config/league_allowset_v1/complete_registry_classification.json").read_text())
+          private = json.loads(Path("state/config/league_allowset_v1/complete_registry_classification.json").read_text())
+          for data in (public, private):
+              keys = [(x["sport_id"], x["league_id"]) for x in data["leagues"]]
+              assert len(keys) == len(set(keys)) == 16187
+              assert {x["tier"] for x in data["leagues"]} <= {"CORE", "SECONDARY", "EXCLUDE"}
+          assert public["counts"] == private["counts"]
+          PY
+      - name: Commit private canonical registry
+        working-directory: state
+        run: |
+          set -euo pipefail
+          git config user.name jarvis-intuition-bot
+          git config user.email jarvis-intuition-bot@users.noreply.github.com
+          git add config/project.json config/league_allowset_v1 docs/LEAGUE_REGISTRY_V1.md
+          git commit -m "Canonicalize complete BetsAPI league registry"
+          git push
+      - name: Commit public registry copy
+        working-directory: ops
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add config/league_allowset_v1
+          git commit -m "Publish complete exact league classification"
+          git push

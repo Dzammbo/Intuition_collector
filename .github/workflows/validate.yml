@@ -71,6 +71,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
+          import json
           from pathlib import Path
           root = Path("ops")
           workflows = root / ".github" / "workflows"
@@ -79,6 +80,7 @@ jobs:
               "build-model-prescreen-packet.yml", "reclassify-saved-universe.yml",
               "extract-unclassified.yml",
               "sync-league-registry.yml",
+              "finalize-league-registry.yml",
               "check-final-card-settlement.yml", "daily-settlement.yml",
               "rerender-results.yml", "telegram-native-publish.yml", "validate.yml",
           }
@@ -93,6 +95,15 @@ jobs:
                       assert forbidden not in body.lower(), (path, forbidden)
           private_workflows = sorted(p.name for p in Path("state/.github/workflows").glob("*.yml"))
           assert not private_workflows, private_workflows
+          catalog = json.loads((root / "config/league_registry_v1/catalog.json").read_text(encoding="utf-8"))
+          mapping_path = root / "config/league_allowset_v1/complete_registry_classification.json"
+          if mapping_path.exists():
+              mapping = json.loads(mapping_path.read_text(encoding="utf-8"))
+              catalog_keys = {(x["sport_id"], x["league_id"]) for x in catalog["leagues"]}
+              mapping_keys = {(x["sport_id"], x["league_id"]) for x in mapping["leagues"]}
+              assert catalog_keys == mapping_keys
+              assert len(mapping_keys) == 16187
+              assert {x["tier"] for x in mapping["leagues"]} <= {"CORE", "SECONDARY", "EXCLUDE"}
           print({"private_workflows": private_workflows})
           PY
       - name: Verify private repository write permission
