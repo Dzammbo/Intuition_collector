@@ -1,0 +1,484 @@
+{
+  "schema_version": 1,
+  "status": "CANONICAL_COPY",
+  "source_private_path": "config/league_allowset_v1/new_leagues_2026-09-28_classification.json",
+  "source_run_id": 36379808382,
+  "leagues": [
+    {
+      "sport_id": 13,
+      "league_id": 41706,
+      "league_name": "Challenger Jingshan",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 36346,
+      "league_name": "UTR Pro Kawaguchi",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12378,
+      "league_name": "WTA Beijing",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46580,
+      "league_name": "M15 Telavi",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 36650,
+      "league_name": "UTR Pro Newport Beach Women",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46648,
+      "league_name": "W35 Baza",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46655,
+      "league_name": "M25 Zaragoza",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 39191,
+      "league_name": "Czechia Extraliga U20",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 362,
+      "league_name": "Uruguay Reserve League",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46657,
+      "league_name": "W15 Varna",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46654,
+      "league_name": "M25 Slobozia",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46651,
+      "league_name": "M15 Sibenik",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 39176,
+      "league_name": "Czechia 1. Liga",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 39009,
+      "league_name": "Greece ESKA-ESKANA A1",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46568,
+      "league_name": "M15 Baku",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 36574,
+      "league_name": "UTR Pro Newport Beach",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 41537,
+      "league_name": "UTR Pro Ithaca",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46644,
+      "league_name": "UTR Pro Ithaca Women",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 676,
+      "league_name": "Serbia Prva Liga",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46653,
+      "league_name": "M25 Kigali",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 41095,
+      "league_name": "UTR Pro Lincoln Women",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 853,
+      "league_name": "Israel Leumit Liga",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 511,
+      "league_name": "Africa Cup of Nations Qualification",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12360,
+      "league_name": "ATP Tokyo",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12361,
+      "league_name": "ATP Beijing",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 39790,
+      "league_name": "UTR Pro Lincoln",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 7355,
+      "league_name": "Qatar Stars Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46658,
+      "league_name": "W15 Trelew",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 3598,
+      "league_name": "India Bangalore Super Division",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 13055,
+      "league_name": "U23 Africa Cup of Nations Qual",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 38642,
+      "league_name": "Paraguay Copa EFE Women",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 37849,
+      "league_name": "Paraguay Primera C",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 313,
+      "league_name": "Argentina Reserve League",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 494,
+      "league_name": "UAE Cup",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30976,
+      "league_name": "UEFA Nations League C",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 775,
+      "league_name": "Colombia U19 Championship",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 40287,
+      "league_name": "Peru Liga 3",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 1212,
+      "league_name": "England Northern League Division One",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 257,
+      "league_name": "Paraguay Division Profesional",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 16,
+      "league_id": 22713,
+      "league_name": "Nicaragua CNBS",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 17,
+      "league_id": 39241,
+      "league_name": "Czechia ULLH",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 27847,
+      "league_name": "Brazil Paulista FPB U20",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 36145,
+      "league_name": "India Shillong 1st Division",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 9433,
+      "league_name": "India Mumbai Super Division",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 23835,
+      "league_name": "Bhutan Premier League",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 352,
+      "league_name": "India Shillong Premier League",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 38871,
+      "league_name": "Hong Kong U22 League",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 25121,
+      "league_name": "Zanzibar Premier League",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 29082,
+      "league_name": "Bosnia & Herzegovina 1st League Women",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 508,
+      "league_name": "U21 International",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 458,
+      "league_name": "Slovakia 2. Liga",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 11818,
+      "league_name": "Portugal U23 League",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 432,
+      "league_name": "Norway Division 3 Group 6",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 586,
+      "league_name": "Finland Ykkonen Women",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 17455,
+      "league_name": "Argentina Youth League",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 461,
+      "league_name": "European U21 Championship Qual",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30658,
+      "league_name": "England Development League 2",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 30854,
+      "league_name": "England U21 Premier League Cup",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 41387,
+      "league_name": "Brazil Campeonato Potiguar U20",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 733,
+      "league_name": "England Isthmian Division One South",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 1,
+      "league_id": 36377,
+      "league_name": "England Southern League Div One",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 46656,
+      "league_name": "WTA Adana WD",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 12940,
+      "league_name": "Challenger Mouilleron le Captif MD",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 13,
+      "league_id": 532,
+      "league_name": "Challenger Curitiba MD",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 27313,
+      "league_name": "Latvia NBL",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 34578,
+      "league_name": "Brazil Paulista U20 Women",
+      "tier": "EXCLUDE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 18274,
+      "league_name": "Paraguay Primera",
+      "tier": "CORE",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    },
+    {
+      "sport_id": 18,
+      "league_id": 6909,
+      "league_name": "Argentina Super 20",
+      "tier": "SECONDARY",
+      "tier_reason": "2026-09-28_CANONICAL_CLASSIFICATION"
+    }
+  ]
+}
