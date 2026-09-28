@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       source_run_id:
-        description: GitHub Actions run id of the completed Collect Universe workflow
+        description: GitHub Actions run id containing the final classified Universe artifact
         required: true
         type: string
       date_moscow:
@@ -33,9 +33,10 @@ jobs:
       - name: Download classified Universe artifact
         uses: actions/download-artifact@v4
         with:
-          name: universe
           github-token: ${{ github.token }}
           run-id: ${{ inputs.source_run_id }}
+          pattern: '*universe*'
+          merge-multiple: true
       - name: Verify classified snapshot
         run: |
           set -euo pipefail
