@@ -1,0 +1,47 @@
+name: Build Model Pre-Screen Packet
+on:
+  workflow_dispatch:
+    inputs:
+      odds_run_id: {description: Odds workflow run id, required: true, type: string}
+      event_view_run_id: {description: Event View workflow run id, required: true, type: string}
+      date_moscow: {description: YYYY-MM-DD, required: true, type: string}
+  push:
+    branches: [main]
+    paths: ['triggers/run-model-packet.txt']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve inputs
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "ODDS=$(sed -n '1p' triggers/run-model-packet.txt)" >> "$GITHUB_ENV"
+            echo "VIEW=$(sed -n '2p' triggers/run-model-packet.txt)" >> "$GITHUB_ENV"
+            echo "DAY=$(sed -n '3p' triggers/run-model-packet.txt)" >> "$GITHUB_ENV"
+          else
+            echo "ODDS=${{ inputs.odds_run_id }}" >> "$GITHUB_ENV"
+            echo "VIEW=${{ inputs.event_view_run_id }}" >> "$GITHUB_ENV"
+            echo "DAY=${{ inputs.date_moscow }}" >> "$GITHUB_ENV"
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: l1-market-scan-${{ env.DAY }}
+          github-token: ${{ github.token }}
+          run-id: ${{ env.ODDS }}
+          path: odds
+      - uses: actions/download-artifact@v4
+        with:
+          name: event-view-core-${{ env.DAY }}
+          github-token: ${{ github.token }}
+          run-id: ${{ env.VIEW }}
+          path: view
+      - run: python3 build_model_prescreen_packet.py odds/l1-market-raw.json view/event-view-core.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-prescreen-packet-${{ env.DAY }}
+          path: model-prescreen-packet.json
+          retention-days: 7
