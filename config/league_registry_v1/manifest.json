@@ -1,0 +1,35 @@
+{
+  "api_calls_by_sport": {
+    "baseball": 3,
+    "basketball": 17,
+    "ice_hockey": 5,
+    "soccer": 32,
+    "tennis": 113
+  },
+  "canonical_ids_absent_from_provider_snapshot": [],
+  "canonical_tier_records_loaded": 494,
+  "captured_at": "2026-09-28T15:59:12.229212Z",
+  "counts_by_sport": {
+    "baseball": 113,
+    "basketball": 1572,
+    "ice_hockey": 317,
+    "soccer": 3040,
+    "tennis": 11145
+  },
+  "counts_by_tier": {
+    "CORE": 197,
+    "EXCLUDE": 150,
+    "SECONDARY": 147,
+    "UNCLASSIFIED_LEAGUE": 15693
+  },
+  "schema_version": 1,
+  "supported_sports": {
+    "1": "soccer",
+    "13": "tennis",
+    "16": "baseball",
+    "17": "ice_hockey",
+    "18": "basketball"
+  },
+  "total_leagues": 16187,
+  "unknown_runtime_action": "QUARANTINE_WITHOUT_BLOCKING_DAILY_RUN"
+}
