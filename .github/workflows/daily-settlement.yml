@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: public-daily-settlement
@@ -51,6 +52,40 @@ jobs:
           if [ -z "$D" ]; then D=$(TZ=Europe/Moscow date -d yesterday +%F); fi
           [[ "$D" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           echo "date=$D" >> "$GITHUB_OUTPUT"
+      - name: Download exact model pre-screen packet
+        id: packet
+        run: |
+          set -euo pipefail
+          D="${{ steps.request.outputs.date }}"
+          RUN_ID=$(python3 - <<'PY'
+          import glob,json,os
+          day=os.environ["DAY"]
+          ids=set()
+          for path in glob.glob(f"state/assessment_checkpoints/{day}/batch-*-candidates-*.json"):
+              with open(path,encoding="utf-8") as f:
+                  value=json.load(f).get("source_packet_run_id")
+              if value is not None: ids.add(str(value))
+          if len(ids)!=1:
+              raise SystemExit(f"expected exactly one source_packet_run_id for {day}, found {sorted(ids)}")
+          print(next(iter(ids)))
+          PY
+          )
+          PACKET_DIR="$RUNNER_TEMP/model-packet-$D"
+          mkdir -p "$PACKET_DIR"
+          gh run download "$RUN_ID" --repo Dzammbo/Intuition_collector \
+            --name "model-prescreen-packet-$D" --dir "$PACKET_DIR"
+          test -s "$PACKET_DIR/model-prescreen-packet.json"
+          echo "path=$PACKET_DIR/model-prescreen-packet.json" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAY: ${{ steps.request.outputs.date }}
+      - name: Build full assessment learning population
+        working-directory: state
+        run: |
+          set -euo pipefail
+          python3 scripts/build_learning_population.py \
+            --date "${{ steps.request.outputs.date }}" \
+            --model-packet "${{ steps.packet.outputs.path }}"
       - name: Settle and render
         working-directory: state
         run: |
@@ -68,7 +103,7 @@ jobs:
           git config user.name "jarvis-intuition-bot"
           git config user.email "jarvis-intuition-bot@users.noreply.github.com"
           mkdir -p settlements telegram_reports
-          git add settlements/ diagnostics/ performance/ telegram_reports/
+          git add learning/ settlements/ diagnostics/ performance/ telegram_reports/
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Settle Jarvis Intuition daily batches"
           git pull --rebase origin main
