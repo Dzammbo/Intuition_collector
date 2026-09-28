@@ -76,6 +76,8 @@ jobs:
           workflows = root / ".github" / "workflows"
           required = {
               "collect.yml", "collect-event-view.yml", "l1-market-scan.yml",
+              "build-model-prescreen-packet.yml", "reclassify-saved-universe.yml",
+              "extract-unclassified.yml",
               "check-final-card-settlement.yml", "daily-settlement.yml",
               "rerender-results.yml", "telegram-native-publish.yml", "validate.yml",
           }
