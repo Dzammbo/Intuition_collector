@@ -13,6 +13,7 @@ The repository contains collection code and public workflow definitions. Betting
 - `Collect Universe`
 - `Collect CORE Event View`
 - `L1 Broad Signal Market Scan`
+- `Sync BetsAPI League Registry` - complete provider registry for all five supported sports
 
 ## Operational workflows
 
@@ -36,6 +37,7 @@ Operational workflows run on public GitHub-hosted runners, check out the private
 All production stages are explicit and have no clock schedules. Collection and operational workflows can be started manually. Canonical trigger files are also supported for plugin-driven execution:
 
 - `triggers/run-universe.txt`
+- `triggers/run-league-registry.txt`
 - `triggers/run-final-card-check.txt`
 - `triggers/run-settlement-check.txt`
 - `triggers/run-rerender-results.txt`

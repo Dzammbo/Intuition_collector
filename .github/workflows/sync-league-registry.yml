@@ -1,0 +1,57 @@
+name: Sync BetsAPI League Registry
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - 'triggers/run-league-registry.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download complete provider league registry
+        run: |
+          set -euo pipefail
+          test -n "${BETSAPI_TOKEN:-}"
+          python3 sync_league_registry.py
+      - name: Validate registry
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("config/league_registry_v1")
+          catalog = json.loads((root / "catalog.json").read_text())
+          manifest = json.loads((root / "manifest.json").read_text())
+          assert catalog["leagues"], "empty catalog"
+          assert manifest["total_leagues"] == len(catalog["leagues"])
+          assert {x["sport_id"] for x in catalog["leagues"]} == {1, 13, 16, 17, 18}
+          keys = [(x["sport_id"], x["league_id"]) for x in catalog["leagues"]]
+          assert len(keys) == len(set(keys)), "duplicate provider league IDs"
+          print(manifest)
+          PY
+      - name: Persist registry snapshot
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add config/league_registry_v1
+          if git diff --cached --quiet; then
+            echo "Registry is unchanged"
+          else
+            git commit -m "Refresh complete BetsAPI league registry"
+            git push
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: betsapi-league-registry-${{ github.run_id }}
+          path: config/league_registry_v1
+          retention-days: 30
