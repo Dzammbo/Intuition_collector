@@ -1,29 +1,33 @@
 {
   "schema_version": 1,
-  "policy_version": "2026-09-27-league-allowset-v1",
+  "policy_version": "2026-09-28-complete-provider-registry-v1",
   "status": "WORKING_COPY_OF_PRIVATE_CANON",
-  "canonical_repository": "Dzammbo/jarvis-intuition",
-  "total_allowed_leagues": 292,
+  "source": "BetsAPI /v3/league complete registry snapshot",
+  "source_catalog_captured_at": "2026-09-28T15:59:12.229212Z",
+  "total_provider_registry_leagues": 16187,
+  "total_classified_leagues": 16187,
+  "total_allowed_leagues": 13049,
+  "classification_counts": {
+    "CORE": 10826,
+    "SECONDARY": 2223,
+    "EXCLUDE": 3138,
+    "UNCLASSIFIED_LEAGUE": 0
+  },
   "counts_by_sport": {
-    "soccer": 164,
-    "tennis": 30,
-    "baseball": 5,
-    "ice_hockey": 23,
-    "basketball": 70
+    "soccer": 1831,
+    "tennis": 10310,
+    "baseball": 48,
+    "ice_hockey": 117,
+    "basketball": 743
   },
   "matching_key": [
     "sport_id",
     "league_id"
   ],
-  "unknown_league_action": "UNCLASSIFIED_LEAGUE",
-  "collection_rule": "Always collect the complete sport/day RAW schedule first. Apply this allow-set only after the immutable RAW snapshot and before event-level enrichment.",
-  "change_rule": "Public copy must mirror the private canonical allow-set; never auto-add a league.",
-  "run5_new_leagues": {
-    "source_run_id": 36311337088,
-    "classified": 134,
-    "core": 1,
-    "secondary": 14,
-    "exclude": 119,
-    "private_canonical_file": "config/league_allowset_v1/new_leagues_run5_classification.json"
-  }
+  "complete_registry_file": "config/league_allowset_v1/complete_registry_classification.json",
+  "unknown_league_action": "QUARANTINE_WITHOUT_BLOCKING_DAILY_RUN",
+  "collection_rule": "Collect the complete sport/day RAW schedule first. Apply this exact-ID registry only after the immutable RAW snapshot and before event-level enrichment.",
+  "change_rule": "Never promote a new provider ID during a daily run. Registry changes require a versioned, audited canonical update. Existing canonical decisions take precedence over build-time rules.",
+  "canonical_repository": "Dzammbo/jarvis-intuition",
+  "provider_catalog_file": "config/league_registry_v1/catalog.json"
 }
