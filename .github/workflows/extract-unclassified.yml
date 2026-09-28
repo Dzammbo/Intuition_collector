@@ -1,0 +1,35 @@
+name: Extract Unclassified Leagues
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-extract-unclassified.txt']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: universe
+          github-token: ${{ github.token }}
+          run-id: 36379808382
+      - name: Extract league counts
+        run: |
+          python3 - <<'PY'
+          import json,collections
+          d=json.load(open("classified-universe.json"))
+          xs=d["events"]["UNCLASSIFIED_LEAGUE"]
+          c=collections.Counter((int(e["sport_id"]),int(e["league"]["id"]),e["league"]["name"]) for e in xs)
+          rows=[{"sport_id":k[0],"league_id":k[1],"league_name":k[2],"events":n} for k,n in c.most_common()]
+          out={"events":len(xs),"unique_leagues":len(rows),"leagues":rows}
+          open("unclassified-leagues-2026-09-28.json","w").write(json.dumps(out,ensure_ascii=False,indent=2))
+          print(json.dumps({"events":len(xs),"unique_leagues":len(rows),"top":rows[:30]},ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unclassified-leagues-2026-09-28
+          path: unclassified-leagues-2026-09-28.json
+          retention-days: 7
