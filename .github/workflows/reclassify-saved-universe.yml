@@ -11,17 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve source Collect Universe run
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id="$(awk -F= '$1 == "source_run" || $1 == "source_run_id" {print $2}' triggers/run-reclassify-saved.txt | tail -1)"
+          [[ "$run_id" =~ ^[0-9]+$ ]] || { echo "invalid source run id"; exit 1; }
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
           name: universe
           github-token: ${{ github.token }}
-          run-id: 36379808382
-      - name: Restore raw universe filename
-        run: |
-          test -f universe.json || { echo "universe.json missing"; exit 1; }
-      - run: python3 classify_universe.py
+          run-id: ${{ steps.source.outputs.run_id }}
+      - name: Validate saved raw universe
+        run: test -f universe.json
+      - name: Reclassify
+        run: python3 classify_universe.py
       - uses: actions/upload-artifact@v4
         with:
-          name: final-universe-${{ github.run_id }}
-          path: classified-universe.json
+          name: universe
+          path: |
+            universe.json
+            classified-universe.json
+          if-no-files-found: error
           retention-days: 7
