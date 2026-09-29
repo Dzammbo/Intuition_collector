@@ -7,6 +7,12 @@ on:
         description: YYYY-MM-DD, blank means yesterday in Moscow
         required: false
         type: string
+      settlement_scope:
+        description: fast for portfolio-only intermediate, full for overnight learning settlement
+        required: false
+        default: full
+        type: choice
+        options: [full, fast]
   push:
     branches: [main]
     paths: [triggers/run-settlement-check.txt]
@@ -40,19 +46,26 @@ jobs:
           repository: Dzammbo/jarvis-intuition
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
-      - name: Resolve settlement date
+      - name: Resolve settlement request
         id: request
         run: |
           set -euo pipefail
           if [ "${{ github.event_name }}" = "push" ]; then
             D=$(grep -Eo '^[0-9]{4}-[0-9]{2}-[0-9]{2}' ops/triggers/run-settlement-check.txt | head -1 || true)
+            PURPOSE=$(sed -n 's/^purpose=//p' ops/triggers/run-settlement-check.txt | head -1)
+            if [[ "$PURPOSE" == *intermediate* ]]; then SCOPE=fast; else SCOPE=full; fi
           else
             D="${{ inputs.date_moscow }}"
+            SCOPE="${{ inputs.settlement_scope }}"
           fi
           if [ -z "$D" ]; then D=$(TZ=Europe/Moscow date -d yesterday +%F); fi
+          if [ -z "$SCOPE" ]; then SCOPE=full; fi
           [[ "$D" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          [[ "$SCOPE" =~ ^(fast|full)$ ]]
           echo "date=$D" >> "$GITHUB_OUTPUT"
+          echo "scope=$SCOPE" >> "$GITHUB_OUTPUT"
       - name: Download exact model pre-screen packet
+        if: steps.request.outputs.scope == 'full'
         id: packet
         run: |
           set -euo pipefail
@@ -80,13 +93,25 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DAY: ${{ steps.request.outputs.date }}
       - name: Build full assessment learning population
+        if: steps.request.outputs.scope == 'full'
         working-directory: state
         run: |
           set -euo pipefail
           python3 scripts/build_learning_population.py \
             --date "${{ steps.request.outputs.date }}" \
             --model-packet "${{ steps.packet.outputs.path }}"
-      - name: Settle and render
+      - name: Fast portfolio-only settlement
+        if: steps.request.outputs.scope == 'fast'
+        working-directory: state
+        run: |
+          set -euo pipefail
+          D="${{ steps.request.outputs.date }}"
+          python3 scripts/settle_portfolio_fast.py --date-moscow "$D"
+          test -f "settlements/$D.json"
+          python3 scripts/build_bankroll_performance.py
+          python3 scripts/render_settlement_report.py --date "$D"
+      - name: Full overnight settlement
+        if: steps.request.outputs.scope == 'full'
         working-directory: state
         run: |
           set -euo pipefail
