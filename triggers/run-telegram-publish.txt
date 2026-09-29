@@ -1,4 +1,4 @@
-telegram_reports/2026-09-28-results.md
-RESULTS
-2026-09-28
-postponed-partial-2026-09-29-1
+telegram_reports/2026-09-29-prematch.md
+PREMATCH
+2026-09-29
+publish-2026-09-29-1
