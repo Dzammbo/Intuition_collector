@@ -61,6 +61,8 @@ def resolve_dynamic(sport_id, league_name, families):
     sibling_tiers = {row["tier"] for row in siblings}
     if len(sibling_tiers) == 1:
         return sibling_tiers.pop(), "NORMALIZED_FAMILY", siblings
+    if siblings:
+        return None, None, siblings
 
     if sport_id == 13 and not TENNIS_BLOCKED.search(league_name or ""):
         if TENNIS_PRO_PREFIX.search(family):
