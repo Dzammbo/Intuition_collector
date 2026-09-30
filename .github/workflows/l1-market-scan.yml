@@ -55,9 +55,9 @@ jobs:
           assert isinstance(events.get("CORE"), list)
           assert isinstance(events.get("SECONDARY"), list)
           assert isinstance(events.get("EXCLUDE"), list)
-          classified = sum(len(events.get(k, [])) for k in ("CORE", "SECONDARY", "EXCLUDE"))
+          classified = sum(len(events.get(k, [])) for k in ("CORE", "SECONDARY", "EXCLUDE", "UNCLASSIFIED_LEAGUE"))
           assert classified == d["window_event_count"]
-          print({"window": d["window_event_count"], "core": len(events["CORE"])})
+          print({"window": d["window_event_count"], "core": len(events["CORE"]), "secondary": len(events["SECONDARY"]), "unclassified": len(events.get("UNCLASSIFIED_LEAGUE", []))})
           PY
       - name: Run L1 market scan
         run: python3 l1_market_scan.py
