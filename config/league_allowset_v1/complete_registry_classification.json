@@ -2,7 +2,7 @@
   "counts": {
     "CORE": 10826,
     "EXCLUDE": 3138,
-    "SECONDARY": 2223
+    "SECONDARY": 2224
   },
   "counts_by_sport": {
     "baseball": {
@@ -28,7 +28,7 @@
     "tennis": {
       "CORE": 10257,
       "EXCLUDE": 835,
-      "SECONDARY": 53
+      "SECONDARY": 54
     }
   },
   "leagues": [
@@ -99328,6 +99328,13 @@
       "tier_reason": "PROFESSIONAL_TENNIS_TOUR"
     },
     {
+      "league_id": 46678,
+      "league_name": "Asian Games",
+      "sport_id": 13,
+      "tier": "SECONDARY",
+      "tier_reason": "OFFICIAL_MULTI_SPORT_EVENT_TENNIS_LIMITED_MARKET_DEPTH_USER_APPROVED_2026_09_30"
+    },
+    {
       "league_id": 225,
       "league_name": "MLB",
       "sport_id": 16,
@@ -113346,7 +113353,7 @@
     "sport_id",
     "league_id"
   ],
-  "policy_version": "2026-09-28-complete-provider-registry-v1",
+  "policy_version": "2026-09-30-secondary-l1-v1",
   "precedence_rule": "All pre-existing canonical decisions are preserved.",
   "runtime_rule": "Exact ID matching only; build-time rules are never applied during a daily run.",
   "schema_version": 1,
