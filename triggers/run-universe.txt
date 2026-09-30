@@ -1,2 +1,2 @@
-2026-09-30T05:34:30Z
-reason=start_daily_universe_2026-09-30
+2026-09-30T06:05:00Z
+reason=recollect_after_approved_asian_games_secondary_mapping
