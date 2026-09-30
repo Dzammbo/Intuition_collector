@@ -1,21 +1,21 @@
 {
   "schema_version": 2,
-  "policy_version": "2026-09-29-dynamic-league-family-v2",
+  "policy_version": "2026-09-30-secondary-l1-v1",
   "status": "WORKING_COPY_OF_PRIVATE_CANON",
   "source": "BetsAPI /v3/league complete registry snapshot",
   "source_catalog_captured_at": "2026-09-28T15:59:12.229212Z",
-  "total_provider_registry_leagues": 16187,
-  "total_classified_leagues": 16187,
-  "total_allowed_leagues": 13049,
+  "total_provider_registry_leagues": 16188,
+  "total_classified_leagues": 16188,
+  "total_allowed_leagues": 13050,
   "classification_counts": {
     "CORE": 10826,
-    "SECONDARY": 2223,
+    "SECONDARY": 2224,
     "EXCLUDE": 3138,
     "UNCLASSIFIED_LEAGUE": 0
   },
   "counts_by_sport": {
     "soccer": 1831,
-    "tennis": 10310,
+    "tennis": 10311,
     "baseball": 48,
     "ice_hockey": 117,
     "basketball": 743
@@ -34,5 +34,7 @@
   "collection_rule": "Collect the complete sport/day RAW schedule first. Apply the versioned registry and audited fallback only after the immutable RAW snapshot and before event-level enrichment.",
   "change_rule": "Existing exact-ID canonical decisions always win. Dynamic fallback may not override an exact ID, resolve an ambiguous family or bypass an exclusion marker. New unresolved families require a versioned audited canonical update.",
   "canonical_repository": "Dzammbo/jarvis-intuition",
-  "provider_catalog_file": "config/league_registry_v1/catalog.json"
+  "provider_catalog_file": "config/league_registry_v1/catalog.json",
+  "l1_enrichment_scope": "CORE_PLUS_SECONDARY",
+  "l1_secondary_rule": "Collect the same raw L1 market snapshot for SECONDARY as for CORE. Preserve tier provenance; do not auto-promote SECONDARY and do not enrich EXCLUDE."
 }
