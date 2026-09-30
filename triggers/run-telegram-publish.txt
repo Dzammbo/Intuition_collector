@@ -1,4 +1,4 @@
-telegram_reports/2026-09-29-results.md
-RESULTS
-2026-09-29
-update-2026-09-30-0529-approved-external-settlement
+telegram_reports/2026-09-30-prematch.md
+PREMATCH
+2026-09-30
+publish-2026-09-30-14-bets-2026-09-30T11:28:37.275Z
