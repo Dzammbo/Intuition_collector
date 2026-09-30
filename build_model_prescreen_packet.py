@@ -28,60 +28,82 @@ def main():
     odds_ids = [event_id(row) for row in odds_rows]
     view_ids = [event_id(row) for row in view_rows]
 
-    if not odds_ids or any(not value for value in odds_ids + view_ids):
+    if not odds_ids or not view_ids or any(not value for value in odds_ids + view_ids):
         raise SystemExit("missing event identity")
     if len(odds_ids) != len(set(odds_ids)):
         raise SystemExit("duplicate event in L1 odds")
     if len(view_ids) != len(set(view_ids)):
         raise SystemExit("duplicate event in Event View")
-    if set(odds_ids) != set(view_ids):
-        missing_view = sorted(set(odds_ids) - set(view_ids))
+    if not set(view_ids).issubset(set(odds_ids)):
         missing_odds = sorted(set(view_ids) - set(odds_ids))
-        raise SystemExit(
-            f"L1/Event View identity mismatch: missing_view={missing_view} missing_odds={missing_odds}"
-        )
+        raise SystemExit(f"Event View contains events missing from L1: {missing_odds}")
 
-    expected = int(odds.get("input_core") or 0)
-    if expected != len(odds_rows) or int(event_view.get("input_core") or 0) != expected:
+    l1_expected = int(odds.get("input_total") or 0)
+    if l1_expected != len(odds_rows):
+        raise SystemExit("L1 total accounting mismatch")
+    view_expected = int(event_view.get("input_total") or 0)
+    if view_expected != len(view_rows):
+        raise SystemExit("Event View total accounting mismatch")
+    if int(event_view.get("input_core") or 0) != int(odds.get("input_core") or 0):
         raise SystemExit("CORE accounting mismatch")
+    if int(event_view.get("input_secondary") or 0) != int(odds.get("input_secondary") or 0):
+        raise SystemExit("SECONDARY accounting mismatch")
 
+    odds_map = {event_id(row): row for row in odds_rows}
     view_map = {event_id(row): row for row in view_rows}
+    selected_odds_rows = [odds_map[eid] for eid in view_ids]
+
     cards = []
-    for ordinal, row in enumerate(sorted(odds_rows, key=start_key), 1):
+    for ordinal, row in enumerate(sorted(selected_odds_rows, key=start_key), 1):
         eid = event_id(row)
-        raw_odds = row.get("odds") or {}
+        source_tier = view_map[eid].get("source_tier") or row.get("source_tier")
         cards.append(
             {
                 "ordinal": ordinal,
                 "event_id": eid,
+                "source_tier": source_tier,
                 "sport_id": row.get("sport_id"),
                 "league": row.get("league"),
                 "home": row.get("home"),
                 "away": row.get("away"),
                 "start_time": row.get("time"),
-                "raw_odds": raw_odds,
+                "raw_odds": row.get("odds") or {},
                 "event_view": view_map[eid],
             }
         )
 
+    tier_counts = {
+        "CORE": sum(card.get("source_tier") == "CORE" for card in cards),
+        "SECONDARY": sum(card.get("source_tier") == "SECONDARY" for card in cards),
+    }
+    if tier_counts["CORE"] != int(event_view.get("input_core") or 0):
+        raise SystemExit("packet CORE tier mismatch")
+    if tier_counts["SECONDARY"] != int(event_view.get("promoted_secondary") or 0):
+        raise SystemExit("packet promoted SECONDARY tier mismatch")
+
     output = {
-        "schema_version": 2,
+        "schema_version": 3,
         "stage": "MODEL_PRESCREEN_PACKET",
         "input": len(cards),
         "ordering": "START_TIME_ASC_EVENT_ID_ASC",
-        "rule": "Lossless handoff from saved L1 odds + Event View. No new provider calls.",
+        "rule": "Lossless handoff from saved L1 odds + tier-aware Event View. No new provider calls.",
         "source_accounting": {
-            "l1_records": len(odds_rows),
+            "l1_records_total": len(odds_rows),
+            "l1_core": int(odds.get("input_core") or 0),
+            "l1_secondary": int(odds.get("input_secondary") or 0),
             "event_view_records": len(view_rows),
-            "unique_events": len(set(odds_ids)),
+            "packet_core": tier_counts["CORE"],
+            "packet_promoted_secondary": tier_counts["SECONDARY"],
+            "secondary_not_promoted": int(event_view.get("not_promoted_secondary") or 0),
             "source_errors": 0,
         },
+        "secondary_promotion_audit": event_view.get("promotion_audit") or [],
         "cards": cards,
     }
     open("model-prescreen-packet.json", "w", encoding="utf-8").write(
         json.dumps(output, ensure_ascii=False)
     )
-    print(json.dumps({"cards": len(cards), "ordering": output["ordering"]}))
+    print(json.dumps({"cards": len(cards), "tiers": tier_counts, "ordering": output["ordering"]}))
 
 
 if __name__ == "__main__":
