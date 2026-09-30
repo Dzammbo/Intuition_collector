@@ -1,1 +1,3 @@
-2026-09-27 compact rerender requested 2026-09-29T09:02:00+03:00
+2026-09-29
+requested_at=2026-09-30T05:28:00Z
+purpose=rerender-after-approved-external-settlement
