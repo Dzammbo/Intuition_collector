@@ -1,13 +1,17 @@
-name: Collect CORE Event View
+name: Collect Tier-aware Event View
 
 on:
   push:
     branches: [main]
-    paths: ['triggers/run-enrichment-2026-09-28.txt']
+    paths: ['triggers/run-event-view.txt']
   workflow_dispatch:
     inputs:
-      source_run_id:
-        description: GitHub Actions run id containing the final classified Universe artifact
+      universe_run_id:
+        description: GitHub Actions run id containing classified Universe
+        required: true
+        type: string
+      l1_run_id:
+        description: GitHub Actions run id containing L1 market scan
         required: true
         type: string
       date_moscow:
@@ -30,29 +34,57 @@ jobs:
       - name: Validate explicit inputs
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "push" ]; then SRC=$(sed -n "1p" triggers/run-enrichment-2026-09-28.txt); DAY=$(sed -n "2p" triggers/run-enrichment-2026-09-28.txt); else SRC="${{ inputs.source_run_id }}"; DAY="${{ env.DAY }}"; fi
-          [[ "$SRC" =~ ^[0-9]+$ ]]
+          if [ "${{ github.event_name }}" = "push" ]; then
+            UNIVERSE_RUN=$(sed -n "1p" triggers/run-event-view.txt)
+            L1_RUN=$(sed -n "2p" triggers/run-event-view.txt)
+            DAY=$(sed -n "3p" triggers/run-event-view.txt)
+          else
+            UNIVERSE_RUN="${{ inputs.universe_run_id }}"
+            L1_RUN="${{ inputs.l1_run_id }}"
+            DAY="${{ inputs.date_moscow }}"
+          fi
+          [[ "$UNIVERSE_RUN" =~ ^[0-9]+$ ]]
+          [[ "$L1_RUN" =~ ^[0-9]+$ ]]
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
-          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          echo "UNIVERSE_RUN=$UNIVERSE_RUN" >> "$GITHUB_ENV"
+          echo "L1_RUN=$L1_RUN" >> "$GITHUB_ENV"
           echo "DAY=$DAY" >> "$GITHUB_ENV"
-      - uses: actions/download-artifact@v4
+      - name: Download classified Universe
+        uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
-          run-id: ${{ env.SRC }}
+          run-id: ${{ env.UNIVERSE_RUN }}
           pattern: '*universe*'
           merge-multiple: true
-      - name: Verify CORE input
+      - name: Download L1 market scan
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ env.L1_RUN }}
+          pattern: 'l1-market-scan-*'
+          merge-multiple: true
+          path: l1
+      - name: Verify tier-aware inputs
         run: |
           set -euo pipefail
           test -f classified-universe.json
+          test -f l1/l1-market-raw.json
           python3 - <<'PY'
           import json
-          d = json.load(open("classified-universe.json"))
-          core = d.get("events", {}).get("CORE")
-          assert isinstance(core, list) and core
-          print({"core": len(core)})
+          u=json.load(open("classified-universe.json"))
+          l=json.load(open("l1/l1-market-raw.json"))
+          core=u.get("events",{}).get("CORE")
+          secondary=u.get("events",{}).get("SECONDARY")
+          assert isinstance(core,list) and core
+          assert isinstance(secondary,list)
+          assert l.get("input_core")==len(core)
+          assert l.get("input_secondary")==len(secondary)
+          assert l.get("completed")==len(core)+len(secondary)
+          assert not l.get("errors")
+          print({"core":len(core),"secondary":len(secondary),"l1_completed":l["completed"]})
           PY
-      - run: python3 collect_event_view.py
+      - name: Collect CORE and promoted SECONDARY Event View
+        run: python3 collect_event_view.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
