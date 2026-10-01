@@ -1,2 +1,2 @@
-2026-09-30T06:05:00Z
-reason=recollect_after_approved_asian_games_secondary_mapping
+2026-10-01T04:16:00Z
+reason=verify_five_sport_events_api_subscription
