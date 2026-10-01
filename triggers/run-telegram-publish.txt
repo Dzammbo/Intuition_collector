@@ -1,4 +1,4 @@
-telegram_reports/2026-09-30-results.md
-RESULTS
-2026-09-30
-update-results-2026-10-01T04:55:00Z
+telegram_reports/2026-10-01-prematch.md
+PREMATCH
+2026-10-01
+publish-prematch-2026-10-01T08:36:00Z
