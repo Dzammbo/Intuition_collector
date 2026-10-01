@@ -1,10 +1,28 @@
 {
   "date_moscow": "2026-10-01",
-  "batch": 312,
+  "batch": 313,
   "event_ids": [
-    "12315931",
-    "11632934",
-    "12385196"
+    "13211223",
+    "13211225",
+    "13211226",
+    "13220860",
+    "13221549",
+    "13221550",
+    "13221551",
+    "13221552",
+    "13221553",
+    "13221554",
+    "13221555",
+    "13221556",
+    "13221557",
+    "13221558",
+    "13221720",
+    "13222149",
+    "13222274",
+    "13222275",
+    "13222605",
+    "13223088",
+    "13223351"
   ],
-  "reason": "Final <=5 minute exact-market price control for recall batch 351-400 BET shortlist; research already complete"
+  "reason": "Recall final batch 401-421 current-price refresh before assessment; final <=5 minute exact-market control will be separate for BET shortlist"
 }
