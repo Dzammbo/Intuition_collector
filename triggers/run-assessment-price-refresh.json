@@ -1,15 +1,10 @@
 {
   "date_moscow": "2026-10-01",
-  "batch": 202,
+  "batch": 203,
   "event_ids": [
     "13220988",
     "13220059",
-    "13217351",
-    "13222803",
-    "13060182",
-    "13060183",
-    "13060184",
-    "12022218"
+    "13060184"
   ],
-  "reason": "Final just-in-time price refresh for tentative BET shortlist from restarted assessment events 51-100"
+  "reason": "Final five-minute freeze refresh for confirmed BET decisions in restarted assessment events 51-100"
 }
