@@ -1,0 +1,37 @@
+name: Assessment Current Price Refresh
+
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-assessment-price-refresh.json']
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate trigger
+        run: |
+          python3 - <<'PY'
+          import json
+          d=json.load(open("triggers/run-assessment-price-refresh.json"))
+          assert d["date_moscow"]
+          assert isinstance(d["batch"], int)
+          assert 1 <= len(d["event_ids"]) <= 50
+          assert len(d["event_ids"]) == len(set(map(str,d["event_ids"])))
+          PY
+      - name: Refresh exact event markets
+        run: python3 assessment_price_refresh.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: assessment-price-refresh-${{ github.run_id }}
+          path: assessment-price-refresh.json
+          if-no-files-found: error
+          retention-days: 7
