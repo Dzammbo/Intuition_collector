@@ -1,4 +1,4 @@
-36814264760
-2026-10-01
-requested_at=2026-10-01T06:34:12Z
-reason=assessment-current-price-restart
+36972620393
+2026-10-02
+requested_at=2026-10-02T06:21:00Z
+reason=l1-core-secondary-scan
