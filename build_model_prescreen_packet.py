@@ -84,6 +84,14 @@ def main():
     output = {
         "schema_version": 3,
         "stage": "MODEL_PRESCREEN_PACKET",
+        "handoff_status": "INPUT_ONLY",
+        "substantive_prescreen_completed": False,
+        "may_be_used_as_research_candidate_ledger": False,
+        "completion_rule": (
+            "This artifact is only the lossless model input packet. "
+            "A separate event-by-event substantive ledger must pass the canonical "
+            "private-repository validator before the pre-screen may be reported complete."
+        ),
         "input": len(cards),
         "ordering": "START_TIME_ASC_EVENT_ID_ASC",
         "rule": "Lossless handoff from saved L1 odds + tier-aware Event View. No new provider calls.",
