@@ -1,5 +1,5 @@
 36973070913
 36979075036
 2026-10-02
-requested_at=2026-10-02T07:40:08Z
-reason=model-substantive-prescreen-packet
+requested_at=2026-10-02T08:22:16Z
+reason=rebuild-input-only-packet-for-valid-prescreen
