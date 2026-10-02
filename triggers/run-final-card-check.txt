@@ -1,3 +1,3 @@
-2026-09-30
-requested_at=2026-10-01T04:14:00Z
-purpose=current-results-check
+2026-10-02
+requested_at=2026-10-02T16:03:02.773Z
+purpose=current-results-check-cross-card
