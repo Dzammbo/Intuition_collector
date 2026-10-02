@@ -1,5 +1,5 @@
-36825474785
-36817788323
-2026-10-01
-requested_at=2026-10-01T06:39:53Z
-reason=assessment-current-price-restart
+36973070913
+36979075036
+2026-10-02
+requested_at=2026-10-02T07:40:08Z
+reason=model-substantive-prescreen-packet
