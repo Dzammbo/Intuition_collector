@@ -1,4 +1,5 @@
-36814264760
-36817288125
-2026-10-01
-requested_at=2026-10-01T05:00:30Z
+36972620393
+36973070913
+2026-10-02
+requested_at=2026-10-02T07:30:36Z
+reason=tier-aware-secondary-promotion-and-event-view
