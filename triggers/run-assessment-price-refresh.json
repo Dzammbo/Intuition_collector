@@ -5,9 +5,12 @@
     "12069539",
     "12184756",
     "12186346",
+    "12186347",
     "12213630",
     "12261429",
     "13035160",
+    "13053681",
+    "13146425",
     "13224694",
     "13231177",
     "11168563",
@@ -25,6 +28,6 @@
     "12185699",
     "12210721"
   ],
-  "requested_at": "2026-10-02T09:33:09Z",
-  "reason": "Exact-market price control for batch 5 provisional BET decisions"
+  "requested_at": "2026-10-02T09:36:08Z",
+  "reason": "Corrected exact-market price control for all 25 batch 5 candidates"
 }
