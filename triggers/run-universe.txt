@@ -1,2 +1,2 @@
-2026-10-01T04:16:00Z
-reason=verify_five_sport_events_api_subscription
+2026-10-02T06:16:00Z
+reason=start_moscow_day_2026-10-02_raw_universe
