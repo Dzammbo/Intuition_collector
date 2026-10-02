@@ -1,15 +1,22 @@
 {
   "date_moscow": "2026-10-02",
-  "batch": 2,
+  "batch": 3,
   "event_ids": [
-    "13228985",
-    "12159249",
-    "13140125",
-    "12022216",
-    "13227242",
-    "13227583",
-    "13019738"
+    "13021048",
+    "13223184",
+    "12328066",
+    "12328341",
+    "13229859",
+    "13117660",
+    "12479474",
+    "11437521",
+    "13181834",
+    "13199040",
+    "13199042",
+    "13199043",
+    "13199047",
+    "13227918"
   ],
-  "requested_at": "2026-10-02T09:25:00Z",
-  "reason": "Exact-market price control for batch 2 provisional BET decisions"
+  "requested_at": "2026-10-02T09:26:31Z",
+  "reason": "Exact-market price control for batch 3 provisional BET decisions"
 }
