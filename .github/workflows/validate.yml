@@ -103,7 +103,7 @@ jobs:
               catalog_keys = {(x["sport_id"], x["league_id"]) for x in catalog["leagues"]}
               mapping_keys = {(x["sport_id"], x["league_id"]) for x in mapping["leagues"]}
               assert catalog_keys == mapping_keys
-              assert len(mapping_keys) == 16187
+              assert len(mapping_keys) == 16188
               assert {x["tier"] for x in mapping["leagues"]} <= {"CORE", "SECONDARY", "EXCLUDE"}
           print({"private_workflows": private_workflows})
           PY
