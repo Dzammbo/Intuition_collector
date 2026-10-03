@@ -83,7 +83,7 @@ jobs:
               "finalize-league-registry.yml",
               "check-final-card-settlement.yml", "daily-settlement.yml",
               "assessment-price-refresh.yml", "rerender-results.yml",
-              "telegram-native-publish.yml", "core-only-prescreen.yml", "validate.yml",
+              "telegram-native-publish.yml", "validate.yml",
           }
           present = {p.name for p in workflows.glob("*.yml")}
           assert present == required, (present, required)
