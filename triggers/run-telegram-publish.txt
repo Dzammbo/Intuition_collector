@@ -1,4 +1,4 @@
-telegram_reports/2026-10-02-results.md
-RESULTS
-2026-10-02
-human-russian-results-2026-10-03T06:55:00Z
+telegram_reports/2026-10-03-final.md
+FINAL
+2026-10-03
+human-russian-final-2026-10-03T11:20:00Z
