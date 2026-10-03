@@ -11,10 +11,20 @@ l1_by_id={str(r["event_id"]):r for r in l1.get("records",[])}
 def normalized_quote(q):
  return {k:v for k,v in q.items() if k not in {"id","add_time","time_str","ss"}}
 
+day=os.environ.get("DAY","")
+tennis_full_coverage=day >= "2026-10-04"
 promotion_audit=[]
 promoted=[]
+secondary_tennis_full_coverage=0
+secondary_non_tennis_signal_promoted=0
 for event in secondary:
  eid=str(event["id"])
+ sport_id=str(event.get("sport_id") or "")
+ if tennis_full_coverage and sport_id=="13":
+  promoted.append(event)
+  secondary_tennis_full_coverage+=1
+  promotion_audit.append({"event_id":eid,"source_tier":"SECONDARY","status":"PROMOTED","reason":"TENNIS_FULL_COVERAGE_FROM_2026_10_04","signal_markets":[]})
+  continue
  record=l1_by_id.get(eid)
  signal_markets=[]
  if record:
@@ -27,6 +37,7 @@ for event in secondary:
     signal_markets.append(str(market_key))
  if signal_markets:
   promoted.append(event)
+  secondary_non_tennis_signal_promoted+=1
   promotion_audit.append({"event_id":eid,"source_tier":"SECONDARY","status":"PROMOTED","reason":"AUDITABLE_L1_PRICE_OR_LINE_MOVEMENT","signal_markets":sorted(signal_markets)})
  else:
   promotion_audit.append({"event_id":eid,"source_tier":"SECONDARY","status":"NOT_PROMOTED","reason":"NO_AUDITABLE_MULTI_SNAPSHOT_MOVEMENT","signal_markets":[]})
@@ -69,11 +80,15 @@ out={
  "input_core":len(core),
  "input_secondary":len(secondary),
  "promoted_secondary":len(promoted),
+ "secondary_tennis_full_coverage":secondary_tennis_full_coverage,
+ "secondary_non_tennis_signal_promoted":secondary_non_tennis_signal_promoted,
  "not_promoted_secondary":len(secondary)-len(promoted),
+ "tennis_full_coverage_effective":tennis_full_coverage,
+ "policy_day_moscow":day,
  "input_total":len(events),
  "records":rows,
  "errors":errors,
  "promotion_audit":promotion_audit
 }
 open("event-view-core.json","w",encoding="utf-8").write(json.dumps(out,ensure_ascii=False))
-print(json.dumps({k:out[k] for k in ("input_core","input_secondary","promoted_secondary","not_promoted_secondary","input_total")}|{"records":len(rows),"errors":len(errors)}))
+print(json.dumps({k:out[k] for k in ("input_core","input_secondary","promoted_secondary","secondary_tennis_full_coverage","secondary_non_tennis_signal_promoted","not_promoted_secondary","input_total")}|{"records":len(rows),"errors":len(errors)}))
