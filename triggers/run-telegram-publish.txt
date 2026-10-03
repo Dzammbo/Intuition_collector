@@ -1,4 +1,4 @@
 telegram_reports/2026-10-03-final.md
 FINAL
 2026-10-03
-human-russian-final-2026-10-03T11:20:00Z
+human-russian-final-retry-2026-10-03T11:15:00Z
