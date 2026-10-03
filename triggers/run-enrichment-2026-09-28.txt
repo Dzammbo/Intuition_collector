@@ -1,4 +1,4 @@
 37104153982
 2026-10-03
-requested_at=2026-10-03T06:57:00Z
-reason=l1-core-secondary-scan
+requested_at=2026-10-03T07:28:30Z
+reason=retry-l1-after-timeout-extension
