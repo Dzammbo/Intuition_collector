@@ -1,5 +1,5 @@
-36972620393
-36973070913
-2026-10-02
-requested_at=2026-10-02T07:30:36Z
-reason=tier-aware-secondary-promotion-and-event-view
+37104153982
+37106479739
+2026-10-03
+requested_at=2026-10-03T07:59:00Z
+reason=collect-tier-aware-event-view
