@@ -1,10 +1,8 @@
-import json,os,time,urllib.parse,urllib.request,math
+import json,os,time,urllib.parse,urllib.request
 BASE="https://api.b365api.com"
 TOKEN=os.environ["BETSAPI_TOKEN"]
 d=json.load(open("classified-universe.json"))
-core_events=d["events"]["CORE"]
-secondary_events=d["events"]["SECONDARY"]
-events=[dict(e,source_tier="CORE") for e in core_events]+[dict(e,source_tier="SECONDARY") for e in secondary_events]
+events=[dict(e,scope_status="TENNIS_SINGLES") for e in d["events"]["TENNIS_SINGLES"]]
 def get(event_id):
  q=urllib.parse.urlencode({"token":TOKEN,"event_id":event_id})
  url=BASE+"/v2/event/odds?"+q
@@ -21,11 +19,14 @@ for i,e in enumerate(events,1):
  eid=str(e.get("id"))
  try:
   x=get(eid)
-  results=x.get("results") or {}
-  rows.append({"event_id":eid,"sport_id":e.get("sport_id"),"league":e.get("league"),"home":e.get("home"),"away":e.get("away"),"time":e.get("time"),"source_tier":e.get("source_tier"),"odds":results})
+  rows.append({"event_id":eid,"sport_id":e.get("sport_id"),"league":e.get("league"),
+   "home":e.get("home"),"away":e.get("away"),"time":e.get("time"),
+   "scope_status":"TENNIS_SINGLES","odds":x.get("results") or {}})
  except Exception as ex:
   errors.append({"event_id":eid,"error":str(ex)})
  if i%25==0: print(json.dumps({"progress":i,"total":len(events),"errors":len(errors)}),flush=True)
-out={"schema_version":2,"stage":"L1_MARKET_SCAN_RAW","source_window_events":d["window_event_count"],"input_core":len(core_events),"input_secondary":len(secondary_events),"input_total":len(events),"completed":len(rows),"errors":errors,"records":rows}
+out={"schema_version":3,"stage":"TENNIS_SINGLES_L1_MARKET_SCAN",
+ "source_window_events":d["window_event_count"],"input_singles":len(events),
+ "input_total":len(events),"completed":len(rows),"errors":errors,"records":rows}
 open("l1-market-raw.json","w").write(json.dumps(out,ensure_ascii=False))
-print(json.dumps({"input_core":len(core_events),"input_secondary":len(secondary_events),"input_total":len(events),"completed":len(rows),"errors":len(errors)}))
+print(json.dumps({"input_singles":len(events),"completed":len(rows),"errors":len(errors)}))
