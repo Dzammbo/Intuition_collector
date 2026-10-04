@@ -1,3 +1,3 @@
 2026-10-03
-requested_at=2026-10-03T17:50:45Z
-purpose=fast-intermediate-current-results-analysis
+requested_at=2026-10-04T07:24:00Z
+purpose=full-overnight-final-results
