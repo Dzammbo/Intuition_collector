@@ -1,4 +1,4 @@
-name: Collect Tier-aware Event View
+name: Collect Tennis Singles Event View
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       universe_run_id:
-        description: GitHub Actions run id containing classified Universe
+        description: GitHub Actions run id containing classified tennis universe
         required: true
         type: string
       l1_run_id:
@@ -49,7 +49,7 @@ jobs:
           echo "UNIVERSE_RUN=$UNIVERSE_RUN" >> "$GITHUB_ENV"
           echo "L1_RUN=$L1_RUN" >> "$GITHUB_ENV"
           echo "DAY=$DAY" >> "$GITHUB_ENV"
-      - name: Download classified Universe
+      - name: Download classified tennis universe
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
@@ -64,31 +64,30 @@ jobs:
           pattern: 'l1-market-scan-*'
           merge-multiple: true
           path: l1
-      - name: Verify tier-aware inputs
+      - name: Verify complete singles inputs
         run: |
           set -euo pipefail
           test -f classified-universe.json
           test -f l1/l1-market-raw.json
           python3 - <<'PY'
           import json
-          u=json.load(open("classified-universe.json"))
-          l=json.load(open("l1/l1-market-raw.json"))
-          core=u.get("events",{}).get("CORE")
-          secondary=u.get("events",{}).get("SECONDARY")
-          assert isinstance(core,list) and core
-          assert isinstance(secondary,list)
-          assert l.get("input_core")==len(core)
-          assert l.get("input_secondary")==len(secondary)
-          assert l.get("completed")==len(core)+len(secondary)
+          u = json.load(open("classified-universe.json"))
+          l = json.load(open("l1/l1-market-raw.json"))
+          singles = u.get("events", {}).get("TENNIS_SINGLES")
+          assert isinstance(singles, list)
+          assert u.get("tiering_used") is False
+          assert l.get("stage") == "TENNIS_SINGLES_L1_MARKET_SCAN"
+          assert l.get("input_singles") == len(singles)
+          assert l.get("completed") == len(singles)
           assert not l.get("errors")
-          print({"core":len(core),"secondary":len(secondary),"l1_completed":l["completed"]})
+          print({"singles": len(singles), "l1_completed": l["completed"]})
           PY
-      - name: Collect CORE and promoted SECONDARY Event View
+      - name: Collect Event View for every singles event
         run: python3 collect_event_view.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: event-view-core-${{ env.DAY }}
+          name: event-view-singles-${{ env.DAY }}
           path: event-view-core.json
           if-no-files-found: error
           retention-days: 7
