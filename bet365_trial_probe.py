@@ -51,6 +51,9 @@ def response_shape(payload):
         sample = {k: label(v) for k, v in list(sample.items())[:20]}
     return {
         "top_keys": list(payload.keys()) if isinstance(payload, dict) else [],
+        "success": payload.get("success") if isinstance(payload, dict) else None,
+        "error": payload.get("error") if isinstance(payload, dict) else None,
+        "error_detail": payload.get("error_detail") if isinstance(payload, dict) else None,
         "results_type": type(results).__name__,
         "results_count": len(results) if isinstance(results, list) else None,
         "first_result": sample,
@@ -81,6 +84,9 @@ def event_candidates(payload):
             "name": name,
             "league": label(node.get("league") or node.get("competition")),
             "sport_id": node.get("sport_id"),
+            "r_id": node.get("r_id"),
+            "ev_id": node.get("ev_id"),
+            "our_event_id": node.get("our_event_id"),
             "raw_keys": list(node.keys())[:30],
         })
     return candidates
@@ -131,6 +137,31 @@ for sport_id, sport_name in SPORTS.items():
     except Exception as exc:
         result["sports"][sport_name] = {"sport_id": sport_id, "error": str(exc)}
         result["errors"].append({"sport": sport_name, "stage": "inplay_filter", "error": str(exc)})
+
+result["id_diagnostics"] = []
+first_tennis = next((x for x in all_events if x.get("sport") == "tennis"), None)
+if first_tennis:
+    for field in ("fi", "r_id", "ev_id", "our_event_id"):
+        value = first_tennis.get(field)
+        if not value:
+            continue
+        try:
+            payload, headers = get("/v1/bet365/event", {"FI": value, "stats": 1})
+            result["id_diagnostics"].append({"field": field, "value": value, "shape": response_shape(payload)})
+            last_headers = headers
+        except Exception as exc:
+            result["id_diagnostics"].append({"field": field, "value": value, "exception": str(exc)})
+try:
+    raw_inplay, headers = get("/v1/bet365/inplay", {})
+    raw_events = [x for x in walk(raw_inplay) if str(x.get("type") or "").upper() == "EV" and x.get("FI")]
+    result["raw_inplay"] = {
+        "shape": response_shape(raw_inplay),
+        "event_count": len(raw_events),
+        "sample_events": [{k: x.get(k) for k in ("FI", "NA", "CT", "CL", "C1", "C2", "C3")} for x in raw_events[:10]],
+    }
+    last_headers = headers
+except Exception as exc:
+    result["raw_inplay"] = {"exception": str(exc)}
 
 for event in all_events[:MAX_EVENTS]:
     try:
