@@ -151,19 +151,9 @@ if first_tennis:
             last_headers = headers
         except Exception as exc:
             result["id_diagnostics"].append({"field": field, "value": value, "exception": str(exc)})
-try:
-    raw_inplay, headers = get("/v1/bet365/inplay", {})
-    raw_events = [x for x in walk(raw_inplay) if str(x.get("type") or "").upper() == "EV" and x.get("FI")]
-    result["raw_inplay"] = {
-        "shape": response_shape(raw_inplay),
-        "event_count": len(raw_events),
-        "sample_events": [{k: x.get(k) for k in ("FI", "NA", "CT", "CL", "C1", "C2", "C3")} for x in raw_events[:10]],
-    }
-    last_headers = headers
-except Exception as exc:
-    result["raw_inplay"] = {"exception": str(exc)}
+result["raw_inplay"] = {"skipped": "fast identifier test"}
 
-for event in all_events[:MAX_EVENTS]:
+for event in []:
     try:
         payload, headers = get("/v1/bet365/event", {"FI": event["fi"], "stats": 1})
         result["events"].append({**event, **market_summary(payload), "response_shape": response_shape(payload)})
