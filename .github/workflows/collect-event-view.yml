@@ -88,6 +88,6 @@ jobs:
         if: always()
         with:
           name: event-view-singles-${{ env.DAY }}
-          path: event-view-core.json
+          path: event-view-singles.json
           if-no-files-found: error
           retention-days: 7
