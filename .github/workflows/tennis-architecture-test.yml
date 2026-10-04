@@ -1,0 +1,144 @@
+name: Tennis Architecture Dry Run
+
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-tennis-architecture-test.txt']
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve test inputs
+        run: |
+          set -euo pipefail
+          SOURCE_RUN=$(sed -n '1p' triggers/run-tennis-architecture-test.txt)
+          DAY=$(sed -n '2p' triggers/run-tennis-architecture-test.txt)
+          LIMIT=$(sed -n '3p' triggers/run-tennis-architecture-test.txt)
+          [[ "$SOURCE_RUN" =~ ^[0-9]+$ ]]
+          [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          [[ "$LIMIT" =~ ^(50|[5-9][0-9]|100)$ ]]
+          echo "SOURCE_RUN=$SOURCE_RUN" >> "$GITHUB_ENV"
+          echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "LIMIT=$LIMIT" >> "$GITHUB_ENV"
+
+      - name: Download source universe
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ env.SOURCE_RUN }}
+          name: universe
+          path: source
+
+      - name: Build isolated singles subset
+        run: |
+          python3 build_tennis_test_subset.py source/classified-universe.json "$DAY" "$LIMIT" classified-universe.json
+
+      - name: Collect exact odds for test subset
+        run: python3 l1_market_scan.py
+
+      - name: Collect Event View for test subset
+        run: |
+          mkdir -p l1
+          cp l1-market-raw.json l1/l1-market-raw.json
+          python3 collect_event_view.py
+
+      - name: Build lossless research packet
+        run: python3 build_model_prescreen_packet.py l1-market-raw.json event-view-singles.json
+
+      - name: Build baseline player dossiers and audit
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from collections import Counter
+          from pathlib import Path
+
+          packet = json.loads(Path("model-prescreen-packet.json").read_text())
+          players = {}
+          snapshots = []
+          for card in packet["cards"]:
+              sides = (("home", card.get("home") or {}), ("away", card.get("away") or {}))
+              refs = card.get("player_refs") or []
+              dossier_refs = []
+              for index, (side, participant) in enumerate(sides):
+                  pid = str(participant.get("id") or (refs[index] if index < len(refs) else "") or "")
+                  name = str(participant.get("name") or "").strip()
+                  key = pid or ("name:" + name.casefold())
+                  players.setdefault(key, {
+                      "player_key": key,
+                      "provider_player_id": pid or None,
+                      "canonical_name": name,
+                      "aliases": [name] if name else [],
+                      "identity_source": "BETSAPI_EVENT_VIEW",
+                      "external_enrichment_status": "REQUIRED",
+                  })
+                  dossier_refs.append(key)
+              snapshots.append({
+                  "event_id": card["event_id"],
+                  "date_moscow": os.environ["DAY"],
+                  "captured_before_start": True,
+                  "player_dossier_refs": dossier_refs,
+                  "context": {
+                      "competition": (card.get("league") or {}).get("name"),
+                      "start_time": card.get("start_time"),
+                  },
+                  "available_sources": ["BETSAPI_ODDS", "BETSAPI_EVENT_VIEW"],
+                  "external_sources_required": ["ATP_OR_WTA_OR_ITF", "TENNIS_ABSTRACT_WHEN_AVAILABLE", "CURRENT_CONTEXT_SEARCH"],
+              })
+
+          dossier = {
+              "schema_version": 1,
+              "stage": "BASELINE_PLAYER_DOSSIERS",
+              "date_moscow": os.environ["DAY"],
+              "test_only": True,
+              "players": list(players.values()),
+              "prematch_snapshots": snapshots,
+          }
+          Path("player-dossier-baseline.json").write_text(json.dumps(dossier, ensure_ascii=False, indent=2) + "\n")
+
+          errors = json.loads(Path("l1-market-raw.json").read_text()).get("errors") or []
+          event_errors = json.loads(Path("event-view-singles.json").read_text()).get("errors") or []
+          leagues = Counter((c.get("league") or {}).get("name") or "UNKNOWN" for c in packet["cards"])
+          audit = {
+              "schema_version": 1,
+              "date_moscow": os.environ["DAY"],
+              "test_only": True,
+              "requested": int(os.environ["LIMIT"]),
+              "research_packet_matches": len(packet["cards"]),
+              "unique_players": len(players),
+              "l1_errors": errors,
+              "event_view_errors": event_errors,
+              "tournaments": dict(sorted(leagues.items())),
+              "tiering_used": False,
+              "core_secondary_fields_found": any("source_tier" in c for c in packet["cards"]),
+              "result": "PASSED" if len(packet["cards"]) == int(os.environ["LIMIT"]) and not errors and not event_errors else "FAILED",
+          }
+          Path("architecture-test-audit.json").write_text(json.dumps(audit, ensure_ascii=False, indent=2) + "\n")
+          if audit["result"] != "PASSED":
+              raise SystemExit(json.dumps(audit))
+          print(json.dumps({"result": audit["result"], "matches": len(packet["cards"]), "players": len(players), "tournaments": len(leagues)}))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tennis-architecture-test-${{ env.DAY }}-${{ env.LIMIT }}
+          path: |
+            classified-universe.json
+            l1-market-raw.json
+            event-view-singles.json
+            model-prescreen-packet.json
+            player-dossier-baseline.json
+            architecture-test-audit.json
+          if-no-files-found: error
+          retention-days: 7
