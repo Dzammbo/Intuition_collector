@@ -156,7 +156,7 @@ if first_tennis:
         if not value:
             continue
         try:
-            payload, headers = get("/v1/bet365/event", {"FI": value, "stats": 1})
+            payload, headers = get("/v1/bet365/event", {"FI": value})
             result["id_diagnostics"].append({"field": field, "value": value, "shape": response_shape(payload)})
             last_headers = headers
         except Exception as exc:
@@ -165,7 +165,7 @@ result["raw_inplay"] = {"skipped": "fast identifier test"}
 
 for event in [x for x in all_events if x.get("sport") == "tennis"][:10]:
     try:
-        payload, headers = get("/v1/bet365/event", {"FI": event["fi"], "stats": 1})
+        payload, headers = get("/v1/bet365/event", {"FI": event["fi"]})
         result["events"].append({**event, **market_summary(payload), "response_shape": response_shape(payload)})
         last_headers = headers
     except Exception as exc:
