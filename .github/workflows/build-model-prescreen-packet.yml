@@ -66,6 +66,29 @@ jobs:
           path: model-prescreen-packet.json
           retention-days: 7
 
+      - name: Build compact active assessment index
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("state")
+          day=str(Path("triggers/run-model-packet.txt").read_text().splitlines()[2])
+          ledger=json.loads((root/f"candidate_screen_outputs/{day}/model-pre-screen-ledger-v2-tennis-full-coverage.json").read_text())
+          packet=json.loads(Path("model-prescreen-packet.json").read_text())
+          rows=ledger["decisions"]
+          advanced=[str(r["event_id"]) for r in rows if r.get("research_candidate_status")=="RESEARCH_CANDIDATE"]
+          if len(advanced)!=231:
+              raise SystemExit(f"expected 231 active candidates, got {len(advanced)}")
+          cards={str(c["event_id"]):c for c in packet["cards"]}
+          out=[]
+          for i,eid in enumerate(advanced,1):
+              c=cards[eid]
+              out.append({"candidate_index":i,"ordinal":c.get("ordinal"),"event_id":eid,"source_tier":c.get("source_tier"),"sport_id":str(c.get("sport_id")),"league":c.get("league"),"home":c.get("home"),"away":c.get("away"),"start_time":c.get("start_time")})
+          dest=root/f"assessment_inputs/{day}/assessment-candidate-index.json"
+          dest.parent.mkdir(parents=True,exist_ok=True)
+          dest.write_text(json.dumps({"schema_version":1,"date_moscow":day,"count":len(out),"candidates":out},ensure_ascii=False,indent=2)+"\\n")
+          PY
+
       - name: Persist input-only packet to canonical state
         run: |
           set -euo pipefail
@@ -74,7 +97,7 @@ jobs:
           cd state
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add "candidate_screen_inputs/$DAY/model-prescreen-packet.json"
+          git add "candidate_screen_inputs/$DAY/model-prescreen-packet.json" "assessment_inputs/$DAY/assessment-candidate-index.json"
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Persist $DAY model pre-screen input packet"
           git pull --rebase origin main
