@@ -1,7 +1,7 @@
 import json,os,time,urllib.parse,urllib.request
 from datetime import datetime,timezone,timedelta
-SPORTS={"13":"tennis","16":"baseball","17":"ice_hockey","18":"basketball"}
-EXCLUDED_SPORTS={"1":"soccer"}
+SPORTS={"13":"tennis"}
+EXCLUDED_SPORTS={"1":"soccer","16":"baseball","17":"ice_hockey","18":"basketball"}
 BASE="https://api.b365api.com"
 def get(path,params,timeout=20):
  p=dict(params);p["token"]=os.environ["BETSAPI_TOKEN"]
@@ -48,7 +48,7 @@ for sid in SPORTS:
 start=int(now.timestamp());end=int((now+timedelta(hours=24)).timestamp())
 all_events={str(e.get("id")):e for f in feeds for e in f["events"] if e.get("id") is not None}
 window=[e for e in all_events.values() if str(e.get("time","")).isdigit() and start<=int(e["time"])<end]
-out={"captured_at":now.isoformat(),"window_start":start,"window_end":end,"active_sports":list(SPORTS.values()),"excluded_sports":list(EXCLUDED_SPORTS.values()),"expected_feeds":8,"feeds":feeds,"errors":errors,"raw_unique_events":len(all_events),"window_events":window,"window_event_count":len(window)}
+out={"captured_at":now.isoformat(),"window_start":start,"window_end":end,"active_sports":list(SPORTS.values()),"excluded_sports":list(EXCLUDED_SPORTS.values()),"expected_feeds":2,"feeds":feeds,"errors":errors,"raw_unique_events":len(all_events),"window_events":window,"window_event_count":len(window)}
 open("universe.json","w").write(json.dumps(out,ensure_ascii=False))
 print(json.dumps({"feeds_complete":len(feeds),"errors":len(errors),"raw_unique_events":len(all_events),"window_events":len(window)}))
 if errors: raise SystemExit(2)
