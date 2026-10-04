@@ -1,4 +1,4 @@
-name: Build Model Pre-Screen Input Packet
+name: Build Tennis Singles Research Packet
 on:
   workflow_dispatch:
     inputs:
@@ -12,7 +12,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: persist-model-prescreen-packet
+  group: persist-tennis-singles-research-packet
   cancel-in-progress: false
 jobs:
   build:
@@ -38,67 +38,79 @@ jobs:
           path: odds
       - uses: actions/download-artifact@v4
         with:
-          name: event-view-core-${{ env.DAY }}
+          name: event-view-singles-${{ env.DAY }}
           github-token: ${{ github.token }}
           run-id: ${{ env.VIEW }}
           path: view
-      - name: Build input-only packet
+      - name: Build lossless singles packet
         run: python3 build_model_prescreen_packet.py odds/l1-market-raw.json view/event-view-core.json
       - uses: actions/checkout@v4
         with:
           repository: Dzammbo/jarvis-intuition
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
-      - name: Verify packet cannot be mistaken for completed pre-screen
+      - name: Verify every eligible single advances
         run: |
           python3 - <<'PY'
           import json
           packet = json.load(open("model-prescreen-packet.json", encoding="utf-8"))
-          assert packet["stage"] == "MODEL_PRESCREEN_PACKET"
-          assert packet["handoff_status"] == "INPUT_ONLY"
-          assert packet["substantive_prescreen_completed"] is False
-          assert packet["may_be_used_as_research_candidate_ledger"] is False
+          assert packet["stage"] == "TENNIS_SINGLES_RESEARCH_PACKET"
+          assert packet["handoff_status"] == "READY_FOR_ASSESSMENT"
+          assert packet["substantive_prescreen_required"] is False
+          assert packet["tiering_used"] is False
           assert len(packet["cards"]) == packet["input"]
+          assert all(c.get("scope_status") == "TENNIS_SINGLES" for c in packet["cards"])
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: model-prescreen-packet-${{ env.DAY }}
+          name: tennis-singles-research-packet-${{ env.DAY }}
           path: model-prescreen-packet.json
           retention-days: 7
 
-      - name: Build compact active assessment index
+      - name: Build complete assessment index
         run: |
           python3 - <<'PY'
-          import json
+          import json, os
           from pathlib import Path
-          root=Path("state")
-          day=str(Path("triggers/run-model-packet.txt").read_text().splitlines()[2])
-          ledger=json.loads((root/f"candidate_screen_outputs/{day}/model-pre-screen-ledger-v2-tennis-full-coverage.json").read_text())
-          packet=json.loads(Path("model-prescreen-packet.json").read_text())
-          rows=ledger["decisions"]
-          advanced=[str(r["event_id"]) for r in rows if r.get("research_candidate_status")=="RESEARCH_CANDIDATE"]
-          if len(advanced)!=231:
-              raise SystemExit(f"expected 231 active candidates, got {len(advanced)}")
-          cards={str(c["event_id"]):c for c in packet["cards"]}
-          out=[]
-          for i,eid in enumerate(advanced,1):
-              c=cards[eid]
-              out.append({"candidate_index":i,"ordinal":c.get("ordinal"),"event_id":eid,"source_tier":c.get("source_tier"),"sport_id":str(c.get("sport_id")),"league":c.get("league"),"home":c.get("home"),"away":c.get("away"),"start_time":c.get("start_time")})
-          dest=root/f"assessment_inputs/{day}/assessment-candidate-index.json"
-          dest.parent.mkdir(parents=True,exist_ok=True)
-          dest.write_text(json.dumps({"schema_version":1,"date_moscow":day,"count":len(out),"candidates":out},ensure_ascii=False,indent=2)+"\\n")
+          root = Path("state")
+          day = os.environ["DAY"]
+          packet = json.loads(Path("model-prescreen-packet.json").read_text())
+          out = []
+          for i, c in enumerate(packet["cards"], 1):
+              out.append({
+                  "candidate_index": i,
+                  "ordinal": c.get("ordinal"),
+                  "event_id": str(c["event_id"]),
+                  "scope_status": "TENNIS_SINGLES",
+                  "sport_id": "13",
+                  "league": c.get("league"),
+                  "home": c.get("home"),
+                  "away": c.get("away"),
+                  "start_time": c.get("start_time"),
+                  "player_refs": c.get("player_refs") or [],
+              })
+          dest = root / f"assessment_inputs/{day}/assessment-candidate-index.json"
+          dest.parent.mkdir(parents=True, exist_ok=True)
+          dest.write_text(json.dumps({
+              "schema_version": 2,
+              "date_moscow": day,
+              "scope": "ALL_REAL_TENNIS_SINGLES",
+              "tiering_used": False,
+              "count": len(out),
+              "candidates": out,
+          }, ensure_ascii=False, indent=2) + "\n")
           PY
 
-      - name: Persist input-only packet to canonical state
+      - name: Persist singles packet to canonical state
         run: |
           set -euo pipefail
           mkdir -p "state/candidate_screen_inputs/$DAY"
-          cp model-prescreen-packet.json "state/candidate_screen_inputs/$DAY/model-prescreen-packet.json"
+          cp model-prescreen-packet.json "state/candidate_screen_inputs/$DAY/tennis-singles-research-packet.json"
           cd state
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add "candidate_screen_inputs/$DAY/model-prescreen-packet.json" "assessment_inputs/$DAY/assessment-candidate-index.json"
+          git add "candidate_screen_inputs/$DAY/tennis-singles-research-packet.json" "assessment_inputs/$DAY/assessment-candidate-index.json"
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Persist $DAY model pre-screen input packet"
+          git commit -m "Persist $DAY tennis singles research packet"
           git pull --rebase origin main
           git push origin HEAD:main
