@@ -146,50 +146,50 @@
       "sport_id": 13,
       "league_id": 46563,
       "league_name": "M15 Forbach",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
       "league_id": 46576,
       "league_name": "W50 Berkeley",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
       "league_id": 46581,
       "league_name": "M25 Setubal",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
       "league_id": 46593,
       "league_name": "M15 Columbia",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
       "league_id": 46595,
       "league_name": "W15 Belem",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
       "league_id": 46597,
       "league_name": "W50 Berkeley WD",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
       "league_id": 46599,
       "league_name": "M15 Curitiba",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
@@ -202,15 +202,15 @@
       "sport_id": 13,
       "league_id": 46645,
       "league_name": "W75 Quinta Do Lago",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
       "league_id": 46646,
       "league_name": "W35 Reims",
-      "tier": "CORE",
-      "tier_reason": "PROFESSIONAL_TENNIS_RETAINED"
+      "tier": "SECONDARY",
+      "tier_reason": "PROFESSIONAL_ITF_SECONDARY"
     },
     {
       "sport_id": 13,
