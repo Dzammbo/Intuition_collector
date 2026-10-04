@@ -7,15 +7,15 @@ import urllib.request
 
 BASE = "https://api.b365api.com"
 TOKEN = os.environ["BETSAPI_TOKEN"]
-MAX_EVENTS = int(os.environ.get("MAX_EVENTS", "30"))
-
+MAX_EVENTS = int(os.environ.get("MAX_EVENTS", "20"))
+SPORTS = {1: "football", 13: "tennis", 16: "baseball", 17: "ice_hockey", 18: "basketball"}
 
 def get(path, params, timeout=30):
     query = dict(params)
     query["token"] = TOKEN
     url = BASE + path + "?" + urllib.parse.urlencode(query)
     last = None
-    for attempt in range(1, 5):
+    for attempt in range(1, 4):
         try:
             with urllib.request.urlopen(url, timeout=timeout) as response:
                 headers = {
@@ -26,10 +26,9 @@ def get(path, params, timeout=30):
                 return json.load(response), headers
         except Exception as exc:
             last = exc
-            if attempt < 4:
-                time.sleep(1.5 * attempt)
+            if attempt < 3:
+                time.sleep(attempt)
     raise last
-
 
 def walk(value):
     if isinstance(value, dict):
@@ -40,103 +39,114 @@ def walk(value):
         for child in value:
             yield from walk(child)
 
+def label(value):
+    if isinstance(value, dict):
+        return value.get("name") or value.get("NA") or value.get("id")
+    return value
+
+def response_shape(payload):
+    results = payload.get("results") if isinstance(payload, dict) else None
+    sample = results[0] if isinstance(results, list) and results else results
+    if isinstance(sample, dict):
+        sample = {k: label(v) for k, v in list(sample.items())[:20]}
+    return {
+        "top_keys": list(payload.keys()) if isinstance(payload, dict) else [],
+        "results_type": type(results).__name__,
+        "results_count": len(results) if isinstance(results, list) else None,
+        "first_result": sample,
+    }
 
 def event_candidates(payload):
-    candidates = []
-    seen = set()
-    for node in walk(payload.get("results") or payload):
-        kind = str(node.get("type") or "").upper()
-        if kind not in {"EV", "EVENT"} and not any(k in node for k in ("FI", "event_id")):
-            continue
-        event_id = node.get("FI") or node.get("event_id") or node.get("ID") or node.get("id")
-        if event_id is None:
+    candidates, seen = [], set()
+    for node in walk(payload.get("results") if isinstance(payload, dict) else payload):
+        event_id = node.get("FI") or node.get("event_id") or node.get("our_event_id") or node.get("id")
+        event_like = (
+            ("home" in node and "away" in node)
+            or "sport_id" in node
+            or "time_status" in node
+            or str(node.get("type") or "").upper() in {"EV", "EVENT"}
+        )
+        if event_id is None or not event_like:
             continue
         event_id = str(event_id)
         if event_id in seen:
             continue
         seen.add(event_id)
+        home, away = label(node.get("home")), label(node.get("away"))
+        name = node.get("NA") or node.get("name")
+        if not name and (home or away):
+            name = f"{home or '?'} vs {away or '?'}"
         candidates.append({
             "fi": event_id,
-            "name": node.get("NA") or node.get("name"),
-            "league": node.get("league") or node.get("competition"),
-            "raw_type": kind,
+            "name": name,
+            "league": label(node.get("league") or node.get("competition")),
+            "sport_id": node.get("sport_id"),
+            "raw_keys": list(node.keys())[:30],
         })
     return candidates
 
-
 def market_summary(payload):
-    nodes = list(walk(payload.get("results") or payload))
-    market_names = []
-    selections = []
-    current_market = None
+    nodes = list(walk(payload.get("results") if isinstance(payload, dict) else payload))
+    market_names, target_lines = [], []
     for node in nodes:
-        kind = str(node.get("type") or "").upper()
-        if kind == "MG":
-            current_market = str(node.get("NA") or node.get("name") or "")
-            if current_market and current_market not in market_names:
-                market_names.append(current_market)
-        elif kind == "PA":
+        if str(node.get("type") or "").upper() == "MG":
             name = str(node.get("NA") or node.get("name") or "")
-            handicap = node.get("HA") or node.get("handicap") or node.get("line")
-            odds = node.get("OD") or node.get("odds")
-            if current_market and re.search(r"total games|game lines|games total|тотал", current_market, re.I):
-                selections.append({
-                    "market": current_market,
-                    "name": name,
-                    "line": handicap,
-                    "odds": odds,
-                    "suspended": node.get("SU"),
-                })
+            if name and name not in market_names:
+                market_names.append(name)
+        if str(node.get("type") or "").upper() == "PA":
+            line = node.get("HA") or node.get("handicap") or node.get("line")
+            try:
+                numeric = abs(float(str(line).replace(",", ".")))
+            except Exception:
+                continue
+            if 14.5 <= numeric <= 24.5:
+                target_lines.append({"name": node.get("NA"), "line": line, "odds": node.get("OD")})
     text = json.dumps(payload, ensure_ascii=False)
-    has_itf = bool(re.search(r"\bITF\b|World Tennis|M15|M25|W15|W25|W35|W50|W75|W100", text, re.I))
-    total_markets = [x for x in market_names if re.search(r"total games|game lines|games total|тотал", x, re.I)]
-    handicap_markets = [x for x in market_names if re.search(r"handicap|game handicap|games handicap|фора", x, re.I)]
-    set_markets = [x for x in market_names if re.search(r"set", x, re.I)]
-    target_selections = []
-    for selection in selections:
-        try:
-            line = abs(float(str(selection.get("line", "")).replace(",", ".")))
-        except Exception:
-            continue
-        if 14.5 <= line <= 18.5:
-            target_selections.append(selection)
     return {
-        "has_itf_marker": has_itf,
+        "has_itf_marker": bool(re.search(r"\\bITF\\b|World Tennis|M15|M25|W15|W25|W35|W50|W75|W100", text, re.I)),
         "market_count": len(market_names),
         "market_names": market_names,
-        "total_game_markets": total_markets,
-        "handicap_markets": handicap_markets,
-        "set_markets": set_markets,
-        "target_total_selections": target_selections,
+        "has_total_market": any(re.search(r"total|games|goals|points|runs", x, re.I) for x in market_names),
+        "has_handicap_market": any(re.search(r"handicap|spread", x, re.I) for x in market_names),
+        "has_set_or_period_market": any(re.search(r"set|period|quarter|inning", x, re.I) for x in market_names),
+        "target_lines": target_lines[:20],
     }
 
-
-inplay, headers = get("/v1/bet365/inplay_filter", {"sport_id": 13})
-events = event_candidates(inplay)
-probed = []
-errors = []
-for event in events[:MAX_EVENTS]:
+result = {"schema_version": 2, "endpoint_ok": True, "sports": {}, "events": [], "errors": []}
+last_headers = {}
+all_events = []
+for sport_id, sport_name in SPORTS.items():
     try:
-        payload, event_headers = get("/v1/bet365/event", {"FI": event["fi"], "stats": 1})
-        summary = market_summary(payload)
-        probed.append({**event, **summary, "rate_limit": event_headers})
+        payload, headers = get("/v1/bet365/inplay_filter", {"sport_id": sport_id})
+        last_headers = headers
+        events = event_candidates(payload)
+        result["sports"][sport_name] = {
+            "sport_id": sport_id,
+            "events_found": len(events),
+            "response_shape": response_shape(payload),
+        }
+        for event in events:
+            event["sport"] = sport_name
+        all_events.extend(events[:10 if sport_id == 13 else 3])
     except Exception as exc:
-        errors.append({"fi": event["fi"], "error": str(exc)})
+        result["sports"][sport_name] = {"sport_id": sport_id, "error": str(exc)}
+        result["errors"].append({"sport": sport_name, "stage": "inplay_filter", "error": str(exc)})
 
-result = {
-    "schema_version": 1,
-    "endpoint_ok": True,
-    "inplay_tennis_events_found": len(events),
-    "events_probed": len(probed),
-    "events_with_itf_marker": sum(x["has_itf_marker"] for x in probed),
-    "events_with_total_games": sum(bool(x["total_game_markets"]) for x in probed),
-    "events_with_handicaps": sum(bool(x["handicap_markets"]) for x in probed),
-    "events_with_set_markets": sum(bool(x["set_markets"]) for x in probed),
-    "events_with_target_14_5_18_5": sum(bool(x["target_total_selections"]) for x in probed),
-    "rate_limit": headers,
-    "errors": errors,
-    "events": probed,
-}
+for event in all_events[:MAX_EVENTS]:
+    try:
+        payload, headers = get("/v1/bet365/event", {"FI": event["fi"], "stats": 1})
+        result["events"].append({**event, **market_summary(payload), "response_shape": response_shape(payload)})
+        last_headers = headers
+    except Exception as exc:
+        result["errors"].append({"sport": event["sport"], "fi": event["fi"], "stage": "event", "error": str(exc)})
+
+result["events_probed"] = len(result["events"])
+result["events_with_itf_marker"] = sum(x["has_itf_marker"] for x in result["events"])
+result["events_with_total_market"] = sum(x["has_total_market"] for x in result["events"])
+result["events_with_handicap_market"] = sum(x["has_handicap_market"] for x in result["events"])
+result["events_with_set_or_period_market"] = sum(x["has_set_or_period_market"] for x in result["events"])
+result["events_with_target_lines"] = sum(bool(x["target_lines"]) for x in result["events"])
+result["rate_limit"] = last_headers
 with open("bet365-trial-probe.json", "w", encoding="utf-8") as handle:
     json.dump(result, handle, ensure_ascii=False, indent=2)
 print(json.dumps({k: v for k, v in result.items() if k != "events"}, ensure_ascii=False))
