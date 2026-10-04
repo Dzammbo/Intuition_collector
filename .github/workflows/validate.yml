@@ -83,7 +83,7 @@ jobs:
               "finalize-league-registry.yml",
               "check-final-card-settlement.yml", "daily-settlement.yml",
               "assessment-price-refresh.yml", "rerender-results.yml",
-              "telegram-native-publish.yml", "validate.yml",
+              "telegram-native-publish.yml", "capture-bet365-closing.yml", "validate.yml",
           }
           present = {p.name for p in workflows.glob("*.yml")}
           assert present == required, (present, required)
@@ -107,6 +107,8 @@ jobs:
               assert {x["tier"] for x in mapping["leagues"]} <= {"CORE", "SECONDARY", "EXCLUDE"}
           print({"private_workflows": private_workflows})
           PY
+          cd ops
+          python3 -m unittest -v test_capture_bet365_closing.py
       - name: Verify private repository write permission
         working-directory: state
         run: git push --dry-run origin HEAD:main

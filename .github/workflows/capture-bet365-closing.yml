@@ -1,0 +1,46 @@
+name: Capture Bet365 Closing Line
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: capture-bet365-closing
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+      STATE_ROOT: state
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ops
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - name: Capture non-blocking Bet365 snapshots
+        run: python3 ops/capture_bet365_closing.py
+      - name: Validate collector functions
+        working-directory: ops
+        run: python3 -m unittest -v test_capture_bet365_closing.py
+      - name: Commit append-only snapshots to private state
+        working-directory: state
+        run: |
+          set -euo pipefail
+          git config user.name "jarvis-intuition-bot"
+          git config user.email "jarvis-intuition-bot@users.noreply.github.com"
+          git add closing_line_snapshots/ diagnostics/bet365_closing/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Capture Bet365 closing-line snapshots"
+          git pull --rebase origin main
+          git push origin HEAD:main

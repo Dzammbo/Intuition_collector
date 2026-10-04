@@ -29,6 +29,9 @@ promoted automatically.
 - `Daily Settlement`
 - `Rerender Results`
 - `Native Telegram Publish`
+- `Capture Bet365 Closing Line` - every five minutes, diagnostic only; tracks
+  the exact Bet365 target for each BET and substantive PASS without delaying
+  selection or publication
 - `Validate Public Operations`
 
 Operational workflows run on public GitHub-hosted runners, check out the private state repository with a restricted token, execute its canonical scripts, and write generated state back to the private repository.
@@ -42,7 +45,10 @@ Operational workflows run on public GitHub-hosted runners, check out the private
 
 ## Trigger model
 
-All production stages are explicit and have no clock schedules. Collection and operational workflows can be started manually. Canonical trigger files are also supported for plugin-driven execution:
+Selection and publication stages remain explicit. The only clock-scheduled
+workflow is the non-blocking Bet365 closing-line recorder. Other collection and
+operational workflows can be started manually. Canonical trigger files are also
+supported for plugin-driven execution:
 
 - `triggers/run-universe.txt`
 - `triggers/run-league-registry.txt`
