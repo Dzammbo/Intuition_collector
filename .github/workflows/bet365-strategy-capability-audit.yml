@@ -59,6 +59,12 @@ jobs:
                   if not isinstance(n,dict): continue
                   typ=str(n.get("type","")).upper()
                   name=str(n.get("NA") or n.get("name") or "")
+                  if isinstance(n.get("odds"),list) and name:
+                      current=name
+                      if name not in names: names.append(name)
+                      for o in n["odds"]:
+                          if isinstance(o,dict):
+                              selections.append({"market":name,"name":str(o.get("name") or ""),"line":o.get("handicap") or o.get("header"),"odds":o.get("odds")})
                   if typ in ("MA","MG"):
                       current=name
                       if name and name not in names: names.append(name)
@@ -95,6 +101,10 @@ jobs:
                   ev=event_rows(up)
                   if sname=="tennis":
                       ev=sorted(ev,key=lambda e:not bool(re.search(r"\bITF\b|M15|M25|W15|W25|W35|W50|W75|W100",text(e["raw"]),re.I)))
+                  elif sname=="football":
+                      ev=sorted(ev,key=lambda e:bool(re.search(r"esoccer|e-soccer|srl",text(e["raw"]),re.I)))
+                  elif sname=="basketball":
+                      ev=sorted(ev,key=lambda e:not bool(re.search(r"\bNBA\b",text(e["raw"]),re.I)))
                   report["prematch"][sname]={"upcoming_count":len(ev),"samples":[]}
                   for e in ev[:2 if sname=="tennis" else 1]:
                       try:
