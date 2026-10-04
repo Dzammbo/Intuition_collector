@@ -1,1 +1,2 @@
-2026-09-29T07:43:51Z validate dynamic league family fallback
+requested_at=2026-10-04T10:05:54.499Z
+reason=validate-tennis-tier-and-continuous-chain-fixes
