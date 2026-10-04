@@ -1,4 +1,4 @@
-telegram_reports/2026-10-04-final.md
-FINAL
+telegram_reports/2026-10-04-results.md
+RESULTS
 2026-10-04
-single-pool-43-bets-2026-10-04T13:02:00Z
+refresh-results-2026-10-04T19:15:00Z
