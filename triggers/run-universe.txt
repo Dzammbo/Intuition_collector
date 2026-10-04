@@ -1,2 +1,3 @@
-2026-10-03T06:45:00Z
-reason=start_moscow_day_2026-10-03_raw_universe
+2026-10-04T09:02:11Z
+reason=start_moscow_day_2026-10-04_raw_universe_four_sport_no_football
+canon_commit=614da05da22dac8b62707b5516a33120b302561c
