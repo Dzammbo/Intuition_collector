@@ -1,5 +1,5 @@
-37104153982
-37106479739
-2026-10-03
-requested_at=2026-10-03T07:59:00Z
-reason=collect-tier-aware-event-view
+37190881905
+37191346125
+2026-10-04
+requested_at=2026-10-04T09:27:00Z
+reason=continue-daily-run-without-intermediate-stops
