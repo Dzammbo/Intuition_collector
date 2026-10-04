@@ -78,11 +78,12 @@ jobs:
           required = {
               "collect.yml", "collect-event-view.yml", "l1-market-scan.yml",
               "build-model-prescreen-packet.yml", "reclassify-saved-universe.yml",
-              "extract-unclassified.yml",
+              "extract-unclassified.yml", "export-assessment-index.yml",
               "sync-league-registry.yml",
               "finalize-league-registry.yml",
               "check-final-card-settlement.yml", "daily-settlement.yml",
-              "assessment-price-refresh.yml", "rerender-results.yml",
+              "assessment-price-refresh.yml", "bet365-trial-probe.yml",
+              "rerender-results.yml", "tennis-architecture-test.yml",
               "telegram-native-publish.yml", "capture-bet365-closing.yml", "validate.yml",
           }
           present = {p.name for p in workflows.glob("*.yml")}
