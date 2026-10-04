@@ -39,9 +39,15 @@ jobs:
           name: universe
           path: source
 
+      - name: Reclassify source with current singles rules
+        run: |
+          cp source/universe.json universe.json
+          python3 classify_universe.py
+          mv classified-universe.json classified-universe-full.json
+
       - name: Build isolated singles subset
         run: |
-          python3 build_tennis_test_subset.py source/classified-universe.json "$DAY" "$LIMIT" classified-universe.json
+          python3 build_tennis_test_subset.py classified-universe-full.json "$DAY" "$LIMIT" classified-universe.json
 
       - name: Collect exact odds for test subset
         run: python3 l1_market_scan.py
