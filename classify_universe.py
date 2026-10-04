@@ -9,6 +9,7 @@ from collections import defaultdict
 
 
 TIERS = {"CORE", "SECONDARY", "EXCLUDE"}
+ACTIVE_SPORT_IDS = {13, 16, 17, 18}
 TENNIS_PRO_PREFIX = re.compile(r"^(?:atp|wta|challenger|m\d{2,3}|w\d{2,3})\b", re.I)
 TENNIS_BLOCKED = re.compile(
     r"\b(?:utr|junior|juniors|youth|u[- ]?\d{1,2}|wheelchair|"
@@ -75,11 +76,14 @@ def main():
     universe = json.load(open("universe.json", encoding="utf-8"))
     exact, families = load_registry()
     buckets = {"CORE": [], "SECONDARY": [], "EXCLUDE": [], "UNCLASSIFIED_LEAGUE": []}
-    audit = {"EXACT_ID": 0, "NORMALIZED_FAMILY": 0, "TENNIS_PRO_PREFIX": 0, "UNCLASSIFIED": 0}
+    audit = {"EXACT_ID": 0, "NORMALIZED_FAMILY": 0, "TENNIS_PRO_PREFIX": 0, "UNCLASSIFIED": 0, "FOOTBALL_MORATORIUM": 0}
     inferred = {}
 
     for event in universe["window_events"]:
         sport_id = int(event.get("sport_id") or 0)
+        if sport_id not in ACTIVE_SPORT_IDS:
+            audit["FOOTBALL_MORATORIUM"] += 1
+            continue
         league = event.get("league") or {}
         try:
             league_id = int(league.get("id"))
@@ -112,7 +116,9 @@ def main():
     output = {
         "schema_version": 2,
         "source_captured_at": universe["captured_at"],
-        "window_event_count": len(universe["window_events"]),
+        "window_event_count": sum(len(value) for value in buckets.values()),
+        "raw_window_event_count": len(universe["window_events"]),
+        "football_moratorium_excluded": audit["FOOTBALL_MORATORIUM"],
         "counts": {key: len(value) for key, value in buckets.items()},
         "classification_audit": audit,
         "inferred_leagues": sorted(inferred.values(), key=lambda row: (row["sport_id"], row["league_id"])),

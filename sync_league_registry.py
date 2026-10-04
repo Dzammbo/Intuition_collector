@@ -19,13 +19,13 @@ from pathlib import Path
 
 BASE = "https://api.b365api.com"
 SPORTS = {
-    1: "soccer",
     13: "tennis",
     16: "baseball",
     17: "ice_hockey",
     18: "basketball",
 }
 OUTPUT_DIR = Path("config/league_registry_v1")
+HISTORICAL_EXCLUDED_SPORTS = {1: "soccer"}
 
 
 def utcnow_iso():
@@ -136,7 +136,15 @@ def main():
         raise SystemExit("BETSAPI_TOKEN is required")
     captured_at = utcnow_iso()
     tiers = load_canonical_tiers()
-    leagues = []
+    existing_catalog = OUTPUT_DIR / "catalog.json"
+    historical_rows = []
+    if existing_catalog.exists():
+        saved = json.loads(existing_catalog.read_text(encoding="utf-8"))
+        historical_rows = [
+            row for row in saved.get("leagues", [])
+            if int(row.get("sport_id") or 0) in HISTORICAL_EXCLUDED_SPORTS
+        ]
+    leagues = list(historical_rows)
     calls_by_sport = {}
     for sport_id, sport_name in SPORTS.items():
         sport_rows, calls = collect_sport(sport_id, sport_name, tiers)
@@ -168,10 +176,12 @@ def main():
         "schema_version": 1,
         "captured_at": captured_at,
         "supported_sports": SPORTS,
+        "historical_excluded_sports_retained_without_api_calls": HISTORICAL_EXCLUDED_SPORTS,
         "total_leagues": len(leagues),
         "counts_by_sport": dict(sorted(sport_counts.items())),
         "counts_by_tier": dict(sorted(tier_counts.items())),
         "api_calls_by_sport": calls_by_sport,
+        "football_api_calls": 0,
         "canonical_tier_records_loaded": len(tiers),
         "canonical_ids_absent_from_provider_snapshot": [
             {"sport_id": sport_id, "league_id": league_id}
