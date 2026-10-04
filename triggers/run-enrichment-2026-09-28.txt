@@ -1,4 +1,5 @@
-37104153982
-2026-10-03
-requested_at=2026-10-03T07:28:30Z
-reason=retry-l1-after-timeout-extension
+37190881905
+2026-10-04
+requested_at=2026-10-04T09:10:59Z
+reason=start-l1-four-sport-no-football
+canon_status_commit=d324bb1f38422f63eeea633f4cc7a309792ace71
