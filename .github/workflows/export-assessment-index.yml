@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   export:
@@ -46,16 +46,15 @@ jobs:
           for i,eid in enumerate(advanced,1):
               c=card_map[eid]
               out.append({'candidate_index':i,'ordinal':c.get('ordinal'),'event_id':eid,'source_tier':c.get('source_tier'),'sport_id':str(c.get('sport_id')),'league':c.get('league'),'home':c.get('home'),'away':c.get('away'),'start_time':c.get('start_time')})
-          dest=root/f'assessment_inputs/{day}/assessment-candidate-index.json'
+          dest=Path(f'exports/{day}/assessment-candidate-index.json')
           dest.parent.mkdir(parents=True,exist_ok=True)
           dest.write_text(json.dumps({'schema_version':1,'date_moscow':day,'count':len(out),'candidates':out},ensure_ascii=False,indent=2)+'\n')
           PY
-      - name: Commit index to private canon
-        working-directory: jarvis
+      - name: Commit index export
         run: |
-          git config user.name "jarvis-intuition-bot"
-          git config user.email "jarvis-intuition-bot@users.noreply.github.com"
-          git add assessment_inputs/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add exports/
           git diff --cached --quiet && exit 0
           git commit -m "Export compact assessment candidate index"
           git push
