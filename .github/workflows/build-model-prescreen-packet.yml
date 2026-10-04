@@ -60,6 +60,8 @@ jobs:
           assert packet["tiering_used"] is False
           assert len(packet["cards"]) == packet["input"]
           assert all(c.get("scope_status") == "TENNIS_SINGLES" for c in packet["cards"])
+          assert all(c.get("price_gate_status") in {"PRICE_READY", "WAITING_FOR_PRICE"} for c in packet["cards"])
+          assert packet["source_accounting"]["price_ready"] + packet["source_accounting"]["waiting_for_price"] == packet["input"]
           PY
       - uses: actions/upload-artifact@v4
         with:
@@ -82,6 +84,7 @@ jobs:
                   "ordinal": c.get("ordinal"),
                   "event_id": str(c["event_id"]),
                   "scope_status": "TENNIS_SINGLES",
+                  "price_gate_status": c.get("price_gate_status"),
                   "sport_id": "13",
                   "league": c.get("league"),
                   "home": c.get("home"),
