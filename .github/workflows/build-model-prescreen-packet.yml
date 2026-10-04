@@ -43,7 +43,7 @@ jobs:
           run-id: ${{ env.VIEW }}
           path: view
       - name: Build lossless singles packet
-        run: python3 build_model_prescreen_packet.py odds/l1-market-raw.json view/event-view-core.json
+        run: python3 build_model_prescreen_packet.py odds/l1-market-raw.json view/event-view-singles.json
       - uses: actions/checkout@v4
         with:
           repository: Dzammbo/jarvis-intuition
