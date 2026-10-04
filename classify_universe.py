@@ -10,7 +10,8 @@ from collections import defaultdict
 
 TIERS = {"CORE", "SECONDARY", "EXCLUDE"}
 ACTIVE_SPORT_IDS = {13, 16, 17, 18}
-TENNIS_PRO_PREFIX = re.compile(r"^(?:atp|wta|challenger|m\d{2,3}|w\d{2,3})\b", re.I)
+TENNIS_CORE_PREFIX = re.compile(r"^(?:atp|wta|challenger)\\b", re.I)
+TENNIS_SECONDARY_PREFIX = re.compile(r"^(?:m\\d{2,3}|w\\d{2,3})\\b", re.I)
 TENNIS_BLOCKED = re.compile(
     r"\b(?:utr|junior|juniors|youth|u[- ]?\d{1,2}|wheelchair|"
     r"table tennis|padel|beach|exhibition|battle of)\b",
@@ -66,8 +67,10 @@ def resolve_dynamic(sport_id, league_name, families):
         return None, None, siblings
 
     if sport_id == 13 and not TENNIS_BLOCKED.search(league_name or ""):
-        if TENNIS_PRO_PREFIX.search(family):
-            return "CORE", "TENNIS_PRO_PREFIX", []
+        if TENNIS_CORE_PREFIX.search(family):
+            return "CORE", "TENNIS_CORE_PREFIX", []
+        if TENNIS_SECONDARY_PREFIX.search(family):
+            return "SECONDARY", "TENNIS_SECONDARY_PREFIX", []
 
     return None, None, siblings
 
@@ -76,7 +79,7 @@ def main():
     universe = json.load(open("universe.json", encoding="utf-8"))
     exact, families = load_registry()
     buckets = {"CORE": [], "SECONDARY": [], "EXCLUDE": [], "UNCLASSIFIED_LEAGUE": []}
-    audit = {"EXACT_ID": 0, "NORMALIZED_FAMILY": 0, "TENNIS_PRO_PREFIX": 0, "UNCLASSIFIED": 0, "FOOTBALL_MORATORIUM": 0}
+    audit = {"EXACT_ID": 0, "NORMALIZED_FAMILY": 0, "TENNIS_CORE_PREFIX": 0, "TENNIS_SECONDARY_PREFIX": 0, "UNCLASSIFIED": 0, "FOOTBALL_MORATORIUM": 0}
     inferred = {}
 
     for event in universe["window_events"]:
