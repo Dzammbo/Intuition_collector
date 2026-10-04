@@ -1,0 +1,29 @@
+name: Bet365 Trial Probe
+
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-bet365-probe.txt']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+      MAX_EVENTS: '30'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe Bet365 live tennis coverage
+        run: python3 bet365_trial_probe.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bet365-trial-probe
+          path: bet365-trial-probe.json
+          if-no-files-found: error
+          retention-days: 3
