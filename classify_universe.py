@@ -1,136 +1,70 @@
 #!/usr/bin/env python3
-"""Classify the saved 24-hour universe with audited dynamic-ID fallback."""
+"""Classify every real tennis event by singles eligibility, without league tiers."""
 
-import glob
 import json
 import re
-import unicodedata
-from collections import defaultdict
 
-
-TIERS = {"CORE", "SECONDARY", "EXCLUDE"}
-ACTIVE_SPORT_IDS = {13, 16, 17, 18}
-TENNIS_CORE_PREFIX = re.compile(r"^(?:atp|wta|challenger)\\b", re.I)
-TENNIS_SECONDARY_PREFIX = re.compile(r"^(?:m\\d{2,3}|w\\d{2,3})\\b", re.I)
-TENNIS_BLOCKED = re.compile(
-    r"\b(?:utr|junior|juniors|youth|u[- ]?\d{1,2}|wheelchair|"
-    r"table tennis|padel|beach|exhibition|battle of)\b",
+NON_TENNIS = re.compile(
+    r"\b(?:padel|table tennis|beach tennis|virtual|esports?|e-tennis|simulated|battle of)\b",
     re.I,
 )
-DRAW_SUFFIX = re.compile(r"\s+(?:md|wd|qual|qualification|qualifying)$", re.I)
+DOUBLES_LEAGUE = re.compile(
+    r"(?:\b(?:doubles?|mixed doubles?)\b|\s(?:md|wd|xd)\s*$)",
+    re.I,
+)
+PAIR_NAME = re.compile(r"(?:\s[/&+]\s|/|\s(?:and|и)\s)", re.I)
 
 
-def normalized_family(sport_id, name):
-    text = unicodedata.normalize("NFKD", name or "")
-    text = "".join(ch for ch in text if not unicodedata.combining(ch)).lower()
-    text = re.sub(r"[^a-z0-9]+", " ", text).strip()
-    if sport_id == 13:
-        text = re.sub(r"^itf\s+", "", text)
-        while DRAW_SUFFIX.search(text):
-            text = DRAW_SUFFIX.sub("", text).strip()
-    return text
+def participant_name(event, side):
+    value = event.get(side) or {}
+    return str(value.get("name") or "").strip()
 
 
-def load_registry():
-    exact = {}
-    families = defaultdict(list)
-    for path in glob.glob("config/league_allowset_v1/*.json"):
-        try:
-            data = json.load(open(path, encoding="utf-8"))
-        except Exception:
-            continue
-        rows = data.get("allowed_leagues", []) + data.get("leagues", [])
-        for row in rows:
-            tier = row.get("tier")
-            if tier not in TIERS:
-                continue
-            sport_id = int(row["sport_id"])
-            league_id = int(row["league_id"])
-            name = row.get("league_name") or ""
-            exact[(sport_id, league_id)] = (tier, row.get("tier_reason"))
-            family = normalized_family(sport_id, name)
-            if family:
-                families[(sport_id, family)].append(
-                    {"league_id": league_id, "league_name": name, "tier": tier}
-                )
-    return exact, families
-
-
-def resolve_dynamic(sport_id, league_name, families):
-    """Resolve only deterministic cases; ambiguous names remain quarantined."""
-    family = normalized_family(sport_id, league_name)
-    siblings = families.get((sport_id, family), [])
-    sibling_tiers = {row["tier"] for row in siblings}
-    if len(sibling_tiers) == 1:
-        return sibling_tiers.pop(), "NORMALIZED_FAMILY", siblings
-    if siblings:
-        return None, None, siblings
-
-    if sport_id == 13 and not TENNIS_BLOCKED.search(league_name or ""):
-        if TENNIS_CORE_PREFIX.search(family):
-            return "CORE", "TENNIS_CORE_PREFIX", []
-        if TENNIS_SECONDARY_PREFIX.search(family):
-            return "SECONDARY", "TENNIS_SECONDARY_PREFIX", []
-
-    return None, None, siblings
+def classify(event):
+    league = str((event.get("league") or {}).get("name") or "").strip()
+    home = participant_name(event, "home")
+    away = participant_name(event, "away")
+    if int(event.get("sport_id") or 0) != 13 or NON_TENNIS.search(league):
+        return "EXCLUDED_NON_TENNIS", "NOT_REAL_RACKET_TENNIS"
+    if not home or not away or home.casefold() == away.casefold():
+        return "TECHNICAL_EXCLUSION", "MISSING_OR_INVALID_PARTICIPANTS"
+    if DOUBLES_LEAGUE.search(league) or PAIR_NAME.search(home) or PAIR_NAME.search(away):
+        return "EXCLUDED_DOUBLES", "DOUBLES_IDENTITY"
+    return "TENNIS_SINGLES", "ALL_REAL_SINGLES_INCLUDED"
 
 
 def main():
     universe = json.load(open("universe.json", encoding="utf-8"))
-    exact, families = load_registry()
-    buckets = {"CORE": [], "SECONDARY": [], "EXCLUDE": [], "UNCLASSIFIED_LEAGUE": []}
-    audit = {"EXACT_ID": 0, "NORMALIZED_FAMILY": 0, "TENNIS_CORE_PREFIX": 0, "TENNIS_SECONDARY_PREFIX": 0, "UNCLASSIFIED": 0, "FOOTBALL_MORATORIUM": 0}
-    inferred = {}
-
-    for event in universe["window_events"]:
-        sport_id = int(event.get("sport_id") or 0)
-        if sport_id not in ACTIVE_SPORT_IDS:
-            audit["FOOTBALL_MORATORIUM"] += 1
-            continue
-        league = event.get("league") or {}
-        try:
-            league_id = int(league.get("id"))
-        except (TypeError, ValueError):
-            league_id = 0
-        league_name = league.get("name") or ""
-        record = exact.get((sport_id, league_id))
-        if record:
-            tier = record[0]
-            method = "EXACT_ID"
-            siblings = []
-        else:
-            tier, method, siblings = resolve_dynamic(sport_id, league_name, families)
-            if tier is None:
-                tier = "UNCLASSIFIED_LEAGUE"
-                method = "UNCLASSIFIED"
-            else:
-                key = f"{sport_id}:{league_id}"
-                inferred[key] = {
-                    "sport_id": sport_id,
-                    "league_id": league_id,
-                    "league_name": league_name,
-                    "tier": tier,
-                    "method": method,
-                    "matched_league_ids": sorted({row["league_id"] for row in siblings}),
-                }
-        audit[method] += 1
-        buckets[tier].append(event)
+    buckets = {
+        "TENNIS_SINGLES": [],
+        "EXCLUDED_DOUBLES": [],
+        "EXCLUDED_NON_TENNIS": [],
+        "TECHNICAL_EXCLUSION": [],
+    }
+    reasons = {}
+    for event in universe.get("window_events") or []:
+        status, reason = classify(event)
+        row = dict(event)
+        row["scope_status"] = status
+        row["scope_reason"] = reason
+        buckets[status].append(row)
+        reasons[reason] = reasons.get(reason, 0) + 1
 
     output = {
-        "schema_version": 2,
+        "schema_version": 3,
+        "stage": "TENNIS_SINGLES_SCOPE_CLASSIFICATION",
         "source_captured_at": universe["captured_at"],
+        "raw_window_event_count": len(universe.get("window_events") or []),
         "window_event_count": sum(len(value) for value in buckets.values()),
-        "raw_window_event_count": len(universe["window_events"]),
-        "football_moratorium_excluded": audit["FOOTBALL_MORATORIUM"],
         "counts": {key: len(value) for key, value in buckets.items()},
-        "classification_audit": audit,
-        "inferred_leagues": sorted(inferred.values(), key=lambda row: (row["sport_id"], row["league_id"])),
+        "classification_audit": reasons,
+        "tiering_used": False,
         "events": buckets,
     }
     open("classified-universe.json", "w", encoding="utf-8").write(
         json.dumps(output, ensure_ascii=False)
     )
-    print(json.dumps({"counts": output["counts"], "classification_audit": audit}))
+    print(json.dumps({"counts": output["counts"], "classification_audit": reasons}))
 
 
 if __name__ == "__main__":
