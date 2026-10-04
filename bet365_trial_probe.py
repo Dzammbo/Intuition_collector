@@ -49,6 +49,8 @@ def response_shape(payload):
     sample = results[0] if isinstance(results, list) and results else results
     if isinstance(sample, dict):
         sample = {k: label(v) for k, v in list(sample.items())[:20]}
+    elif isinstance(sample, list):
+        sample = {"nested_count": len(sample), "record_types": [x.get("type") for x in sample[:20] if isinstance(x, dict)]}
     return {
         "top_keys": list(payload.keys()) if isinstance(payload, dict) else [],
         "success": payload.get("success") if isinstance(payload, dict) else None,
@@ -94,25 +96,33 @@ def event_candidates(payload):
 def market_summary(payload):
     nodes = list(walk(payload.get("results") if isinstance(payload, dict) else payload))
     market_names, target_lines = [], []
+    current_market = ""
+    priced_selections = 0
     for node in nodes:
-        if str(node.get("type") or "").upper() == "MG":
+        kind = str(node.get("type") or "").upper()
+        if kind in {"MA", "MG"}:
             name = str(node.get("NA") or node.get("name") or "")
-            if name and name not in market_names:
-                market_names.append(name)
-        if str(node.get("type") or "").upper() == "PA":
-            line = node.get("HA") or node.get("handicap") or node.get("line")
+            if name:
+                current_market = name
+                if name not in market_names:
+                    market_names.append(name)
+        elif kind == "PA":
+            if node.get("OD"):
+                priced_selections += 1
+            line = node.get("HA") or node.get("HD") or node.get("handicap") or node.get("line")
             try:
                 numeric = abs(float(str(line).replace(",", ".")))
             except Exception:
                 continue
             if 14.5 <= numeric <= 24.5:
-                target_lines.append({"name": node.get("NA"), "line": line, "odds": node.get("OD")})
+                target_lines.append({"market": current_market, "name": node.get("NA"), "line": line, "odds": node.get("OD")})
     text = json.dumps(payload, ensure_ascii=False)
     return {
         "has_itf_marker": bool(re.search(r"\\bITF\\b|World Tennis|M15|M25|W15|W25|W35|W50|W75|W100", text, re.I)),
         "market_count": len(market_names),
+        "priced_selections": priced_selections,
         "market_names": market_names,
-        "has_total_market": any(re.search(r"total|games|goals|points|runs", x, re.I) for x in market_names),
+        "has_total_market": any(re.search(r"total|game lines|games|goals|points|runs", x, re.I) for x in market_names),
         "has_handicap_market": any(re.search(r"handicap|spread", x, re.I) for x in market_names),
         "has_set_or_period_market": any(re.search(r"set|period|quarter|inning", x, re.I) for x in market_names),
         "target_lines": target_lines[:20],
@@ -153,7 +163,7 @@ if first_tennis:
             result["id_diagnostics"].append({"field": field, "value": value, "exception": str(exc)})
 result["raw_inplay"] = {"skipped": "fast identifier test"}
 
-for event in []:
+for event in [x for x in all_events if x.get("sport") == "tennis"][:10]:
     try:
         payload, headers = get("/v1/bet365/event", {"FI": event["fi"], "stats": 1})
         result["events"].append({**event, **market_summary(payload), "response_shape": response_shape(payload)})
