@@ -1,4 +1,4 @@
-name: L1 Broad Signal Market Scan
+name: L1 Tennis Singles Market Scan
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       source_run_id:
-        description: GitHub Actions run id containing the final classified Universe artifact
+        description: GitHub Actions run id containing the classified tennis universe
         required: true
         type: string
       date_moscow:
@@ -31,35 +31,43 @@ jobs:
       - name: Validate explicit inputs
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "push" ]; then SRC=$(sed -n "1p" triggers/run-enrichment-2026-09-28.txt); DAY=$(sed -n "2p" triggers/run-enrichment-2026-09-28.txt); else SRC="${{ inputs.source_run_id }}"; DAY="${{ env.DAY }}"; fi
+          if [ "${{ github.event_name }}" = "push" ]; then
+            SRC=$(sed -n "1p" triggers/run-enrichment-2026-09-28.txt)
+            DAY=$(sed -n "2p" triggers/run-enrichment-2026-09-28.txt)
+          else
+            SRC="${{ inputs.source_run_id }}"
+            DAY="${{ inputs.date_moscow }}"
+          fi
           [[ "$SRC" =~ ^[0-9]+$ ]]
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           echo "SRC=$SRC" >> "$GITHUB_ENV"
           echo "DAY=$DAY" >> "$GITHUB_ENV"
-      - name: Download classified Universe artifact
+      - name: Download classified tennis universe
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           run-id: ${{ env.SRC }}
           pattern: '*universe*'
           merge-multiple: true
-      - name: Verify classified snapshot
+      - name: Verify singles scope
         run: |
           set -euo pipefail
           test -f classified-universe.json
           python3 - <<'PY'
           import json
           d = json.load(open("classified-universe.json"))
-          assert d.get("window_event_count", 0) > 0
+          assert d.get("stage") == "TENNIS_SINGLES_SCOPE_CLASSIFICATION"
+          assert d.get("tiering_used") is False
           events = d.get("events", {})
-          assert isinstance(events.get("CORE"), list)
-          assert isinstance(events.get("SECONDARY"), list)
-          assert isinstance(events.get("EXCLUDE"), list)
-          classified = sum(len(events.get(k, [])) for k in ("CORE", "SECONDARY", "EXCLUDE", "UNCLASSIFIED_LEAGUE"))
+          keys = ("TENNIS_SINGLES", "EXCLUDED_DOUBLES", "EXCLUDED_NON_TENNIS", "TECHNICAL_EXCLUSION")
+          for key in keys:
+              assert isinstance(events.get(key), list)
+          classified = sum(len(events[key]) for key in keys)
           assert classified == d["window_event_count"]
-          print({"window": d["window_event_count"], "core": len(events["CORE"]), "secondary": len(events["SECONDARY"]), "unclassified": len(events.get("UNCLASSIFIED_LEAGUE", []))})
+          assert classified == d["raw_window_event_count"]
+          print({"window": classified, "singles": len(events["TENNIS_SINGLES"]), "doubles": len(events["EXCLUDED_DOUBLES"]), "technical": len(events["TECHNICAL_EXCLUSION"])})
           PY
-      - name: Run L1 market scan
+      - name: Scan every eligible singles event
         run: python3 l1_market_scan.py
       - uses: actions/upload-artifact@v4
         if: always()
