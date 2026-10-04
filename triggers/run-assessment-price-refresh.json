@@ -28,6 +28,6 @@
     "12461075",
     "13033853"
   ],
-  "requested_at": "2026-10-04T10:35:02.399Z",
-  "reason": "Exact-market price snapshot for assessment checkpoint 5 candidates 101-125"
+  "requested_at": "2026-10-04T11:12:32.838Z",
+  "reason": "Restart batch 5 price refresh and export active candidate index"
 }
