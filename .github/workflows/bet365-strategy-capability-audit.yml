@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      BETSAPI_TOKEN: \${{ secrets.BETS_API }}
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
     steps:
       - name: Probe prematch and live market coverage
         shell: bash
