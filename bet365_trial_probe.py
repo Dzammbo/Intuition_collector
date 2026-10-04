@@ -59,7 +59,7 @@ def response_shape(payload):
 def event_candidates(payload):
     candidates, seen = [], set()
     for node in walk(payload.get("results") if isinstance(payload, dict) else payload):
-        event_id = node.get("FI") or node.get("event_id") or node.get("our_event_id") or node.get("id")
+        event_id = node.get("FI") or node.get("event_id") or node.get("id") or node.get("our_event_id")
         event_like = (
             ("home" in node and "away" in node)
             or "sport_id" in node
