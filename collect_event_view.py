@@ -32,5 +32,5 @@ for i in range(0,len(events),10):
  print(json.dumps({"batches":i//10+1,"of":(len(events)+9)//10,"records":len(rows),"errors":len(errors)}),flush=True)
 out={"schema_version":3,"stage":"TENNIS_SINGLES_EVENT_VIEW","input_singles":len(events),
  "input_total":len(events),"records":rows,"errors":errors,"tiering_used":False}
-open("event-view-core.json","w",encoding="utf-8").write(json.dumps(out,ensure_ascii=False))
+open("event-view-singles.json","w",encoding="utf-8").write(json.dumps(out,ensure_ascii=False))
 print(json.dumps({"input_singles":len(events),"records":len(rows),"errors":len(errors)}))
