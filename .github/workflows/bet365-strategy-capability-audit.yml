@@ -23,7 +23,7 @@ jobs:
           import json, os, re, urllib.parse, urllib.request
           BASE="https://api.b365api.com"
           TOKEN=os.environ["BETSAPI_TOKEN"]
-          SPORTS={1:"football",13:"tennis",16:"baseball",17:"hockey",18:"basketball"}
+          SPORTS={13:"tennis"}
           calls=0
           rate={}
           def get(path, params):
@@ -106,7 +106,7 @@ jobs:
                   elif sname=="basketball":
                       ev=sorted(ev,key=lambda e:not bool(re.search(r"\bNBA\b",text(e["raw"]),re.I)))
                   report["prematch"][sname]={"upcoming_count":len(ev),"samples":[]}
-                  for e in ev[:2 if sname=="tennis" else 1]:
+                  for e in ev[:8 if sname=="tennis" else 1]:
                       try:
                           p=get("/v4/bet365/prematch",{"FI":e["fi"]})
                           report["prematch"][sname]["samples"].append({"fi":e["fi"],"event":e["raw"],"summary":summary(p)})
@@ -118,7 +118,7 @@ jobs:
                   ip=get("/v1/bet365/inplay_filter",{"sport_id":sid})
                   ev=event_rows(ip)
                   report["live"][sname]={"live_count":len(ev),"samples":[]}
-                  for e in ev[:1]:
+                  for e in ev[:4 if sname=="tennis" else 1]:
                       try:
                           p=get("/v1/bet365/event",{"FI":e["fi"]})
                           report["live"][sname]["samples"].append({"fi":e["fi"],"event":e["raw"],"summary":summary(p)})
