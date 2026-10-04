@@ -1,2 +1,2 @@
-2026-10-04T13:45:00Z
-Bet365 raw feed and event identifier diagnostics
+2026-10-04T13:48:00Z
+Fast Bet365 event identifier diagnostics
