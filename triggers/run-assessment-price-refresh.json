@@ -1,14 +1,11 @@
 {
-  "date_moscow": "2026-10-04",
-  "batch": 10,
+  "date_moscow": "2026-10-05",
+  "batch": 1,
   "event_ids": [
-    "13242337",
-    "13242338",
-    "13242339",
-    "13242340",
-    "13242341",
-    "13242342"
+    "13240125",
+    "13241436",
+    "13241439"
   ],
-  "requested_at": "2026-10-04T12:36:00Z",
-  "reason": "Research-volume restart batch 10 final price refresh"
+  "requested_at": "2026-10-05T13:12:20.181Z",
+  "reason": "Urgent canonical prematch refresh for first remaining assessment batch"
 }
