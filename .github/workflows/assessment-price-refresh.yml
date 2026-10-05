@@ -21,35 +21,21 @@ jobs:
           repository: Dzammbo/jarvis-intuition
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
-      - name: Export compact active candidate index
+      - name: Verify canonical assessment candidate index
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
-          root=Path("state"); day=json.loads(Path("triggers/run-assessment-price-refresh.json").read_text())["date_moscow"]
-          ledger=json.loads((root/f"candidate_screen_outputs/{day}/model-pre-screen-ledger-v2-tennis-full-coverage.json").read_text())
-          packet=json.loads((root/f"candidate_screen_inputs/{day}/model-prescreen-packet.json").read_text())
-          rows=next(v for v in ledger.values() if isinstance(v,list) and len(v)==395)
-          advanced=[]
-          for r in rows:
-              status=str(r.get("research_candidate_status") or r.get("status") or r.get("decision") or "").upper()
-              if status in {"RESEARCH_CANDIDATE","ADVANCE","ADVANCED"} or r.get("advanced") is True:
-                  advanced.append(str(r.get("event_id") or r.get("id")))
-          if len(advanced)!=231: raise SystemExit(f"expected 231 candidates, got {len(advanced)}")
-          cards={str(c["event_id"]):c for c in packet["cards"]}; out=[]
-          for i,eid in enumerate(advanced,1):
-              c=cards[eid]; out.append({"candidate_index":i,"ordinal":c.get("ordinal"),"event_id":eid,"source_tier":c.get("source_tier"),"sport_id":str(c.get("sport_id")),"league":c.get("league"),"home":c.get("home"),"away":c.get("away"),"start_time":c.get("start_time")})
-          dest=root/f"assessment_inputs/{day}/assessment-candidate-index.json"; dest.parent.mkdir(parents=True,exist_ok=True); dest.write_text(json.dumps({"schema_version":1,"date_moscow":day,"count":len(out),"candidates":out},ensure_ascii=False,indent=2)+"\\n")
+          trigger=json.loads(Path("triggers/run-assessment-price-refresh.json").read_text())
+          day=trigger["date_moscow"]
+          index=json.loads((Path("state")/f"assessment_inputs/{day}/assessment-candidate-index.json").read_text())
+          candidates={str(row["event_id"]) for row in index["candidates"]}
+          requested={str(event_id) for event_id in trigger["event_ids"]}
+          missing=sorted(requested-candidates)
+          if missing:
+              raise SystemExit(f"requested events absent from canonical candidate index: {missing}")
+          print({"candidate_count": index["count"], "requested": len(requested)})
           PY
-          cd state
-          git config user.name "jarvis-intuition-bot"
-          git config user.email "jarvis-intuition-bot@users.noreply.github.com"
-          git add assessment_inputs/
-          if ! git diff --cached --quiet; then
-            git commit -m "Export compact assessment candidate index"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
       - name: Validate trigger
         run: |
           python3 - <<'PY'
