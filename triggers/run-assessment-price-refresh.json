@@ -1,11 +1,19 @@
 {
   "date_moscow": "2026-10-05",
-  "batch": 1,
+  "batch": 2,
   "event_ids": [
-    "13240125",
-    "13241436",
-    "13241439"
+    "13236107",
+    "13236108",
+    "13238164",
+    "13240123",
+    "13245924",
+    "13245925",
+    "13245949",
+    "13246268",
+    "13246269",
+    "13246270",
+    "13246271"
   ],
-  "requested_at": "2026-10-05T13:18:31.567Z",
-  "reason": "Repeat first remaining batch with explicit Bet365 source"
+  "requested_at": "2026-10-05T13:24:41.444Z",
+  "reason": "Canonical prematch refresh for 17:00 Moscow assessment batch"
 }
