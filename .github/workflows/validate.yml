@@ -12,6 +12,7 @@ on:
       - 'l1_market_scan.py'
       - 'collect_event_view.py'
       - 'build_model_prescreen_packet.py'
+      - 'build_player_dossiers.py'
       - 'config/**'
       - 'triggers/run-validation.txt'
 
