@@ -1,5 +1,5 @@
-37190881905
-2026-10-04
-requested_at=2026-10-04T09:10:59Z
-reason=start-l1-four-sport-no-football
-canon_status_commit=d324bb1f38422f63eeea633f4cc7a309792ace71
+37272360085
+2026-10-05
+requested_at=2026-10-05T06:27:51Z
+reason=start-card-2026-10-05-l1-tennis-singles
+canon_commit=5a3517970cbffcd915c09c0808f97dfde8afdd68
