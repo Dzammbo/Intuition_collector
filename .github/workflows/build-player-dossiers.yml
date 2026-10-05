@@ -69,6 +69,18 @@ jobs:
               --output "valuebetennis-matchs-${year}.csv"
           done
 
+      - name: Capture provider singles ranking snapshots
+        env:
+          BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+        run: |
+          set -euo pipefail
+          for type in 1 3; do
+            curl --fail --location --retry 3 --silent --show-error \\
+              "https://api.b365api.com/v1/tennis/ranking?token=$BETSAPI_TOKEN&type_id=$type" \\
+              --output "betsapi-ranking-$type.json"
+            python3 -m json.tool "betsapi-ranking-$type.json" >/dev/null
+          done
+
       - name: Build immutable multi-source player dossiers
         run: |
           set -euo pipefail
