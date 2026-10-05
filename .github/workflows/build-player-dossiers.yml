@@ -75,10 +75,23 @@ jobs:
         run: |
           set -euo pipefail
           for type in 1 3; do
-            curl --fail --location --retry 3 --silent --show-error \\
-              "https://api.b365api.com/v1/tennis/ranking?token=$BETSAPI_TOKEN&type_id=$type" \\
-              --output "betsapi-ranking-$type.json"
-            python3 -m json.tool "betsapi-ranking-$type.json" >/dev/null
+            curl --location --retry 3 --silent --show-error \
+              "https://api.b365api.com/v1/tennis/ranking?token=$BETSAPI_TOKEN&type_id=$type" \
+              --output "betsapi-ranking-$type.raw" || true
+            TYPE="$type" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          kind = os.environ["TYPE"]
+          raw = Path(f"betsapi-ranking-{kind}.raw")
+          try:
+              payload = json.loads(raw.read_text(encoding="utf-8"))
+          except Exception:
+              payload = {"success": 0, "results": []}
+          if payload.get("success") != 1 or not isinstance(payload.get("results"), list):
+              print(f"BETSAPI_RANKING_UNAVAILABLE type_id={kind}")
+              payload = {"success": 0, "results": []}
+          Path(f"betsapi-ranking-{kind}.json").write_text(json.dumps(payload), encoding="utf-8")
+          PY
           done
 
       - name: Build immutable multi-source player dossiers
