@@ -37,7 +37,13 @@ def collect_feed(sid,day):
   page+=1
   if page>100: raise RuntimeError("pagination_guard")
  return {"sport_id":int(sid),"sport":SPORTS[sid],"day_utc":day,"pages":page,"reported_total":reported,"rows":len(events),"events":events}
-now=datetime.now(timezone.utc);days=[now.strftime("%Y%m%d"),(now+timedelta(days=1)).strftime("%Y%m%d")]
+captured_at=datetime.now(timezone.utc)
+anchor=os.environ.get("CARD_WINDOW_START_UTC")
+if anchor:
+ window_start=datetime.fromisoformat(anchor.replace("Z","+00:00")).astimezone(timezone.utc)
+else:
+ window_start=captured_at
+days=[window_start.strftime("%Y%m%d"),(window_start+timedelta(days=1)).strftime("%Y%m%d")]
 feeds=[];errors=[]
 for sid in SPORTS:
  for day in days:
@@ -45,10 +51,10 @@ for sid in SPORTS:
    x=collect_feed(sid,day);feeds.append(x);print(json.dumps({"feed":"complete","sport":SPORTS[sid],"day":day,"rows":x["rows"],"pages":x["pages"],"reported_total":x["reported_total"]}),flush=True)
   except Exception as e:
    errors.append({"sport_id":sid,"day":day,"error":str(e)});print(json.dumps({"feed":"error","sport":SPORTS[sid],"day":day,"error":str(e)}),flush=True)
-start=int(now.timestamp());end=int((now+timedelta(hours=24)).timestamp())
+start=int(window_start.timestamp());end=int((window_start+timedelta(hours=24)).timestamp())
 all_events={str(e.get("id")):e for f in feeds for e in f["events"] if e.get("id") is not None}
 window=[e for e in all_events.values() if str(e.get("time","")).isdigit() and start<=int(e["time"])<end]
-out={"captured_at":now.isoformat(),"window_start":start,"window_end":end,"active_sports":list(SPORTS.values()),"excluded_sports":list(EXCLUDED_SPORTS.values()),"expected_feeds":2,"feeds":feeds,"errors":errors,"raw_unique_events":len(all_events),"window_events":window,"window_event_count":len(window)}
+out={"captured_at":captured_at.isoformat(),"window_start":start,"window_end":end,"active_sports":list(SPORTS.values()),"excluded_sports":list(EXCLUDED_SPORTS.values()),"expected_feeds":2,"feeds":feeds,"errors":errors,"raw_unique_events":len(all_events),"window_events":window,"window_event_count":len(window)}
 open("universe.json","w").write(json.dumps(out,ensure_ascii=False))
 print(json.dumps({"feeds_complete":len(feeds),"errors":len(errors),"raw_unique_events":len(all_events),"window_events":len(window)}))
 if errors: raise SystemExit(2)
