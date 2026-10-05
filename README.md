@@ -11,17 +11,16 @@ The repository contains collection code and public workflow definitions. Betting
 ## Collection workflows
 
 - `Collect Universe`
-- `Collect CORE Event View`
-- `L1 Broad Signal Market Scan`
-- `Sync BetsAPI League Registry` - complete provider registry for the four active sports; historical football rows are retained without new football API calls
+- `Collect Tennis Singles Event View`
+- `L1 Tennis Singles Market Scan`
+- `Build Tennis Singles Research Packet` - lossless handoff of every technically eligible single, including rows waiting for price
+- `Sync BetsAPI League Registry` - legacy provider-name and audit support only; it does not gate active tennis eligibility
 
-Football is excluded before daily provider collection and from all downstream enrichment. The collector runs eight sport/day feeds for tennis, baseball, ice hockey and basketball. Historical football artifacts remain available only for settlement and analytics.
+Football, baseball, ice hockey and basketball are excluded before daily provider collection. The active collector runs the two UTC-day tennis feeds needed for the rolling 24-hour window. Historical artifacts remain available only for settlement and analytics.
 
-The provider catalog is stored in `config/league_registry_v1/`. Runtime league
-classification uses the frozen exact-ID overlay in
-`config/league_allowset_v1/complete_registry_classification.json`. A genuinely
-new provider ID is quarantined without blocking the daily run and cannot be
-promoted automatically.
+The provider catalog and old tier overlay remain for historical provenance and
+diagnostics. CORE/SECONDARY/EXCLUDE is not used to admit, defer or reject an
+active tennis singles event.
 
 ## Operational workflows
 
