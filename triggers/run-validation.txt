@@ -1,2 +1,1 @@
-requested_at=2026-10-04T10:05:54.499Z
-reason=validate-tennis-tier-and-continuous-chain-fixes
+validate seven-factor tennis contract 2026-10-05T03:40:00Z
