@@ -23,14 +23,22 @@ for i in range(0,len(events),10):
    if a<3: time.sleep(1.5*(a+1))
  if last:
   errors.append({"ids":ids,"error":str(last)})
+  for event in batch:
+   rows.append({**event,"scope_status":"TENNIS_SINGLES",
+    "technical_error":{"stage":"EVENT_VIEW","error":str(last)}})
  else:
   returned={str(x.get("id")) for x in result_rows}
   for row in result_rows:
    row["scope_status"]="TENNIS_SINGLES";rows.append(row)
   for missing in sorted({str(x["id"]) for x in batch}-returned):
    errors.append({"ids":missing,"error":"MISSING_FROM_EVENT_VIEW_RESPONSE"})
+   event=next(x for x in batch if str(x["id"])==missing)
+   rows.append({**event,"scope_status":"TENNIS_SINGLES",
+    "technical_error":{"stage":"EVENT_VIEW","error":"MISSING_FROM_EVENT_VIEW_RESPONSE"}})
  print(json.dumps({"batches":i//10+1,"of":(len(events)+9)//10,"records":len(rows),"errors":len(errors)}),flush=True)
+rows.sort(key=lambda x:(int(x.get("time") or 0),str(x.get("id") or "")))
 out={"schema_version":3,"stage":"TENNIS_SINGLES_EVENT_VIEW","input_singles":len(events),
- "input_total":len(events),"records":rows,"errors":errors,"tiering_used":False}
+ "input_total":len(events),"records":rows,"errors":errors,"tiering_used":False,
+ "completed":len(rows),"successful":len(rows)-sum(bool(x.get("technical_error")) for x in rows)}
 open("event-view-singles.json","w",encoding="utf-8").write(json.dumps(out,ensure_ascii=False))
 print(json.dumps({"input_singles":len(events),"records":len(rows),"errors":len(errors)}))
