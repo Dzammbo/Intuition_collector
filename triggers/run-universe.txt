@@ -1,3 +1,4 @@
-2026-10-04T16:45:00Z
-reason=test_2026-10-05_tennis_singles_architecture_50_100
-canon_commit=9068074a2d5e0cec9dbb64da8936232c56cc2a8a
+2026-10-05T06:25:02Z
+card_date_moscow=2026-10-05
+reason=user-requested-start-card
+canon_commit=5a3517970cbffcd915c09c0808f97dfde8afdd68
