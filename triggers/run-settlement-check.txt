@@ -1,3 +1,3 @@
 2026-10-04
-requested_at=2026-10-05T05:24:21Z
-purpose=full-overnight-settlement
+requested_at=2026-10-05T05:26:46Z
+purpose=fast-intermediate-final-results
