@@ -23,10 +23,14 @@ for i,e in enumerate(events,1):
    "home":e.get("home"),"away":e.get("away"),"time":e.get("time"),
    "scope_status":"TENNIS_SINGLES","odds":x.get("results") or {}})
  except Exception as ex:
-  errors.append({"event_id":eid,"error":str(ex)})
+  error={"event_id":eid,"error":str(ex)};errors.append(error)
+  rows.append({"event_id":eid,"sport_id":e.get("sport_id"),"league":e.get("league"),
+   "home":e.get("home"),"away":e.get("away"),"time":e.get("time"),
+   "scope_status":"TENNIS_SINGLES","odds":{},"technical_error":error})
  if i%25==0: print(json.dumps({"progress":i,"total":len(events),"errors":len(errors)}),flush=True)
 out={"schema_version":3,"stage":"TENNIS_SINGLES_L1_MARKET_SCAN",
  "source_window_events":d["window_event_count"],"input_singles":len(events),
- "input_total":len(events),"completed":len(rows),"errors":errors,"records":rows}
+ "input_total":len(events),"completed":len(rows),"successful":len(rows)-len(errors),
+ "errors":errors,"records":rows}
 open("l1-market-raw.json","w").write(json.dumps(out,ensure_ascii=False))
 print(json.dumps({"input_singles":len(events),"completed":len(rows),"errors":len(errors)}))
