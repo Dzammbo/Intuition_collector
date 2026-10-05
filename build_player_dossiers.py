@@ -62,6 +62,7 @@ def main() -> None:
     parser.add_argument("--matches", nargs="+", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--materialized-at-utc", required=True)
+    parser.add_argument("--ranking-snapshots", nargs="*", default=[])
     args = parser.parse_args()
     universe = json.loads(Path(args.universe).read_text(encoding="utf-8-sig"))
     cutoff = parse_stamp(universe["source_captured_at"])
@@ -111,6 +112,19 @@ def main() -> None:
                 by_name[normalise(packed["joueur1"])].append(packed)
                 by_name[normalise(packed["joueur2"])].append(packed)
                 archive_rows += 1
+    rankings = {}
+    ranking_sources = []
+    for filename in args.ranking_snapshots:
+        payload = json.loads(Path(filename).read_text(encoding="utf-8-sig"))
+        rows = payload.get("results") or []
+        for row in rows:
+            player_id = str(row.get("id") or "").strip()
+            if player_id:
+                rankings[player_id] = {"rank": row.get("ranking") or UNKNOWN, "points": row.get("points") or UNKNOWN,
+                                       "provider_country": row.get("country") or UNKNOWN}
+        ranking_sources.append({"source": "BETSAPI_TENNIS_RANKING_SNAPSHOT", "file": Path(filename).name,
+                                "rows": len(rows), "retrieved_at_utc": iso(materialized_at),
+                                "use_constraint": "POST_CUTOFF_SNAPSHOT_NOT_FOR_RETROACTIVE_PREMATCH_REPAIR"})
     players = []
     counts = Counter()
     for provider_id, player in sorted(roster.items(), key=lambda item: (normalise(item[1]["canonical_name"]), item[0])):
@@ -139,6 +153,18 @@ def main() -> None:
                    "events_still_prematch_when_dossier_materialized": len(event_rows) - started_before_materialization,
                    "target_event_surface": UNKNOWN, "target_event_round": UNKNOWN, "target_event_format": UNKNOWN,
                    "target_event_field_status": "UNKNOWN_EVENT_VIEW_NOT_USED_FOR_POST_START_REPAIR"}
+        rank = rankings.get(provider_id)
+        if rank:
+            counts["ranking_resolved"] += 1
+            ranking_and_movement = {"current_rank": rank["rank"], "ranking_points": rank["points"],
+                                    "ranking_movement": UNKNOWN, "source": "BETSAPI_TENNIS_RANKING_SNAPSHOT",
+                                    "retrieved_at_utc": iso(materialized_at),
+                                    "use_constraint": "POST_CUTOFF_SNAPSHOT_NOT_FOR_RETROACTIVE_PREMATCH_REPAIR"}
+            ranking_reason = "RANK_AND_POINTS_CAPTURED; MOVEMENT_NOT_PROVIDED"
+        else:
+            counts["ranking_unresolved"] += 1
+            ranking_and_movement = UNKNOWN
+            ranking_reason = "NO_PROVIDER_RANKING_MATCH_IN_COLLECTED_SINGLES_SNAPSHOTS"
         players.append({**player,
             "identity": {"aliases": [player["canonical_name"]], "date_of_birth": UNKNOWN, "nationality": UNKNOWN,
                          "handedness": UNKNOWN, "identity_resolution": "PROVIDER_ID_AND_CANONICAL_NAME"},
@@ -146,7 +172,7 @@ def main() -> None:
                                   "historical_matches_found": len(matches),
                                   "match_data_source": SOURCE_NAME if matches else UNKNOWN},
             "snapshot": {
-                "ranking_and_movement": UNKNOWN, "ranking_reason": "OFFICIAL_RANKING_SNAPSHOT_NOT_COLLECTED_BY_AUTOMATED_SOURCE",
+                "ranking_and_movement": ranking_and_movement, "ranking_reason": ranking_reason,
                 "last_5": compact_matches(matches, name_key, 5), "last_10": compact_matches(matches, name_key, 10),
                 "last_20": compact_matches(matches, name_key, 20),
                 "surface_record": {surface_name: {"wins": value[0], "losses": value[1], "matches": sum(value)}
@@ -168,11 +194,13 @@ def main() -> None:
       "sources": [{"source": SOURCE_NAME, "url": VALUEBETENNIS_URL,
                    "scope": "ATP_WTA_ITF_CHALLENGER_SINGLES_RESULTS_AND_SURFACES_AS_PUBLISHED",
                    "retrieved_at_utc": iso(materialized_at), "used_result_cutoff_utc": iso(cutoff),
-                   "confidence": "SECONDARY_OPEN_DATA_FILTERED_TO_FROZEN_CUTOFF"}],
+                   "confidence": "SECONDARY_OPEN_DATA_FILTERED_TO_FROZEN_CUTOFF"}] + ranking_sources,
       "coverage": {"eligible_matches": len(events), "unique_players": len(players),
                    "players_with_exact_normalized_historical_match_data": counts["historical_match_resolved"],
                    "players_without_resolved_historical_match_data": counts["historical_match_unresolved"],
-                   "archived_matches_processed_before_cutoff": archive_rows, "malformed_source_rows_ignored": malformed_rows},
+                   "archived_matches_processed_before_cutoff": archive_rows, "malformed_source_rows_ignored": malformed_rows,
+                   "players_with_provider_ranking_snapshot": counts["ranking_resolved"],
+                   "players_without_provider_ranking_snapshot": counts["ranking_unresolved"]},
       "players": players}
     Path(args.output).write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(output["coverage"], ensure_ascii=False))
