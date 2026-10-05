@@ -14,7 +14,7 @@ def iso():
  return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
 
 def get(eid):
- q=urllib.parse.urlencode({"token":TOKEN,"event_id":eid})
+ q=urllib.parse.urlencode({"token":TOKEN,"event_id":eid,"source":"bet365"})
  url=BASE+"/v2/event/odds?"+q
  last=None
  for attempt in range(4):
