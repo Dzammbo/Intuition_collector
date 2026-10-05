@@ -101,7 +101,8 @@ jobs:
             --universe universe/classified-universe.json \
             --matches valuebetennis-matchs-2024.csv valuebetennis-matchs-2025.csv valuebetennis-matchs-2026.csv \
             --output full-player-dossiers.json \
-            --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --ranking-snapshots betsapi-ranking-1.json betsapi-ranking-3.json
           python3 -m json.tool full-player-dossiers.json >/dev/null
 
       - uses: actions/checkout@v4
