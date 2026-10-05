@@ -15,7 +15,6 @@ def start_key(row):
 def main():
  odds=json.load(open(sys.argv[1],encoding="utf-8"))
  view=json.load(open(sys.argv[2],encoding="utf-8"))
- if odds.get("errors") or view.get("errors"):raise SystemExit("source enrichment contains errors")
  odds_rows=odds.get("records") or [];view_rows=view.get("records") or []
  odds_ids=[event_id(x) for x in odds_rows];view_ids=[event_id(x) for x in view_rows]
  if not odds_ids or odds_ids!=view_ids:
@@ -29,10 +28,13 @@ def main():
  for ordinal,row in enumerate(sorted(odds_rows,key=start_key),1):
   eid=event_id(row);v=view_map[eid]
   quotes=match_winner_quotes(row)
+  technical_errors=[x for x in (row.get("technical_error"),v.get("technical_error")) if x]
   cards.append({"ordinal":ordinal,"event_id":eid,"scope_status":"TENNIS_SINGLES",
    "sport_id":13,"league":row.get("league"),"home":row.get("home"),"away":row.get("away"),
    "start_time":row.get("time"),"raw_odds":row.get("odds") or {},"event_view":v,
    "price_gate_status":"PRICE_READY" if quotes else "WAITING_FOR_PRICE",
+   "technical_status":"TECHNICAL_ERROR" if technical_errors else "READY",
+   "technical_errors":technical_errors,
    "match_winner_quotes":quotes,
    "player_refs":[str((row.get("home") or {}).get("id") or ""),str((row.get("away") or {}).get("id") or "")]})
  output={"schema_version":4,"stage":"TENNIS_SINGLES_RESEARCH_PACKET",
@@ -42,7 +44,7 @@ def main():
   "source_accounting":{"eligible_singles":len(cards),"l1_records":len(odds_rows),
    "event_view_records":len(view_rows),"price_ready":sum(c["price_gate_status"]=="PRICE_READY" for c in cards),
    "waiting_for_price":sum(c["price_gate_status"]=="WAITING_FOR_PRICE" for c in cards),
-   "technical_errors":0},"cards":cards}
+   "technical_errors":sum(c["technical_status"]=="TECHNICAL_ERROR" for c in cards)},"cards":cards}
  open("model-prescreen-packet.json","w",encoding="utf-8").write(json.dumps(output,ensure_ascii=False))
  print(json.dumps({"cards":len(cards),"scope":"TENNIS_SINGLES","ordering":output["ordering"]}))
 
