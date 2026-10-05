@@ -61,6 +61,7 @@ jobs:
           assert len(packet["cards"]) == packet["input"]
           assert all(c.get("scope_status") == "TENNIS_SINGLES" for c in packet["cards"])
           assert all(c.get("price_gate_status") in {"PRICE_READY", "WAITING_FOR_PRICE"} for c in packet["cards"])
+          assert all(c.get("technical_status") in {"READY", "TECHNICAL_ERROR"} for c in packet["cards"])
           assert packet["source_accounting"]["price_ready"] + packet["source_accounting"]["waiting_for_price"] == packet["input"]
           PY
       - uses: actions/upload-artifact@v4
