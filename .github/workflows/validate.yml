@@ -96,7 +96,7 @@ jobs:
                   for forbidden in ("vercel", "railway", "selectel"):
                       assert forbidden not in body.lower(), (path, forbidden)
           private_workflows = sorted(p.name for p in Path("state/.github/workflows").glob("*.yml"))
-          assert not private_workflows, private_workflows
+          assert private_workflows == ["export-assessment-index.yml"], private_workflows
           catalog = json.loads((root / "config/league_registry_v1/catalog.json").read_text(encoding="utf-8"))
           mapping_path = root / "config/league_allowset_v1/complete_registry_classification.json"
           if mapping_path.exists():
