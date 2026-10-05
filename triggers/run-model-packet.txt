@@ -1,5 +1,6 @@
-37191346125
-37192181994
-2026-10-04
-requested_at=2026-10-04T11:09:16.714Z
-reason=export-active-assessment-index
+37272547427
+37272891469
+2026-10-05
+requested_at=2026-10-05T06:33:45Z
+reason=start-card-2026-10-05-research-packet
+canon_commit=5a3517970cbffcd915c09c0808f97dfde8afdd68
