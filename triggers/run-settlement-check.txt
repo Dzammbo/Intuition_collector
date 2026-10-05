@@ -1,3 +1,3 @@
 2026-10-04
-requested_at=2026-10-05T05:34:42Z
-purpose=fast-intermediate-final-results-after-scorecard-fix
+requested_at=2026-10-05T05:37:13Z
+purpose=fast-intermediate-diagnostic-reconciliation
