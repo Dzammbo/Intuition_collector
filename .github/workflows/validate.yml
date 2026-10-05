@@ -10,6 +10,8 @@ on:
       - 'classify_universe.py'
       - 'collect_event_view.py'
       - 'l1_market_scan.py'
+      - 'collect_event_view.py'
+      - 'build_model_prescreen_packet.py'
       - 'config/**'
       - 'triggers/run-validation.txt'
 
