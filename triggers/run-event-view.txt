@@ -1,5 +1,6 @@
-37190881905
-37191346125
-2026-10-04
-requested_at=2026-10-04T09:27:00Z
-reason=continue-daily-run-without-intermediate-stops
+37272360085
+37272547427
+2026-10-05
+requested_at=2026-10-05T06:31:43Z
+reason=start-card-2026-10-05-event-view
+canon_commit=5a3517970cbffcd915c09c0808f97dfde8afdd68
