@@ -1,0 +1,106 @@
+name: Build Tennis Player Dossiers
+
+on:
+  workflow_dispatch:
+    inputs:
+      universe_run_id:
+        description: GitHub Actions run id containing the classified tennis universe
+        required: true
+        type: string
+      date_moscow:
+        description: Canonical Moscow card date in YYYY-MM-DD format
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths: ['triggers/run-player-dossiers.txt']
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: persist-tennis-player-dossiers
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve inputs
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "UNIVERSE_RUN=$(sed -n '1p' triggers/run-player-dossiers.txt)" >> "$GITHUB_ENV"
+            echo "DAY=$(sed -n '2p' triggers/run-player-dossiers.txt)" >> "$GITHUB_ENV"
+          else
+            echo "UNIVERSE_RUN=${{ inputs.universe_run_id }}" >> "$GITHUB_ENV"
+            echo "DAY=${{ inputs.date_moscow }}" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ env.UNIVERSE_RUN }}
+          name: universe
+          path: universe
+
+      - name: Validate frozen player universe
+        run: |
+          set -euo pipefail
+          test -f universe/classified-universe.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('universe/classified-universe.json'))
+          assert d.get('stage') == 'TENNIS_SINGLES_SCOPE_CLASSIFICATION'
+          assert d.get('tiering_used') is False
+          assert d.get('events', {}).get('TENNIS_SINGLES')
+          PY
+
+      - name: Download open historical match archive
+        run: |
+          set -euo pipefail
+          for year in 2024 2025 2026; do
+            curl --fail --location --retry 3 --silent --show-error \
+              "https://www.valuebetennis.com/datasets/valuebetennis-matchs-${year}.csv" \
+              --output "valuebetennis-matchs-${year}.csv"
+          done
+
+      - name: Build immutable multi-source player dossiers
+        run: |
+          set -euo pipefail
+          python3 build_player_dossiers.py \
+            --universe universe/classified-universe.json \
+            --matches valuebetennis-matchs-2024.csv valuebetennis-matchs-2025.csv valuebetennis-matchs-2026.csv \
+            --output full-player-dossiers.json \
+            --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 -m json.tool full-player-dossiers.json >/dev/null
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+
+      - name: Persist dossier snapshot to canonical state
+        run: |
+          set -euo pipefail
+          mkdir -p "state/player_dossiers/$DAY"
+          cp full-player-dossiers.json "state/player_dossiers/$DAY/multi-source-snapshots.json"
+          cd state
+          git config user.name "Jarvis Intuition Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "player_dossiers/$DAY/multi-source-snapshots.json"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Persist $DAY multi-source player dossiers"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tennis-player-dossiers-${{ env.DAY }}
+          path: full-player-dossiers.json
+          retention-days: 7
