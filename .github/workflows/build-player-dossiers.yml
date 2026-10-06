@@ -248,6 +248,7 @@ jobs:
           assert m["coverage"]["ranking_provider_responses_complete"] is True
           assert m["coverage"]["ranking_full_coverage"] is True
           assert s["coverage"]["players_with_resolved_static_profile"] > 0
+          assert s["coverage"]["players_with_age"] > 0
           assert m["coverage"]["static_profiles_requested"] == m["coverage"]["current_players"]
           forbidden = {"ss", "points", "stats", "events", "scores", "time_status"}
           assert all(not (forbidden & set(row)) for row in c["events"])
