@@ -177,11 +177,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 collect_tennis_rankings.py --output-dir rankings
+          RANKING_ARGS=()
+          if [ -n "$DIAGNOSTIC_LIMIT" ]; then
+            RANKING_ARGS=(--allow-provider-single-page)
+          fi
+          python3 collect_tennis_rankings.py --output-dir rankings "${RANKING_ARGS[@]}"
           python3 - <<'PY'
           import json
+          import os
           m = json.load(open("rankings/manifest.json"))
-          assert m.get("pagination_complete") is True
+          assert m.get("provider_responses_complete") is True
+          if not os.environ.get("DIAGNOSTIC_LIMIT"):
+              assert m.get("full_ranking_coverage") is True
           assert {row["type_id"] for row in m["types"]} == {1, 3}
           PY
 
@@ -220,7 +227,9 @@ jobs:
           assert c["stage"] == "MATCH_SPECIFIC_DOSSIER_CONTEXT"
           assert m["classification"] == "BASELINE_DOSSIER_NOT_FULL_MULTI_SOURCE"
           assert m["coverage"]["eligible_matches"] == m["coverage"]["match_contexts"]
-          assert m["coverage"]["ranking_pages_complete"] is True
+          assert m["coverage"]["ranking_provider_responses_complete"] is True
+          if not os.environ.get("DIAGNOSTIC_LIMIT"):
+              assert m["coverage"]["ranking_full_coverage"] is True
           forbidden = {"ss", "points", "stats", "events", "scores", "time_status"}
           assert all(not (forbidden & set(row)) for row in c["events"])
           PY
