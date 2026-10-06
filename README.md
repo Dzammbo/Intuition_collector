@@ -14,7 +14,7 @@ The repository contains collection code and public workflow definitions. Betting
 - `Collect Tennis Singles Event View`
 - `L1 Tennis Singles Market Scan`
 - `Build Tennis Singles Research Packet` - lossless handoff of every technically eligible single, including rows waiting for price
-- `Build Baseline Tennis Player Dossiers` - manual-only baseline builder. It requires the matching Universe and Event View runs, collects every available page of men's and women's singles rankings, reuses unchanged persistent player histories, and stores match-specific Event View context separately. It does not claim full multi-source enrichment.
+- `Build Baseline Tennis Player Dossiers` - manual-only baseline builder. It requires the matching Universe and Event View runs, collects the official complete WTA Singles Numeric PDF and every page of the TennisExplorer ATP ranking, reuses unchanged persistent player histories, and stores match-specific Event View context separately. It does not claim full multi-source enrichment.
 - `Sync BetsAPI League Registry` - legacy provider-name and audit support only; it does not gate active tennis eligibility
 
 Football, baseball, ice hockey and basketball are excluded before daily provider collection. The active collector runs the two UTC-day tennis feeds needed for the rolling 24-hour window. Historical artifacts remain available only for settlement and analytics.
