@@ -90,7 +90,7 @@ jobs:
               "check-final-card-settlement.yml", "daily-settlement.yml",
               "assessment-price-refresh.yml", "bet365-trial-probe.yml",
               "rerender-results.yml", "tennis-architecture-test.yml",
-              "telegram-native-publish.yml", "capture-bet365-closing.yml", "build-player-dossiers.yml", "prepare-tennis-day.yml", "validate.yml",
+              "telegram-native-publish.yml", "capture-bet365-closing.yml", "build-player-dossiers.yml", "probe-official-rankings.yml", "prepare-tennis-day.yml", "validate.yml",
           }
           present = {p.name for p in workflows.glob("*.yml")}
           assert present == required, (present, required)
