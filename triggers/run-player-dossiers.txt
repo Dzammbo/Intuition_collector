@@ -5,3 +5,4 @@
 retry-provider-single-response-diagnostic
 retry-after-contract-import-fix
 complete-ranking-sources-diagnostic
+static-profile-layer-diagnostic-v1
