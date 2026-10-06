@@ -14,6 +14,8 @@ on:
       - 'collect_event_view.py'
       - 'build_model_prescreen_packet.py'
       - 'build_player_dossiers.py'
+      - 'collect_tennis_rankings.py'
+      - 'test_dossier_pipeline.py'
       - 'config/**'
       - 'triggers/run-validation.txt'
 
@@ -115,6 +117,7 @@ jobs:
           PY
           cd ops
           python3 -m unittest -v test_capture_bet365_closing.py
+          python3 -m unittest -v test_dossier_pipeline.py
       - name: Verify private repository write permission
         working-directory: state
         run: git push --dry-run origin HEAD:main

@@ -1,10 +1,14 @@
-name: Build Tennis Player Dossiers
+name: Build Baseline Tennis Player Dossiers
 
 on:
   workflow_dispatch:
     inputs:
       universe_run_id:
         description: GitHub Actions run id containing the classified tennis universe
+        required: true
+        type: string
+      event_view_run_id:
+        description: GitHub Actions run id containing Event View for the same universe
         required: true
         type: string
       date_moscow:
@@ -26,41 +30,79 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve inputs
+      - name: Resolve explicit inputs
+        shell: bash
         run: |
           set -euo pipefail
           if [ "${{ github.event_name }}" = "push" ]; then
-            echo "UNIVERSE_RUN=$(sed -n '1p' triggers/run-player-dossiers.txt)" >> "$GITHUB_ENV"
-            echo "DAY=$(sed -n '2p' triggers/run-player-dossiers.txt)" >> "$GITHUB_ENV"
+            UNIVERSE_RUN="$(sed -n '1p' triggers/run-player-dossiers.txt)"
+            EVENT_VIEW_RUN="$(sed -n '2p' triggers/run-player-dossiers.txt)"
+            DAY="$(sed -n '3p' triggers/run-player-dossiers.txt)"
           else
-            echo "UNIVERSE_RUN=${{ inputs.universe_run_id }}" >> "$GITHUB_ENV"
-            echo "DAY=${{ inputs.date_moscow }}" >> "$GITHUB_ENV"
+            UNIVERSE_RUN="${{ inputs.universe_run_id }}"
+            EVENT_VIEW_RUN="${{ inputs.event_view_run_id }}"
+            DAY="${{ inputs.date_moscow }}"
           fi
+          [[ "$UNIVERSE_RUN" =~ ^[0-9]+$ ]]
+          [[ "$EVENT_VIEW_RUN" =~ ^[0-9]+$ ]]
+          [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          echo "UNIVERSE_RUN=$UNIVERSE_RUN" >> "$GITHUB_ENV"
+          echo "EVENT_VIEW_RUN=$EVENT_VIEW_RUN" >> "$GITHUB_ENV"
+          echo "DAY=$DAY" >> "$GITHUB_ENV"
 
-      - uses: actions/download-artifact@v4
+      - name: Download classified tennis universe
+        uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           run-id: ${{ env.UNIVERSE_RUN }}
           name: universe
           path: universe
 
-      - name: Validate frozen player universe
+      - name: Download Event View for the same card
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ env.EVENT_VIEW_RUN }}
+          pattern: event-view-singles-*
+          merge-multiple: true
+          path: event-view
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+
+      - name: Validate complete one-to-one inputs
+        shell: bash
         run: |
           set -euo pipefail
           test -f universe/classified-universe.json
+          test -f event-view/event-view-singles.json
           python3 - <<'PY'
           import json
-          d=json.load(open('universe/classified-universe.json'))
-          assert d.get('stage') == 'TENNIS_SINGLES_SCOPE_CLASSIFICATION'
-          assert d.get('tiering_used') is False
-          assert d.get('events', {}).get('TENNIS_SINGLES')
+          u = json.load(open("universe/classified-universe.json"))
+          e = json.load(open("event-view/event-view-singles.json"))
+          singles = u.get("events", {}).get("TENNIS_SINGLES")
+          assert isinstance(singles, list) and singles
+          assert u.get("stage") == "TENNIS_SINGLES_SCOPE_CLASSIFICATION"
+          assert u.get("tiering_used") is False
+          assert e.get("stage") == "TENNIS_SINGLES_EVENT_VIEW"
+          assert e.get("input_singles") == len(singles)
+          assert e.get("completed") == len(singles)
+          ids = [str(row.get("id") or "") for row in e.get("records") or []]
+          assert len(ids) == len(set(ids)) == len(singles)
+          assert set(ids) == {str(row.get("id") or "") for row in singles}
           PY
 
       - name: Download open historical match archive
+        shell: bash
         run: |
           set -euo pipefail
           for year in 2024 2025 2026; do
@@ -69,64 +111,87 @@ jobs:
               --output "valuebetennis-matchs-${year}.csv"
           done
 
-      - name: Capture provider singles ranking snapshots
-        env:
-          BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+      - name: Capture all pages of provider singles rankings
+        shell: bash
         run: |
           set -euo pipefail
-          for type in 1 3; do
-            curl --location --retry 3 --silent --show-error \
-              "https://api.b365api.com/v1/tennis/ranking?token=$BETSAPI_TOKEN&type_id=$type" \
-              --output "betsapi-ranking-$type.raw" || true
-            TYPE="$type" python3 - <<'PY'
-          import json, os
-          from pathlib import Path
-          kind = os.environ["TYPE"]
-          raw = Path(f"betsapi-ranking-{kind}.raw")
-          try:
-              payload = json.loads(raw.read_text(encoding="utf-8"))
-          except Exception:
-              payload = {"success": 0, "results": []}
-          if payload.get("success") != 1 or not isinstance(payload.get("results"), list):
-              print(f"BETSAPI_RANKING_UNAVAILABLE type_id={kind}")
-              payload = {"success": 0, "results": []}
-          Path(f"betsapi-ranking-{kind}.json").write_text(json.dumps(payload), encoding="utf-8")
+          python3 collect_tennis_rankings.py --output-dir rankings
+          python3 - <<'PY'
+          import json
+          m = json.load(open("rankings/manifest.json"))
+          assert m.get("pagination_complete") is True
+          assert {row["type_id"] for row in m["types"]} == {1, 3}
           PY
-          done
 
-      - name: Build immutable multi-source player dossiers
+      - name: Build separated baseline dossier layers
+        shell: bash
         run: |
           set -euo pipefail
+          PREVIOUS_ARGS=()
+          if [ -f state/player_dossiers/player-history.json ]; then
+            PREVIOUS_ARGS=(--previous-player-history state/player_dossiers/player-history.json)
+          fi
           python3 build_player_dossiers.py \
             --universe universe/classified-universe.json \
+            --event-view event-view/event-view-singles.json \
             --matches valuebetennis-matchs-2024.csv valuebetennis-matchs-2025.csv valuebetennis-matchs-2026.csv \
-            --output full-player-dossiers.json \
             --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --ranking-snapshots betsapi-ranking-1.json betsapi-ranking-3.json
-          python3 -m json.tool full-player-dossiers.json >/dev/null
+            --ranking-snapshots rankings/betsapi-ranking-1.json rankings/betsapi-ranking-3.json \
+            --history-output player-history.json \
+            --snapshot-output baseline-history-snapshot.json \
+            --match-context-output match-context-snapshots.json \
+            --manifest-output baseline-dossier-manifest.json \
+            "${PREVIOUS_ARGS[@]}"
 
-      - uses: actions/checkout@v4
-        with:
-          repository: Dzammbo/jarvis-intuition
-          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
-          path: state
+      - name: Validate baseline dossier contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          h = json.load(open("player-history.json"))
+          s = json.load(open("baseline-history-snapshot.json"))
+          c = json.load(open("match-context-snapshots.json"))
+          m = json.load(open("baseline-dossier-manifest.json"))
+          assert h["stage"] == "BASELINE_PLAYER_HISTORY_REGISTRY"
+          assert s["stage"] == "BASELINE_PLAYER_HISTORY_SNAPSHOT"
+          assert c["stage"] == "MATCH_SPECIFIC_DOSSIER_CONTEXT"
+          assert m["classification"] == "BASELINE_DOSSIER_NOT_FULL_MULTI_SOURCE"
+          assert m["coverage"]["eligible_matches"] == m["coverage"]["match_contexts"]
+          assert m["coverage"]["ranking_pages_complete"] is True
+          forbidden = {"ss", "points", "stats", "events", "scores", "time_status"}
+          assert all(not (forbidden & set(row)) for row in c["events"])
+          PY
 
-      - name: Persist dossier snapshot to canonical state
+      - name: Persist baseline dossier layers to canonical state
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p "state/player_dossiers/$DAY"
-          cp full-player-dossiers.json "state/player_dossiers/$DAY/multi-source-snapshots.json"
+          cp player-history.json state/player_dossiers/player-history.json
+          cp baseline-history-snapshot.json "state/player_dossiers/$DAY/baseline-history-snapshot.json"
+          cp match-context-snapshots.json "state/player_dossiers/$DAY/match-context-snapshots.json"
+          cp baseline-dossier-manifest.json "state/player_dossiers/$DAY/baseline-dossier-manifest.json"
           cd state
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add "player_dossiers/$DAY/multi-source-snapshots.json"
+          git add \
+            player_dossiers/player-history.json \
+            "player_dossiers/$DAY/baseline-history-snapshot.json" \
+            "player_dossiers/$DAY/match-context-snapshots.json" \
+            "player_dossiers/$DAY/baseline-dossier-manifest.json"
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Persist $DAY multi-source player dossiers"
+          git commit -m "Persist $DAY baseline player dossier layers"
           git pull --rebase origin main
           git push origin HEAD:main
 
       - uses: actions/upload-artifact@v4
         with:
-          name: tennis-player-dossiers-${{ env.DAY }}
-          path: full-player-dossiers.json
+          name: baseline-tennis-player-dossiers-${{ env.DAY }}
+          path: |
+            player-history.json
+            baseline-history-snapshot.json
+            match-context-snapshots.json
+            baseline-dossier-manifest.json
+            rankings/manifest.json
           retention-days: 7
