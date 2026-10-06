@@ -36,6 +36,18 @@ class RankingPaginationTests(unittest.TestCase):
         with self.assertRaises(RankingCollectionError):
             collect_ranking_type(1, lambda _type, _page: payload)
 
+    def test_repeated_page_can_be_explicitly_accepted_for_diagnostics(self):
+        payload = {"success": 1, "results": [{"id": 1}]}
+        result = collect_ranking_type(
+            1,
+            lambda _type, _page: payload,
+            allow_provider_single_page=True,
+        )
+        self.assertFalse(result["pagination_complete"])
+        self.assertTrue(result["provider_response_complete"])
+        self.assertFalse(result["full_ranking_coverage"])
+        self.assertEqual(result["unique_rows"], 1)
+
 
 class EventContextTests(unittest.TestCase):
     def test_live_fields_are_not_copied(self):
@@ -90,6 +102,7 @@ class EndToEndDossierTests(unittest.TestCase):
             }
             ranking = lambda kind, player: {
                 "schema_version": 1, "type_id": kind, "pagination_complete": True,
+                "provider_response_complete": True, "full_ranking_coverage": True,
                 "pages_requested": 2, "reported_total": 1,
                 "results": [{"id": player, "ranking": 10, "points": 1000}],
             }
