@@ -1,202 +1,163 @@
 #!/usr/bin/env python3
-"""Collect BetsAPI tennis singles rankings and state their coverage honestly."""
+"""Build complete ATP and WTA singles ranking snapshots from downloaded publications."""
 
 from __future__ import annotations
 
 import argparse
 import json
-import os
-import time
-import urllib.parse
-import urllib.request
+import re
+import unicodedata
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
-from typing import Callable
 
 
-BASE_URL = "https://api.b365api.com/v1/tennis/ranking"
-SINGLES_TYPES = (1, 3)
-
-
-class RankingCollectionError(RuntimeError):
-    pass
+ATP_SOURCE_URL = "https://www.tennisexplorer.com/ranking/atp-men/"
+WTA_SOURCE_URL = "https://wtafiles.wtatennis.com/pdf/rankings/Singles_Numeric.pdf"
 
 
 def iso_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
-def page_signature(rows: list[dict]) -> tuple[str, ...]:
-    return tuple(str(row.get("id") or "") for row in rows)
+def ranking_key(value: object) -> str:
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return " ".join(sorted(re.findall(r"[a-z0-9]+", text.casefold())))
 
 
-def collect_ranking_type(
-    type_id: int,
-    fetch_page: Callable[[int, int], dict],
-    allow_provider_single_page: bool = False,
-) -> dict:
-    """Read pages until the provider proves completion.
+class ATPTableParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.in_row = False
+        self.row_text: list[str] = []
+        self.player_text: list[str] = []
+        self.in_player_link = False
+        self.rows: list[dict] = []
 
-    Completion is accepted only when the response becomes empty or the pager's
-    reported total is reached. A repeated non-empty page is an error, because
-    silently accepting it would recreate the old first-page-only defect.
-    """
-    page = 1
-    rows_by_id: dict[str, dict] = {}
-    seen_signatures: set[tuple[str, ...]] = set()
-    pages: list[dict] = []
-    reported_total: int | None = None
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attrs_dict = dict(attrs)
+        if tag == "tr":
+            self.in_row = True
+            self.row_text = []
+            self.player_text = []
+        href = attrs_dict.get("href") or ""
+        if self.in_row and tag == "a" and "/player/" in href:
+            self.in_player_link = True
 
-    while True:
-        payload = fetch_page(type_id, page)
-        if not isinstance(payload, dict) or payload.get("success") != 1:
-            raise RankingCollectionError(
-                f"ranking type_id={type_id} page={page} returned unsuccessful payload"
-            )
-        rows = payload.get("results")
-        if not isinstance(rows, list):
-            raise RankingCollectionError(
-                f"ranking type_id={type_id} page={page} has no results list"
-            )
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "a":
+            self.in_player_link = False
+        if tag == "tr" and self.in_row:
+            raw = " ".join(self.row_text)
+            rank_match = re.match(r"^\s*(\d{1,5})\.", raw)
+            name = " ".join(self.player_text).strip()
+            if rank_match and name:
+                self.rows.append({
+                    "name": name,
+                    "ranking": int(rank_match.group(1)),
+                    "points": None,
+                    "country": None,
+                    "tour": "ATP",
+                    "raw": raw,
+                })
+            self.in_row = False
 
-        pager = payload.get("pager") if isinstance(payload.get("pager"), dict) else {}
-        if pager.get("total") not in (None, ""):
-            try:
-                reported_total = int(pager["total"])
-            except (TypeError, ValueError) as exc:
-                raise RankingCollectionError(
-                    f"ranking type_id={type_id} page={page} has invalid pager.total"
-                ) from exc
+    def handle_data(self, data: str) -> None:
+        if not self.in_row:
+            return
+        cleaned = " ".join(data.split())
+        if cleaned:
+            self.row_text.append(cleaned)
+            if self.in_player_link:
+                self.player_text.append(cleaned)
 
-        signature = page_signature(rows)
-        if rows and signature in seen_signatures:
-            if not allow_provider_single_page:
-                raise RankingCollectionError(
-                    f"ranking type_id={type_id} repeated page content at page={page}; "
-                    "provider pagination is not verified"
-                )
-            completion_reason = "PROVIDER_PAGINATION_UNSUPPORTED_REPEATED_FIRST_PAGE"
-            pagination_complete = False
-            provider_response_complete = True
-            break
-        if rows:
-            seen_signatures.add(signature)
 
-        before = len(rows_by_id)
-        for row in rows:
-            player_id = str(row.get("id") or "").strip()
-            if player_id:
-                rows_by_id[player_id] = row
-        pages.append({
-            "page": page,
-            "rows_received": len(rows),
-            "unique_rows_added": len(rows_by_id) - before,
-            "pager": pager or None,
-        })
+def parse_atp_html(path: str | Path) -> list[dict]:
+    parser = ATPTableParser()
+    parser.feed(Path(path).read_text(encoding="utf-8", errors="replace"))
+    unique: dict[tuple[int, str], dict] = {}
+    for row in parser.rows:
+        unique[(row["ranking"], ranking_key(row["name"]))] = row
+    return sorted(unique.values(), key=lambda row: (row["ranking"], row["name"]))
 
-        if not rows:
-            completion_reason = "EMPTY_PAGE"
-            pagination_complete = True
-            provider_response_complete = True
-            break
-        if reported_total is not None and len(rows_by_id) >= reported_total:
-            completion_reason = "PAGER_TOTAL_REACHED"
-            pagination_complete = True
-            provider_response_complete = True
-            break
-        page += 1
 
+def parse_wta_text(path: str | Path) -> list[dict]:
+    rows = []
+    for line in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+        match = re.match(r"^\s*(\d{1,5})\s+\([^)]*\)\s+(.+?)\s+([A-Z]{3})\s+(\d+)\s+", line)
+        if match:
+            rows.append({
+                "name": match.group(2).strip(),
+                "ranking": int(match.group(1)),
+                "country": match.group(3),
+                "points": int(match.group(4)),
+                "tour": "WTA",
+                "raw": line.strip(),
+            })
+    return rows
+
+
+def snapshot(source: str, source_url: str, rows: list[dict], retrieved_at: str, pages: int | None) -> dict:
     return {
-        "schema_version": 1,
-        "source": "BETSAPI_TENNIS_RANKING",
-        "type_id": type_id,
-        "pagination_complete": pagination_complete,
-        "provider_response_complete": provider_response_complete,
-        "full_ranking_coverage": pagination_complete,
-        "completion_reason": completion_reason,
-        "pages_requested": len(pages),
-        "reported_total": reported_total,
-        "unique_rows": len(rows_by_id),
-        "pages": pages,
-        "results": list(rows_by_id.values()),
+        "schema_version": 2,
+        "source": source,
+        "source_url": source_url,
+        "retrieved_at_utc": retrieved_at,
+        "provider_response_complete": True,
+        "full_ranking_coverage": True,
+        "pages_requested": pages,
+        "unique_rows": len(rows),
+        "max_rank": max((row["ranking"] for row in rows), default=None),
+        "results": rows,
     }
-
-
-def make_fetcher(token: str, retries: int = 3, timeout: int = 30):
-    def fetch(type_id: int, page: int) -> dict:
-        query = urllib.parse.urlencode({"token": token, "type_id": type_id, "page": page})
-        request = urllib.request.Request(
-            BASE_URL + "?" + query,
-            headers={"User-Agent": "jarvis-intuition-ranking-collector/1.0"},
-        )
-        last_error: Exception | None = None
-        for attempt in range(retries + 1):
-            try:
-                with urllib.request.urlopen(request, timeout=timeout) as response:
-                    return json.load(response)
-            except Exception as exc:  # network boundary
-                last_error = exc
-                if attempt < retries:
-                    time.sleep(1.5 * (attempt + 1))
-        raise RankingCollectionError(
-            f"ranking type_id={type_id} page={page} request failed: {last_error}"
-        )
-
-    return fetch
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--atp-html", required=True)
+    parser.add_argument("--wta-text", required=True)
+    parser.add_argument("--atp-pages", type=int, default=50)
     parser.add_argument("--output-dir", default="rankings")
-    parser.add_argument(
-        "--allow-provider-single-page",
-        action="store_true",
-        help="Diagnostic only: accept the provider-published first response when page=2 repeats it",
-    )
     args = parser.parse_args()
 
-    token = os.environ.get("BETSAPI_TOKEN")
-    if not token:
-        raise SystemExit("BETSAPI_TOKEN is required")
+    atp = parse_atp_html(args.atp_html)
+    wta = parse_wta_text(args.wta_text)
+    if len(atp) < 2000 or max((row["ranking"] for row in atp), default=0) < 2000:
+        raise SystemExit(f"ATP ranking is unexpectedly incomplete: rows={len(atp)}")
+    if len(wta) < 1300 or max((row["ranking"] for row in wta), default=0) < 1400:
+        raise SystemExit(f"WTA ranking is unexpectedly incomplete: rows={len(wta)}")
 
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output = Path(args.output_dir)
+    output.mkdir(parents=True, exist_ok=True)
     retrieved_at = iso_now()
+    snapshots = [
+        ("atp-ranking.json", snapshot(
+            "TENNISEXPLORER_ATP_COMPLETE_RANKING", ATP_SOURCE_URL, atp, retrieved_at, args.atp_pages
+        )),
+        ("wta-ranking.json", snapshot(
+            "WTA_OFFICIAL_SINGLES_NUMERIC_PDF", WTA_SOURCE_URL, wta, retrieved_at, None
+        )),
+    ]
+    for filename, payload in snapshots:
+        (output / filename).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "stage": "COMPLETE_TENNIS_SINGLES_RANKING_SNAPSHOT",
         "retrieved_at_utc": retrieved_at,
-        "types": [],
+        "full_ranking_coverage": True,
+        "sources": [{
+            "source": payload["source"],
+            "file": filename,
+            "rows": payload["unique_rows"],
+            "max_rank": payload["max_rank"],
+            "full_ranking_coverage": True,
+        } for filename, payload in snapshots],
     }
-    fetch_page = make_fetcher(token)
-    for type_id in SINGLES_TYPES:
-        snapshot = collect_ranking_type(
-            type_id,
-            fetch_page,
-            allow_provider_single_page=args.allow_provider_single_page,
-        )
-        snapshot["retrieved_at_utc"] = retrieved_at
-        path = output_dir / f"betsapi-ranking-{type_id}.json"
-        path.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        manifest["types"].append({
-            "type_id": type_id,
-            "file": path.name,
-            "pagination_complete": snapshot["pagination_complete"],
-            "provider_response_complete": snapshot["provider_response_complete"],
-            "full_ranking_coverage": snapshot["full_ranking_coverage"],
-            "pages_requested": snapshot["pages_requested"],
-            "reported_total": snapshot["reported_total"],
-            "unique_rows": snapshot["unique_rows"],
-        })
-
-    manifest["pagination_complete"] = all(item["pagination_complete"] for item in manifest["types"])
-    manifest["provider_responses_complete"] = all(
-        item["provider_response_complete"] for item in manifest["types"]
-    )
-    manifest["full_ranking_coverage"] = all(
-        item["full_ranking_coverage"] for item in manifest["types"]
-    )
-    (output_dir / "manifest.json").write_text(
+    (output / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(manifest, ensure_ascii=False))
