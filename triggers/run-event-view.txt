@@ -1,6 +1,6 @@
-37272360085
-37272547427
-2026-10-05
-requested_at=2026-10-05T06:31:43Z
-reason=start-card-2026-10-05-event-view
-canon_commit=5a3517970cbffcd915c09c0808f97dfde8afdd68
+37413341872
+37419316386
+2026-10-06
+requested_at=2026-10-06T05:41:34Z
+reason=explicit-user-manual-command-event-view-all-386-singles
+canon_commit=348878d5238d8c83aeae01aad05c63bfc72d98bb
