@@ -43,7 +43,10 @@ class ATPTableParser(HTMLParser):
             self.in_player_link = False
         if tag == "tr" and self.in_row:
             text = " ".join(self.row_text)
-            rank_match = re.search(r"(?:^|\s)(\d{1,5})(?:\s|$)", text)
+            # TennisExplorer renders the ranking as the first token with a
+            # trailing dot (for example, "631. 9 Palan Dominik ...").  The
+            # following integer is the weekly movement, not the ranking.
+            rank_match = re.match(r"^\s*(\d{1,5})\.", text)
             player = " ".join(self.player_text).strip()
             if rank_match and player:
                 self.rows.append((int(rank_match.group(1)), player, text))
