@@ -1,4 +1,4 @@
 telegram_reports/2026-10-06-compact.md
 COMPACT
 2026-10-06
-publish-compact-127-2026-10-06T18:52:00Z
+correct-compact-two-messages-2026-10-06T18:55:00Z
