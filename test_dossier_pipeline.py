@@ -23,9 +23,19 @@ class StaticProfileTests(unittest.TestCase):
             "Current/Highest rank - singles: 177. / 105. Sex: woman Plays: right"
         )
         self.assertEqual(fields["date_of_birth"], "1999-08-30")
+        self.assertEqual(fields["source_reported_age"], 27)
         self.assertEqual(fields["handedness"], "RIGHT")
         self.assertEqual(fields["height_cm"], 164)
         self.assertEqual(fields["highest_singles_rank"], 105)
+
+    def test_unique_subset_alias_is_accepted_but_ambiguous_subset_is_not(self):
+        one = '<a href="/player/sari-a2ebb/">Sari, Pelin</a>'
+        self.assertEqual(
+            parse_search_html(one, "Serife Pelin Sari"),
+            ("https://www.tennisexplorer.com/player/sari-a2ebb/", "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"),
+        )
+        ambiguous = one + '<a href="/player/sari-other/">Pelin Sari</a>'
+        self.assertEqual(parse_search_html(ambiguous, "Serife Pelin Sari")[0], None)
 
 
 class RankingPublicationTests(unittest.TestCase):
@@ -132,10 +142,12 @@ class EndToEndDossierTests(unittest.TestCase):
                     {"provider_player_id": "100", "status": "RESOLVED", "source": "TEST_PROFILES",
                      "profile_url": "https://example.test/alice", "fields": {
                          "date_of_birth": "2000-10-07", "nationality": "Russia",
+                         "source_reported_age": 25,
                          "handedness": "RIGHT", "height_cm": 170, "weight_kg": 60, "sex": "WOMAN"}},
                     {"provider_player_id": "200", "status": "RESOLVED", "source": "TEST_PROFILES",
                      "profile_url": "https://example.test/bob", "fields": {
                          "date_of_birth": "1998-01-01", "nationality": "Netherlands",
+                         "source_reported_age": 28,
                          "handedness": "LEFT", "height_cm": 180, "weight_kg": 70, "sex": "MAN"}},
                 ],
             }), encoding="utf-8")
