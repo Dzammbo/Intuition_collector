@@ -4,3 +4,4 @@
 20
 retry-provider-single-response-diagnostic
 retry-after-contract-import-fix
+complete-ranking-sources-diagnostic
