@@ -70,15 +70,29 @@ def parse_search_html(html: str, requested_name: str) -> tuple[str | None, str]:
     parser = VisibleTextParser()
     parser.feed(html)
     exact = []
+    subset = []
+    requested_tokens = set(ranking_key(requested_name).split())
     for href, label in parser.links:
-        if "/player/" in href and ranking_key(label.replace(",", " ")) == ranking_key(requested_name):
-            exact.append(urljoin(BASE_URL, href.split("?", 1)[0]))
+        if "/player/" not in href:
+            continue
+        candidate_key = ranking_key(label.replace(",", " "))
+        candidate_url = urljoin(BASE_URL, href.split("?", 1)[0])
+        if candidate_key == ranking_key(requested_name):
+            exact.append(candidate_url)
+        candidate_tokens = set(candidate_key.split())
+        if len(candidate_tokens) >= 2 and candidate_tokens < requested_tokens:
+            subset.append(candidate_url)
     exact = sorted(set(exact))
     if len(exact) == 1:
         return exact[0], "EXACT_NORMALIZED_TOKEN_SET_NAME"
-    if not exact:
-        return None, "NO_EXACT_NAME_MATCH"
-    return None, "AMBIGUOUS_EXACT_NAME_MATCH"
+    if len(exact) > 1:
+        return None, "AMBIGUOUS_EXACT_NAME_MATCH"
+    subset = sorted(set(subset))
+    if len(subset) == 1:
+        return subset[0], "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"
+    if len(subset) > 1:
+        return None, "AMBIGUOUS_MULTI_TOKEN_SUBSET_ALIAS"
+    return None, "NO_EXACT_OR_UNIQUE_SUBSET_NAME_MATCH"
 
 
 def first(pattern: str, text: str, cast=None):
@@ -103,6 +117,7 @@ def parse_profile_html(html: str) -> dict:
     )
     return {
         "date_of_birth": dob,
+        "source_reported_age": first(r"Age:\s*(\d+)", text, int),
         "nationality": first(
             r"Country:\s*(.+?)(?=\s+(?:Height\s*/\s*Weight|Age|Current/Highest rank|Sex|Plays):)", text
         ),
