@@ -95,6 +95,7 @@ jobs:
           for path in workflows.glob("*.yml"):
               body = path.read_text(encoding="utf-8")
               assert "runs-on: ubuntu-latest" in body, path
+              assert "\n  schedule:" not in body, f"Scheduled automation is forbidden: {path}"
               if path.name != "validate.yml":
                   assert "self-hosted" not in body, path
                   for forbidden in ("vercel", "railway", "selectel"):
