@@ -3,7 +3,7 @@
 
 This collector intentionally does not call the result a full multi-source dossier.
 The baseline layer contains provider identity, Valuebetennis history-derived metrics
-and complete BetsAPI singles ranking snapshots. Event View is consumed only through
+and complete ATP/WTA singles ranking snapshots. Event View is consumed only through
 a prematch-safe whitelist and is stored in a separate match-context snapshot.
 """
 
@@ -31,6 +31,12 @@ def normalise(value: object) -> str:
     text = unicodedata.normalize("NFKD", str(value or ""))
     text = "".join(ch for ch in text if not unicodedata.combining(ch))
     return re.sub(r"[^a-z0-9]+", "", text.casefold())
+
+
+def ranking_key(value: object) -> str:
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return " ".join(sorted(re.findall(r"[a-z0-9]+", text.casefold())))
 
 
 def parse_stamp(value: str) -> datetime:
@@ -168,36 +174,49 @@ def compact_matches(matches: list[dict], player_key: str, take: int) -> dict:
     return {"matches": len(detail), "wins": wins, "losses": len(detail) - wins, "detail": detail}
 
 
-def load_rankings(paths: list[str]) -> tuple[dict[str, dict], list[dict]]:
-    rankings: dict[str, dict] = {}
+def load_rankings(paths: list[str]) -> tuple[dict[str, list[dict]], list[dict]]:
+    rankings: defaultdict[str, list[dict]] = defaultdict(list)
     sources = []
     for filename in paths:
         payload = json.loads(Path(filename).read_text(encoding="utf-8-sig"))
-        if payload.get("provider_response_complete") is not True and payload.get("pagination_complete") is not True:
+        if payload.get("provider_response_complete") is not True:
             raise ValueError(f"ranking snapshot is not provider-response-complete: {filename}")
+        if payload.get("full_ranking_coverage") is not True:
+            raise ValueError(f"ranking snapshot is not full-coverage: {filename}")
         rows = payload.get("results")
         if not isinstance(rows, list):
             raise ValueError(f"ranking snapshot has no results list: {filename}")
         for row in rows:
-            player_id = str(row.get("id") or "").strip()
-            if player_id:
-                rankings[player_id] = {
+            name = str(row.get("name") or "").strip()
+            if name and isinstance(row.get("ranking"), int):
+                rankings[ranking_key(name)].append({
                     "current_rank": row.get("ranking") or UNKNOWN,
                     "ranking_points": row.get("points") or UNKNOWN,
-                    "provider_country": row.get("country") or UNKNOWN,
-                }
+                    "ranking_country": row.get("country") or UNKNOWN,
+                    "ranking_name": name,
+                    "tour": row.get("tour") or UNKNOWN,
+                    "source": payload.get("source") or UNKNOWN,
+                    "match_method": "EXACT_NORMALIZED_TOKEN_SET_NAME",
+                })
         sources.append({
-            "source": "BETSAPI_TENNIS_RANKING_SNAPSHOT",
+            "source": payload.get("source") or UNKNOWN,
+            "source_url": payload.get("source_url") or UNKNOWN,
             "file": Path(filename).name,
-            "type_id": payload.get("type_id"),
             "pages_requested": payload.get("pages_requested"),
-            "reported_total": payload.get("reported_total"),
             "rows": len(rows),
-            "pagination_complete": payload.get("pagination_complete") is True,
             "provider_response_complete": True,
-            "full_ranking_coverage": payload.get("full_ranking_coverage", payload.get("pagination_complete")) is True,
+            "full_ranking_coverage": True,
         })
-    return rankings, sources
+    return dict(rankings), sources
+
+
+def resolve_ranking(player: dict, rankings: dict[str, list[dict]]) -> tuple[dict | None, str]:
+    candidates = rankings.get(ranking_key(player["canonical_name"])) or []
+    if not candidates:
+        return None, "NO_EXACT_NAME_MATCH_IN_COMPLETE_ATP_WTA_SNAPSHOTS"
+    if len(candidates) > 1:
+        return None, "AMBIGUOUS_EXACT_NAME_MATCH_IN_COMPLETE_ATP_WTA_SNAPSHOTS"
+    return candidates[0], "EXACT_NAME_MATCH_IN_COMPLETE_ATP_WTA_SNAPSHOT"
 
 
 def load_previous_history(path: str | None) -> dict[str, dict]:
@@ -292,11 +311,11 @@ def build_history_record(
             "ranking_and_movement": ({
                 **ranking,
                 "ranking_movement": UNKNOWN,
-                "source": "BETSAPI_TENNIS_RANKING_SNAPSHOT",
+                "source": ranking.get("source") or UNKNOWN,
             } if ranking else UNKNOWN),
             "ranking_reason": (
-                "RANK_AND_POINTS_CAPTURED; MOVEMENT_NOT_PROVIDED"
-                if ranking else "NO_PROVIDER_RANKING_MATCH_IN_COMPLETE_SINGLES_SNAPSHOTS"
+                "EXACT_NAME_MATCH_IN_COMPLETE_ATP_WTA_SNAPSHOT; MOVEMENT_NOT_PROVIDED"
+                if ranking else player.get("ranking_resolution_reason")
             ),
             "last_5": compact_matches(matches, key, 5),
             "last_10": compact_matches(matches, key, 10),
@@ -430,7 +449,8 @@ def main() -> None:
     reused = rebuilt = 0
     for player_id, player in sorted(roster.items(), key=lambda item: (normalise(item[1]["canonical_name"]), item[0])):
         matches = by_name.get(normalise(player["canonical_name"]), [])
-        ranking = rankings.get(player_id)
+        ranking, ranking_reason = resolve_ranking(player, rankings)
+        player["ranking_resolution_reason"] = ranking_reason
         fingerprint = history_fingerprint(player, matches, ranking)
         old = previous.get(player_id)
         if old and old.get("source_fingerprint") == fingerprint:
