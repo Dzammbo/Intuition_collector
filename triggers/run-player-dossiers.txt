@@ -8,3 +8,4 @@ complete-ranking-sources-diagnostic
 static-profile-layer-diagnostic-v1
 static-profile-age-alias-diagnostic-v2
 static-profile-fallback-search-diagnostic-v3
+persistent-profile-reuse-diagnostic-v4
