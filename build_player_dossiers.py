@@ -210,6 +210,70 @@ def load_rankings(paths: list[str]) -> tuple[dict[str, list[dict]], list[dict]]:
     return dict(rankings), sources
 
 
+def load_profiles(path: str) -> tuple[dict[str, dict], dict]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    if payload.get("stage") != "TENNIS_PLAYER_STATIC_PROFILE_SNAPSHOT":
+        raise ValueError("profile snapshot has incompatible stage")
+    rows = payload.get("players")
+    if not isinstance(rows, list):
+        raise ValueError("profile snapshot has no players list")
+    profiles: dict[str, dict] = {}
+    for row in rows:
+        player_id = str(row.get("provider_player_id") or "").strip()
+        if not player_id or player_id in profiles:
+            raise ValueError("profile snapshot player ids must be non-empty and unique")
+        profiles[player_id] = row
+    return profiles, {
+        "source": payload.get("source") or UNKNOWN,
+        "source_url": payload.get("source_url") or UNKNOWN,
+        "file": Path(path).name,
+        "retrieved_at_utc": payload.get("retrieved_at_utc") or UNKNOWN,
+        "players_requested": payload.get("players_requested"),
+        "profiles_resolved": payload.get("profiles_resolved"),
+    }
+
+
+def age_on(date_of_birth: object, cutoff: datetime) -> int | str:
+    if not isinstance(date_of_birth, str) or date_of_birth == UNKNOWN:
+        return UNKNOWN
+    try:
+        born = datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+    except ValueError:
+        return UNKNOWN
+    day = cutoff.date()
+    return day.year - born.year - ((day.month, day.day) < (born.month, born.day))
+
+
+def static_identity(profile: dict | None, player: dict, cutoff: datetime) -> dict:
+    profile = profile or {}
+    fields = profile.get("fields") if isinstance(profile.get("fields"), dict) else {}
+    status = str(profile.get("status") or "UNRESOLVED")
+    source = str(profile.get("source") or UNKNOWN)
+    url = str(profile.get("profile_url") or UNKNOWN)
+    dob = fields.get("date_of_birth") or UNKNOWN
+    nationality = fields.get("nationality") or player.get("provider_country_code") or UNKNOWN
+    return {
+        "aliases": [player["canonical_name"]],
+        "date_of_birth": dob,
+        "age_at_history_cutoff": age_on(dob, cutoff),
+        "nationality": nationality,
+        "handedness": fields.get("handedness") or UNKNOWN,
+        "height_cm": fields.get("height_cm") or UNKNOWN,
+        "weight_kg": fields.get("weight_kg") or UNKNOWN,
+        "sex": fields.get("sex") or UNKNOWN,
+        "profile_current_singles_rank": fields.get("current_singles_rank") or UNKNOWN,
+        "profile_highest_singles_rank": fields.get("highest_singles_rank") or UNKNOWN,
+        "profile_resolution_status": status,
+        "profile_source": source,
+        "profile_url": url,
+        "field_provenance": {
+            key: ({"source": source, "url": url} if fields.get(key) not in (None, "", UNKNOWN) else UNKNOWN)
+            for key in ("date_of_birth", "nationality", "handedness", "height_cm", "weight_kg", "sex")
+        },
+        "identity_resolution": "PROVIDER_ID_CANONICAL_NAME_AND_STATIC_PROFILE",
+    }
+
+
 def resolve_ranking(player: dict, rankings: dict[str, list[dict]]) -> tuple[dict | None, str]:
     candidates = rankings.get(ranking_key(player["canonical_name"])) or []
     if not candidates:
@@ -228,12 +292,15 @@ def load_previous_history(path: str | None) -> dict[str, dict]:
     return {str(row["provider_player_id"]): row for row in payload.get("players") or []}
 
 
-def history_fingerprint(player: dict, matches: list[dict], ranking: dict | None) -> str:
+def history_fingerprint(
+    player: dict, matches: list[dict], ranking: dict | None, profile: dict | None
+) -> str:
     source = {
         "provider_player_id": player["provider_player_id"],
         "canonical_name": player["canonical_name"],
         "provider_country_code": player["provider_country_code"],
         "ranking": ranking,
+        "static_profile": profile,
         "matches": [
             [row["match_id"], row["date_utc"], row["vainqueur_id"], row["score"],
              row["closing_odds_1"], row["closing_odds_2"]]
@@ -252,6 +319,7 @@ def build_history_record(
     surface_elo: dict[tuple[str, str], float],
     cutoff: datetime,
     fingerprint: str,
+    profile: dict | None,
 ) -> dict:
     key = normalise(player["canonical_name"])
     surface: defaultdict[str, list[int]] = defaultdict(lambda: [0, 0])
@@ -295,12 +363,8 @@ def build_history_record(
         "source_fingerprint": fingerprint,
         "history_cutoff_utc": iso(cutoff),
         "identity": {
-            "aliases": [player["canonical_name"]],
-            "date_of_birth": UNKNOWN,
-            "nationality": UNKNOWN,
-            "handedness": UNKNOWN,
+            **static_identity(profile, player, cutoff),
             "observed_gender": genders.most_common(1)[0][0] if genders else UNKNOWN,
-            "identity_resolution": "PROVIDER_ID_AND_CANONICAL_NAME",
         },
         "source_resolution": {
             "historical_name_match": "EXACT_NORMALIZED_NAME" if matches else "UNRESOLVED_IN_VALUEBETENNIS_ARCHIVE",
@@ -394,6 +458,7 @@ def main() -> None:
     parser.add_argument("--matches", nargs="+", required=True)
     parser.add_argument("--materialized-at-utc", required=True)
     parser.add_argument("--ranking-snapshots", nargs="+", required=True)
+    parser.add_argument("--profile-snapshot", required=True)
     parser.add_argument("--previous-player-history")
     parser.add_argument("--history-output", required=True)
     parser.add_argument("--snapshot-output", required=True)
@@ -443,6 +508,7 @@ def main() -> None:
         by_name[key] = sorted(unique.values(), key=lambda item: item["date_utc"], reverse=True)
 
     rankings, ranking_sources = load_rankings(args.ranking_snapshots)
+    profiles, profile_source = load_profiles(args.profile_snapshot)
     previous = load_previous_history(args.previous_player_history)
     merged = dict(previous)
     current_records = []
@@ -450,15 +516,16 @@ def main() -> None:
     for player_id, player in sorted(roster.items(), key=lambda item: (normalise(item[1]["canonical_name"]), item[0])):
         matches = by_name.get(normalise(player["canonical_name"]), [])
         ranking, ranking_reason = resolve_ranking(player, rankings)
+        profile = profiles.get(player_id)
         player["ranking_resolution_reason"] = ranking_reason
-        fingerprint = history_fingerprint(player, matches, ranking)
+        fingerprint = history_fingerprint(player, matches, ranking, profile)
         old = previous.get(player_id)
         if old and old.get("source_fingerprint") == fingerprint:
             record = old
             reused += 1
         else:
             record = build_history_record(
-                player, matches, ranking, global_elo, surface_elo, cutoff, fingerprint
+                player, matches, ranking, global_elo, surface_elo, cutoff, fingerprint, profile
             )
             rebuilt += 1
         merged[player_id] = record
@@ -488,7 +555,7 @@ def main() -> None:
             "url": VALUEBETENNIS_URL,
             "used_result_cutoff_utc": iso(cutoff),
             "confidence": "SECONDARY_OPEN_DATA_FILTERED_TO_FROZEN_CUTOFF",
-        }] + ranking_sources,
+        }] + ranking_sources + [profile_source],
         "coverage": {
             "eligible_matches": len(events),
             "unique_players": len(current_records),
@@ -497,6 +564,15 @@ def main() -> None:
             ),
             "players_with_complete_provider_ranking_match": sum(
                 row["baseline_history"]["ranking_and_movement"] != UNKNOWN for row in current_records
+            ),
+            "players_with_resolved_static_profile": sum(
+                row["identity"]["profile_resolution_status"] == "RESOLVED" for row in current_records
+            ),
+            "players_with_date_of_birth": sum(
+                row["identity"]["date_of_birth"] != UNKNOWN for row in current_records
+            ),
+            "players_with_handedness": sum(
+                row["identity"]["handedness"] != UNKNOWN for row in current_records
             ),
             "persistent_records_reused": reused,
             "persistent_records_rebuilt": rebuilt,
@@ -545,6 +621,8 @@ def main() -> None:
             "ranking_full_coverage": all(
                 item["full_ranking_coverage"] for item in ranking_sources
             ),
+            "static_profiles_requested": profile_source["players_requested"],
+            "static_profiles_resolved": profile_source["profiles_resolved"],
         },
     }
 
