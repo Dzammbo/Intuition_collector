@@ -35,8 +35,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
     steps:
       - uses: actions/checkout@v4
 
@@ -173,23 +171,38 @@ jobs:
               --output "valuebetennis-matchs-${year}.csv"
           done
 
-      - name: Capture all pages of provider singles rankings
+      - name: Capture complete ATP and WTA singles rankings
         shell: bash
         run: |
           set -euo pipefail
-          RANKING_ARGS=()
-          if [ -n "$DIAGNOSTIC_LIMIT" ]; then
-            RANKING_ARGS=(--allow-provider-single-page)
-          fi
-          python3 collect_tennis_rankings.py --output-dir rankings "${RANKING_ARGS[@]}"
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils
+          mkdir -p rankings
+          : > rankings/atp-rankings.html
+          for page in $(seq 1 50); do
+            curl --fail --location --retry 3 --silent --show-error \
+              -A 'Mozilla/5.0' \
+              "https://www.tennisexplorer.com/ranking/atp-men/?page=$page&sort=rank" \
+              >> rankings/atp-rankings.html
+          done
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://wtafiles.wtatennis.com/pdf/rankings/Singles_Numeric.pdf' \
+            --output rankings/wta-rankings.pdf
+          pdftotext -layout rankings/wta-rankings.pdf rankings/wta-rankings.txt
+          python3 collect_tennis_rankings.py \
+            --atp-html rankings/atp-rankings.html \
+            --wta-text rankings/wta-rankings.txt \
+            --atp-pages 50 \
+            --output-dir rankings
           python3 - <<'PY'
           import json
-          import os
           m = json.load(open("rankings/manifest.json"))
-          assert m.get("provider_responses_complete") is True
-          if not os.environ.get("DIAGNOSTIC_LIMIT"):
-              assert m.get("full_ranking_coverage") is True
-          assert {row["type_id"] for row in m["types"]} == {1, 3}
+          assert m.get("full_ranking_coverage") is True
+          assert {row["source"] for row in m["sources"]} == {
+              "TENNISEXPLORER_ATP_COMPLETE_RANKING",
+              "WTA_OFFICIAL_SINGLES_NUMERIC_PDF",
+          }
+          assert min(row["rows"] for row in m["sources"]) >= 1300
           PY
 
       - name: Build separated baseline dossier layers
@@ -205,7 +218,7 @@ jobs:
             --event-view event-view/event-view-singles.json \
             --matches valuebetennis-matchs-2024.csv valuebetennis-matchs-2025.csv valuebetennis-matchs-2026.csv \
             --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --ranking-snapshots rankings/betsapi-ranking-1.json rankings/betsapi-ranking-3.json \
+            --ranking-snapshots rankings/atp-ranking.json rankings/wta-ranking.json \
             --history-output player-history.json \
             --snapshot-output baseline-history-snapshot.json \
             --match-context-output match-context-snapshots.json \
@@ -229,8 +242,7 @@ jobs:
           assert m["classification"] == "BASELINE_DOSSIER_NOT_FULL_MULTI_SOURCE"
           assert m["coverage"]["eligible_matches"] == m["coverage"]["match_contexts"]
           assert m["coverage"]["ranking_provider_responses_complete"] is True
-          if not os.environ.get("DIAGNOSTIC_LIMIT"):
-              assert m["coverage"]["ranking_full_coverage"] is True
+          assert m["coverage"]["ranking_full_coverage"] is True
           forbidden = {"ss", "points", "stats", "events", "scores", "time_status"}
           assert all(not (forbidden & set(row)) for row in c["events"])
           PY
