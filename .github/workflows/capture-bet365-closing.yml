@@ -1,4 +1,4 @@
-name: Capture Bet365 Closing Line
+name: Capture Bet365 Closing Line (Manual)
 
 on:
   workflow_dispatch:
