@@ -256,6 +256,7 @@ def static_identity(profile: dict | None, player: dict, cutoff: datetime) -> dic
         "aliases": [player["canonical_name"]],
         "date_of_birth": dob,
         "age_at_history_cutoff": age_on(dob, cutoff),
+        "source_reported_age_at_profile_retrieval": fields.get("source_reported_age") or UNKNOWN,
         "nationality": nationality,
         "handedness": fields.get("handedness") or UNKNOWN,
         "height_cm": fields.get("height_cm") or UNKNOWN,
@@ -570,6 +571,11 @@ def main() -> None:
             ),
             "players_with_date_of_birth": sum(
                 row["identity"]["date_of_birth"] != UNKNOWN for row in current_records
+            ),
+            "players_with_age": sum(
+                row["identity"]["age_at_history_cutoff"] != UNKNOWN
+                or row["identity"]["source_reported_age_at_profile_retrieval"] != UNKNOWN
+                for row in current_records
             ),
             "players_with_handedness": sum(
                 row["identity"]["handedness"] != UNKNOWN for row in current_records
