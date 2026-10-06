@@ -209,9 +209,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          PROFILE_ARGS=()
+          if [ -f state/player_dossiers/player-profiles.json ]; then
+            PROFILE_ARGS=(--previous-profile-snapshot state/player_dossiers/player-profiles.json)
+          fi
           python3 collect_tennis_profiles.py \
             --universe universe/classified-universe.json \
-            --output rankings/player-profiles.json
+            --output rankings/player-profiles.json \
+            "${PROFILE_ARGS[@]}"
           PREVIOUS_ARGS=()
           if [ -f state/player_dossiers/player-history.json ]; then
             PREVIOUS_ARGS=(--previous-player-history state/player_dossiers/player-history.json)
@@ -250,6 +255,8 @@ jobs:
           assert s["coverage"]["players_with_resolved_static_profile"] > 0
           assert s["coverage"]["players_with_age"] > 0
           assert m["coverage"]["static_profiles_requested"] == m["coverage"]["current_players"]
+          p = json.load(open("rankings/player-profiles.json"))
+          assert p["profiles_reused"] + p["profiles_fetched"] == m["coverage"]["current_players"]
           forbidden = {"ss", "points", "stats", "events", "scores", "time_status"}
           assert all(not (forbidden & set(row)) for row in c["events"])
           PY
@@ -260,6 +267,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "state/player_dossiers/$DAY"
+          cp rankings/player-profiles.json state/player_dossiers/player-profiles.json
           cp player-history.json state/player_dossiers/player-history.json
           cp baseline-history-snapshot.json "state/player_dossiers/$DAY/baseline-history-snapshot.json"
           cp match-context-snapshots.json "state/player_dossiers/$DAY/match-context-snapshots.json"
@@ -268,6 +276,7 @@ jobs:
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
           git add \
+            player_dossiers/player-profiles.json \
             player_dossiers/player-history.json \
             "player_dossiers/$DAY/baseline-history-snapshot.json" \
             "player_dossiers/$DAY/match-context-snapshots.json" \
