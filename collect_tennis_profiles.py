@@ -193,53 +193,114 @@ def roster_from_universe(path: str) -> list[dict]:
     return sorted(roster.values(), key=lambda row: (ranking_key(row["canonical_name"]), row["provider_player_id"]))
 
 
+def load_previous_profiles(path: str | None) -> tuple[dict[str, dict], str | None]:
+    if not path or not Path(path).exists():
+        return {}, None
+    payload = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    if payload.get("stage") != "TENNIS_PLAYER_STATIC_PROFILE_SNAPSHOT":
+        raise ValueError("previous profile registry has incompatible stage")
+    profiles: dict[str, dict] = {}
+    for row in payload.get("players") or []:
+        player_id = str(row.get("provider_player_id") or "").strip()
+        if player_id:
+            profiles[player_id] = row
+    return profiles, payload.get("retrieved_at_utc")
+
+
+def reusable_profile(previous: dict | None, roster: dict) -> bool:
+    return bool(
+        previous
+        and previous.get("status") == "RESOLVED"
+        and str(previous.get("provider_player_id") or "") == str(roster.get("provider_player_id") or "")
+        and ranking_key(previous.get("canonical_name")) == ranking_key(roster.get("canonical_name"))
+        and isinstance(previous.get("fields"), dict)
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--universe", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--previous-profile-snapshot")
     parser.add_argument("--delay-seconds", type=float, default=0.25)
     args = parser.parse_args()
 
-    players = []
+    previous, previous_retrieved_at = load_previous_profiles(args.previous_profile_snapshot)
+    registry = dict(previous)
+    current_players = []
+    reused = fetched = 0
+    retrieved_at = iso_now()
     for roster in roster_from_universe(args.universe):
         name = roster["canonical_name"]
         search_url = SEARCH_URL.format(quote(name))
+        cached = previous.get(roster["provider_player_id"])
+        if reusable_profile(cached, roster):
+            record = {
+                **cached,
+                **roster,
+                "profile_cache_status": "REUSED_PERSISTENT_PROFILE",
+                "profile_retrieved_at_utc": (
+                    cached.get("profile_retrieved_at_utc") or previous_retrieved_at or UNKNOWN
+                ),
+            }
+            registry[roster["provider_player_id"]] = record
+            current_players.append(record)
+            reused += 1
+            continue
         try:
             profile_url, method, search_attempts = resolve_profile_url(name)
             if not profile_url:
-                players.append({
+                record = {
                     **roster, "status": "UNRESOLVED", "resolution_method": method,
                     "source": SOURCE_NAME, "search_url": search_url, "profile_url": UNKNOWN,
                     "search_attempts": search_attempts, "fields": {},
-                })
+                    "profile_cache_status": "FETCHED_CURRENT_RUN",
+                    "profile_retrieved_at_utc": retrieved_at,
+                }
             else:
                 fields = parse_profile_html(fetch(profile_url))
-                players.append({
+                record = {
                     **roster, "status": "RESOLVED", "resolution_method": method,
                     "source": SOURCE_NAME, "search_url": search_url, "profile_url": profile_url,
                     "search_attempts": search_attempts, "fields": fields,
-                })
+                    "profile_cache_status": "FETCHED_CURRENT_RUN",
+                    "profile_retrieved_at_utc": retrieved_at,
+                }
         except RuntimeError as exc:
-            players.append({
+            record = {
                 **roster, "status": "TECHNICAL_ERROR", "resolution_method": "FETCH_FAILED",
                 "source": SOURCE_NAME, "search_url": search_url, "profile_url": UNKNOWN,
                 "fields": {}, "error": str(exc),
-            })
+                "profile_cache_status": "FETCHED_CURRENT_RUN",
+                "profile_retrieved_at_utc": retrieved_at,
+            }
+        registry[roster["provider_player_id"]] = record
+        current_players.append(record)
+        fetched += 1
         time.sleep(max(0.0, args.delay_seconds))
 
-    resolved = sum(row["status"] == "RESOLVED" for row in players)
+    resolved = sum(row["status"] == "RESOLVED" for row in current_players)
     output = {
-        "schema_version": 1,
+        "schema_version": 2,
         "stage": "TENNIS_PLAYER_STATIC_PROFILE_SNAPSHOT",
         "source": SOURCE_NAME,
         "source_url": BASE_URL + "/list-players/",
-        "retrieved_at_utc": iso_now(),
-        "players_requested": len(players),
+        "retrieved_at_utc": retrieved_at,
+        "players_requested": len(current_players),
         "profiles_resolved": resolved,
-        "players": players,
+        "profiles_reused": reused,
+        "profiles_fetched": fetched,
+        "registry_players": len(registry),
+        "players": sorted(
+            registry.values(),
+            key=lambda row: (ranking_key(row.get("canonical_name")), str(row.get("provider_player_id") or "")),
+        ),
     }
     Path(args.output).write_text(json.dumps(output, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"players_requested": len(players), "profiles_resolved": resolved}, ensure_ascii=False))
+    print(json.dumps({
+        "players_requested": len(current_players), "profiles_resolved": resolved,
+        "profiles_reused": reused, "profiles_fetched": fetched, "registry_players": len(registry),
+    }, ensure_ascii=False))
 
 
 if __name__ == "__main__":
