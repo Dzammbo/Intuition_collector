@@ -14,7 +14,7 @@ The repository contains collection code and public workflow definitions. Betting
 - `Collect Tennis Singles Event View`
 - `L1 Tennis Singles Market Scan`
 - `Build Tennis Singles Research Packet` - lossless handoff of every technically eligible single, including rows waiting for price
-- `Build Baseline Tennis Player Dossiers` - manual-only baseline builder. It requires the matching Universe and Event View runs, collects the official complete WTA Singles Numeric PDF and every page of the TennisExplorer ATP ranking, reuses unchanged persistent player histories, and stores match-specific Event View context separately. It does not claim full multi-source enrichment.
+- `Build Baseline Tennis Player Dossiers` - manual-only baseline builder. It requires the matching Universe and Event View runs, collects the official complete WTA Singles Numeric PDF, every page of the TennisExplorer ATP ranking, and a TennisExplorer static player profile for each roster member. Static profiles contribute date of birth, age at cutoff, nationality, handedness, height, weight and sex with field-level provenance. The builder reuses unchanged persistent player histories and stores match-specific Event View context separately. It does not claim full multi-source enrichment.
 - `Sync BetsAPI League Registry` - legacy provider-name and audit support only; it does not gate active tennis eligibility
 
 Football, baseball, ice hockey and basketball are excluded before daily provider collection. The active collector runs the two UTC-day tennis feeds needed for the rolling 24-hour window. Historical artifacts remain available only for settlement and analytics.
@@ -57,7 +57,6 @@ supported for plugin-driven execution:
 - `triggers/run-rerender-results.txt`
 - `triggers/run-telegram-publish.txt`
 - `triggers/run-validation.txt`
-- `triggers/run-player-dossiers.txt` - three lines: Universe run ID, matching Event View run ID, Moscow card date
+- `triggers/run-player-dossiers.txt` - four operative lines: Universe run ID, matching Event View run ID, Moscow card date, optional diagnostic match limit
 
 Vercel, Railway, Selectel and self-hosted runners are not part of this architecture.
-
