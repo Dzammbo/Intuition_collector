@@ -296,12 +296,18 @@ def load_previous_history(path: str | None) -> dict[str, dict]:
 def history_fingerprint(
     player: dict, matches: list[dict], ranking: dict | None, profile: dict | None
 ) -> str:
+    stable_profile = ({
+        "status": profile.get("status"),
+        "source": profile.get("source"),
+        "profile_url": profile.get("profile_url"),
+        "fields": profile.get("fields"),
+    } if profile else None)
     source = {
         "provider_player_id": player["provider_player_id"],
         "canonical_name": player["canonical_name"],
         "provider_country_code": player["provider_country_code"],
         "ranking": ranking,
-        "static_profile": profile,
+        "static_profile": stable_profile,
         "matches": [
             [row["match_id"], row["date_utc"], row["vainqueur_id"], row["score"],
              row["closing_odds_1"], row["closing_odds_2"]]
