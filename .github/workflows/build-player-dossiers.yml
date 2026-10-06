@@ -209,6 +209,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 collect_tennis_profiles.py \
+            --universe universe/classified-universe.json \
+            --output rankings/player-profiles.json
           PREVIOUS_ARGS=()
           if [ -f state/player_dossiers/player-history.json ]; then
             PREVIOUS_ARGS=(--previous-player-history state/player_dossiers/player-history.json)
@@ -219,6 +222,7 @@ jobs:
             --matches valuebetennis-matchs-2024.csv valuebetennis-matchs-2025.csv valuebetennis-matchs-2026.csv \
             --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             --ranking-snapshots rankings/atp-ranking.json rankings/wta-ranking.json \
+            --profile-snapshot rankings/player-profiles.json \
             --history-output player-history.json \
             --snapshot-output baseline-history-snapshot.json \
             --match-context-output match-context-snapshots.json \
@@ -243,6 +247,8 @@ jobs:
           assert m["coverage"]["eligible_matches"] == m["coverage"]["match_contexts"]
           assert m["coverage"]["ranking_provider_responses_complete"] is True
           assert m["coverage"]["ranking_full_coverage"] is True
+          assert s["coverage"]["players_with_resolved_static_profile"] > 0
+          assert m["coverage"]["static_profiles_requested"] == m["coverage"]["current_players"]
           forbidden = {"ss", "points", "stats", "events", "scores", "time_status"}
           assert all(not (forbidden & set(row)) for row in c["events"])
           PY
@@ -279,4 +285,5 @@ jobs:
             match-context-snapshots.json
             baseline-dossier-manifest.json
             rankings/manifest.json
+            rankings/player-profiles.json
           retention-days: 7
