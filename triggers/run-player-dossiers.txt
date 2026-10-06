@@ -6,3 +6,4 @@ retry-provider-single-response-diagnostic
 retry-after-contract-import-fix
 complete-ranking-sources-diagnostic
 static-profile-layer-diagnostic-v1
+static-profile-age-alias-diagnostic-v2
