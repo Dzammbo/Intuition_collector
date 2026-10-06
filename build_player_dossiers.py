@@ -173,8 +173,8 @@ def load_rankings(paths: list[str]) -> tuple[dict[str, dict], list[dict]]:
     sources = []
     for filename in paths:
         payload = json.loads(Path(filename).read_text(encoding="utf-8-sig"))
-        if payload.get("pagination_complete") is not True:
-            raise ValueError(f"ranking snapshot is not pagination-complete: {filename}")
+        if payload.get("provider_response_complete") is not True and payload.get("pagination_complete") is not True:
+            raise ValueError(f"ranking snapshot is not provider-response-complete: {filename}")
         rows = payload.get("results")
         if not isinstance(rows, list):
             raise ValueError(f"ranking snapshot has no results list: {filename}")
@@ -193,7 +193,9 @@ def load_rankings(paths: list[str]) -> tuple[dict[str, dict], list[dict]]:
             "pages_requested": payload.get("pages_requested"),
             "reported_total": payload.get("reported_total"),
             "rows": len(rows),
-            "pagination_complete": True,
+            "pagination_complete": payload.get("pagination_complete") is True,
+            "provider_response_complete": True,
+            "full_ranking_coverage": payload.get("full_ranking_coverage", payload.get("pagination_complete")) is True,
         })
     return rankings, sources
 
@@ -517,7 +519,12 @@ def main() -> None:
             "eligible_matches": len(events),
             "match_contexts": len(match_context["events"]),
             "current_players": len(current_records),
-            "ranking_pages_complete": all(item["pagination_complete"] for item in ranking_sources),
+            "ranking_provider_responses_complete": all(
+                item["provider_response_complete"] for item in ranking_sources
+            ),
+            "ranking_full_coverage": all(
+                item["full_ranking_coverage"] for item in ranking_sources
+            ),
         },
     }
 
