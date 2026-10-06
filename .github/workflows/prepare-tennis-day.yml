@@ -57,7 +57,7 @@ jobs:
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
 
-      - name: Skip fallback when canonical preflight is already safely ready
+      - name: Skip fallback when canonical prematch preflight already exists
         shell: bash
         run: |
           python3 - <<'PY'
@@ -71,10 +71,7 @@ jobs:
           if path.exists():
               try:
                   data = json.loads(path.read_text())
-                  skip = (
-                      data.get("status") in {"READY_FOR_ASSESSMENT", "NO_ELIGIBLE_EVENTS"}
-                      and (data.get("lead_to_first_start_seconds") is None or int(data["lead_to_first_start_seconds"]) >= 7200)
-                  )
+                  skip = data.get("status") in {"READY_FOR_ASSESSMENT", "NO_ELIGIBLE_EVENTS"}
               except Exception:
                   skip = False
           with open(os.environ["GITHUB_ENV"], "a") as handle:
@@ -195,7 +192,7 @@ jobs:
               "dossier_players": len(dossiers.get("players") or []),
               "earliest_start_utc": datetime.fromtimestamp(earliest, timezone.utc).isoformat() if earliest else None,
               "lead_to_first_start_seconds": lead_seconds,
-              "timing_status": "ON_TIME" if lead_seconds is None or lead_seconds >= 7200 else "AT_RISK",
+              "timing_status": "NO_ELIGIBLE_EVENTS" if lead_seconds is None else ("PREMATCH_READY" if lead_seconds >= 0 else "MISSED_EARLIEST_START"),
               "assessment_order": "EARLIEST_START_FIRST_ROLLING_BATCHES",
               "full_packet_wait_before_first_assessment": False,
           }
