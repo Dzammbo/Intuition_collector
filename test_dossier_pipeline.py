@@ -7,46 +7,32 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from build_player_dossiers import prematch_safe_event_context
-from collect_tennis_rankings import RankingCollectionError, collect_ranking_type
+from collect_tennis_rankings import parse_atp_html, parse_wta_text
 
 
-class RankingPaginationTests(unittest.TestCase):
-    def test_collects_every_page_from_pager(self):
-        payloads = {
-            1: {"success": 1, "pager": {"total": 3, "per_page": 2}, "results": [{"id": 1}, {"id": 2}]},
-            2: {"success": 1, "pager": {"total": 3, "per_page": 2}, "results": [{"id": 3}]},
-        }
-        result = collect_ranking_type(1, lambda _type, page: payloads[page])
-        self.assertTrue(result["pagination_complete"])
-        self.assertEqual(result["pages_requested"], 2)
-        self.assertEqual(result["unique_rows"], 3)
+class RankingPublicationTests(unittest.TestCase):
+    def test_parses_atp_rank_not_movement_column(self):
+        with tempfile.TemporaryDirectory() as raw_dir:
+            path = Path(raw_dir) / "atp.html"
+            path.write_text(
+                '<table><tr><td>631.</td><td>9</td><td><a href="/player/palan-dominik/">'
+                'Palan Dominik</a></td><td>Czech Republic</td><td>59</td></tr></table>',
+                encoding="utf-8",
+            )
+            rows = parse_atp_html(path)
+            self.assertEqual(rows[0]["ranking"], 631)
+            self.assertEqual(rows[0]["name"], "Palan Dominik")
 
-    def test_without_pager_continues_until_empty_page(self):
-        payloads = {
-            1: {"success": 1, "results": [{"id": 1}]},
-            2: {"success": 1, "results": [{"id": 2}]},
-            3: {"success": 1, "results": []},
-        }
-        result = collect_ranking_type(3, lambda _type, page: payloads[page])
-        self.assertEqual(result["completion_reason"], "EMPTY_PAGE")
-        self.assertEqual(result["unique_rows"], 2)
-
-    def test_repeated_page_fails_closed(self):
-        payload = {"success": 1, "results": [{"id": 1}]}
-        with self.assertRaises(RankingCollectionError):
-            collect_ranking_type(1, lambda _type, _page: payload)
-
-    def test_repeated_page_can_be_explicitly_accepted_for_diagnostics(self):
-        payload = {"success": 1, "results": [{"id": 1}]}
-        result = collect_ranking_type(
-            1,
-            lambda _type, _page: payload,
-            allow_provider_single_page=True,
-        )
-        self.assertFalse(result["pagination_complete"])
-        self.assertTrue(result["provider_response_complete"])
-        self.assertFalse(result["full_ranking_coverage"])
-        self.assertEqual(result["unique_rows"], 1)
+    def test_parses_wta_numeric_pdf_text(self):
+        with tempfile.TemporaryDirectory() as raw_dir:
+            path = Path(raw_dir) / "wta.txt"
+            path.write_text(
+                " 177       (171)    HONTAMA, MAI                             JPN    440     32\n",
+                encoding="utf-8",
+            )
+            rows = parse_wta_text(path)
+            self.assertEqual(rows[0]["ranking"], 177)
+            self.assertEqual(rows[0]["points"], 440)
 
 
 class EventContextTests(unittest.TestCase):
@@ -100,16 +86,20 @@ class EndToEndDossierTests(unittest.TestCase):
                     "extra": {"ground": "Clay", "round": "R16", "bestofsets": "3"},
                 }], "errors": [],
             }
-            ranking = lambda kind, player: {
-                "schema_version": 1, "type_id": kind, "pagination_complete": True,
+            ranking = lambda source, name, tour: {
+                "schema_version": 2, "source": source,
                 "provider_response_complete": True, "full_ranking_coverage": True,
-                "pages_requested": 2, "reported_total": 1,
-                "results": [{"id": player, "ranking": 10, "points": 1000}],
+                "pages_requested": 2,
+                "results": [{"name": name, "ranking": 10, "points": 1000, "tour": tour}],
             }
             (root / "universe.json").write_text(json.dumps(universe), encoding="utf-8")
             (root / "event-view.json").write_text(json.dumps(event_view), encoding="utf-8")
-            (root / "rank-1.json").write_text(json.dumps(ranking(1, "100")), encoding="utf-8")
-            (root / "rank-3.json").write_text(json.dumps(ranking(3, "200")), encoding="utf-8")
+            (root / "rank-1.json").write_text(
+                json.dumps(ranking("TEST_ATP", "Alice", "ATP")), encoding="utf-8"
+            )
+            (root / "rank-3.json").write_text(
+                json.dumps(ranking("TEST_WTA", "Bob", "WTA")), encoding="utf-8"
+            )
             (root / "matches.csv").write_text(
                 "match_id;date;tournoi;categorie;surface;tour;duree_min;joueur1;joueur1_id;joueur2;joueur2_id;vainqueur_id;score;genre;cote1_cloture;cote2_cloture\n"
                 "m1;2026-10-01T12:00:00;Test;ITF;Clay;R32;90;Alice;a;Bob;b;a;6-4 6-4;W;1.80;2.00\n",
