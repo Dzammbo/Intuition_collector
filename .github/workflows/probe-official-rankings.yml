@@ -1,0 +1,47 @@
+name: Probe Official Full Tennis Rankings
+
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/probe-official-rankings.txt']
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download official ranking publications
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            -A 'Mozilla/5.0' \
+            'https://www.atptour.com/en/rankings/singles?RankRange=0-5000&Region=all' \
+            -o atp-rankings.html
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://wtafiles.wtatennis.com/pdf/rankings/Singles_Numeric.pdf' \
+            -o wta-rankings.pdf
+          pdftotext -layout wta-rankings.pdf wta-rankings.txt
+          test -s atp-rankings.html
+          test -s wta-rankings.txt
+
+      - name: Check current diagnostic players
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 probe_official_rankings.py \
+            --atp-html atp-rankings.html \
+            --wta-text wta-rankings.txt \
+            --players triggers/probe-official-rankings.txt \
+            --output official-ranking-probe.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-ranking-probe-${{ github.run_id }}
+          path: official-ranking-probe.json
+          retention-days: 7
