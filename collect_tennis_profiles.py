@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import itertools
 import json
 import re
 import time
@@ -144,6 +145,37 @@ def fetch(url: str, attempts: int = 4) -> str:
     raise RuntimeError(f"failed after {attempts} attempts: {url}: {last_error}")
 
 
+def resolve_profile_url(name: str) -> tuple[str | None, str, list[str]]:
+    attempts = [name]
+    candidates: set[str] = set()
+    original_html = fetch(SEARCH_URL.format(quote(name)))
+    profile_url, method = parse_search_html(original_html, name)
+    if profile_url:
+        return profile_url, method, [SEARCH_URL.format(quote(name))]
+    tokens = name.split()
+    for size in range(len(tokens) - 1, 1, -1):
+        for parts in itertools.combinations(tokens, size):
+            query = " ".join(parts)
+            if query not in attempts:
+                attempts.append(query)
+            if len(attempts) >= 7:
+                break
+        if len(attempts) >= 7:
+            break
+    urls = [SEARCH_URL.format(quote(query)) for query in attempts]
+    for url in urls[1:]:
+        candidate, candidate_method = parse_search_html(fetch(url), name)
+        if candidate and candidate_method in {
+            "EXACT_NORMALIZED_TOKEN_SET_NAME", "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"
+        }:
+            candidates.add(candidate)
+    if len(candidates) == 1:
+        return candidates.pop(), "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS_FALLBACK_SEARCH", urls
+    if len(candidates) > 1:
+        return None, "AMBIGUOUS_FALLBACK_SEARCH_CANDIDATES", urls
+    return None, method, urls
+
+
 def roster_from_universe(path: str) -> list[dict]:
     payload = json.loads(Path(path).read_text(encoding="utf-8-sig"))
     roster: dict[str, dict] = {}
@@ -173,20 +205,19 @@ def main() -> None:
         name = roster["canonical_name"]
         search_url = SEARCH_URL.format(quote(name))
         try:
-            search_html = fetch(search_url)
-            profile_url, method = parse_search_html(search_html, name)
+            profile_url, method, search_attempts = resolve_profile_url(name)
             if not profile_url:
                 players.append({
                     **roster, "status": "UNRESOLVED", "resolution_method": method,
                     "source": SOURCE_NAME, "search_url": search_url, "profile_url": UNKNOWN,
-                    "fields": {},
+                    "search_attempts": search_attempts, "fields": {},
                 })
             else:
                 fields = parse_profile_html(fetch(profile_url))
                 players.append({
                     **roster, "status": "RESOLVED", "resolution_method": method,
                     "source": SOURCE_NAME, "search_url": search_url, "profile_url": profile_url,
-                    "fields": fields,
+                    "search_attempts": search_attempts, "fields": fields,
                 })
         except RuntimeError as exc:
             players.append({
