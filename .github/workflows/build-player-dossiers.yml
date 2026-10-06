@@ -15,6 +15,10 @@ on:
         description: Canonical Moscow card date in YYYY-MM-DD format
         required: true
         type: string
+      diagnostic_match_limit:
+        description: Optional earliest-start subset for a non-persistent smoke test
+        required: false
+        type: string
   push:
     branches: [main]
     paths: ['triggers/run-player-dossiers.txt']
@@ -44,17 +48,21 @@ jobs:
             UNIVERSE_RUN="$(sed -n '1p' triggers/run-player-dossiers.txt)"
             EVENT_VIEW_RUN="$(sed -n '2p' triggers/run-player-dossiers.txt)"
             DAY="$(sed -n '3p' triggers/run-player-dossiers.txt)"
+            DIAGNOSTIC_LIMIT="$(sed -n '4p' triggers/run-player-dossiers.txt)"
           else
             UNIVERSE_RUN="${{ inputs.universe_run_id }}"
             EVENT_VIEW_RUN="${{ inputs.event_view_run_id }}"
             DAY="${{ inputs.date_moscow }}"
+            DIAGNOSTIC_LIMIT="${{ inputs.diagnostic_match_limit }}"
           fi
           [[ "$UNIVERSE_RUN" =~ ^[0-9]+$ ]]
           [[ "$EVENT_VIEW_RUN" =~ ^[0-9]+$ ]]
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          [[ "$DIAGNOSTIC_LIMIT" =~ ^$|^[1-9][0-9]*$ ]]
           echo "UNIVERSE_RUN=$UNIVERSE_RUN" >> "$GITHUB_ENV"
           echo "EVENT_VIEW_RUN=$EVENT_VIEW_RUN" >> "$GITHUB_ENV"
           echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "DIAGNOSTIC_LIMIT=$DIAGNOSTIC_LIMIT" >> "$GITHUB_ENV"
 
       - name: Download classified tennis universe
         uses: actions/download-artifact@v4
@@ -78,6 +86,60 @@ jobs:
           repository: Dzammbo/jarvis-intuition
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
+
+      - name: Select earliest-start diagnostic subset
+        if: env.DIAGNOSTIC_LIMIT != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          limit = int(os.environ["DIAGNOSTIC_LIMIT"])
+          universe_path = Path("universe/classified-universe.json")
+          event_view_path = Path("event-view/event-view-singles.json")
+          universe = json.loads(universe_path.read_text())
+          event_view = json.loads(event_view_path.read_text())
+          singles = sorted(
+              universe.get("events", {}).get("TENNIS_SINGLES") or [],
+              key=lambda row: (int(row.get("time") or 0), str(row.get("id") or "")),
+          )
+          if len(singles) < limit:
+              raise SystemExit(f"diagnostic limit {limit} exceeds eligible singles {len(singles)}")
+          selected = singles[:limit]
+          selected_ids = {str(row.get("id") or "") for row in selected}
+          records = [
+              row for row in event_view.get("records") or []
+              if str(row.get("id") or "") in selected_ids
+          ]
+          if len(records) != limit or {str(row.get("id") or "") for row in records} != selected_ids:
+              raise SystemExit("Event View does not cover diagnostic subset one-to-one")
+          universe["events"]["TENNIS_SINGLES"] = selected
+          universe["diagnostic_subset"] = {
+              "mode": "EARLIEST_START_NON_PERSISTENT_SMOKE_TEST",
+              "limit": limit,
+              "source_eligible_singles": len(singles),
+          }
+          event_view["records"] = records
+          event_view["input_singles"] = limit
+          event_view["input_total"] = limit
+          event_view["completed"] = limit
+          event_view["successful"] = sum(not row.get("technical_error") for row in records)
+          event_view["errors"] = [
+              row for row in event_view.get("errors") or []
+              if str(row.get("ids") or "") in selected_ids
+          ]
+          event_view["diagnostic_subset"] = universe["diagnostic_subset"]
+          universe_path.write_text(json.dumps(universe, ensure_ascii=False), encoding="utf-8")
+          event_view_path.write_text(json.dumps(event_view, ensure_ascii=False), encoding="utf-8")
+          print(json.dumps({
+              "diagnostic_matches": limit,
+              "first_event": selected[0]["id"],
+              "last_event": selected[-1]["id"],
+          }))
+          PY
 
       - name: Validate complete one-to-one inputs
         shell: bash
@@ -164,6 +226,7 @@ jobs:
           PY
 
       - name: Persist baseline dossier layers to canonical state
+        if: env.DIAGNOSTIC_LIMIT == ''
         shell: bash
         run: |
           set -euo pipefail
@@ -187,7 +250,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: baseline-tennis-player-dossiers-${{ env.DAY }}
+          name: baseline-tennis-player-dossiers-${{ env.DAY }}-run-${{ github.run_id }}
           path: |
             player-history.json
             baseline-history-snapshot.json
