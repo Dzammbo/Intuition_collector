@@ -8,10 +8,10 @@ on:
         required: true
         type: string
       kind:
-        description: PREMATCH, MIDDAY, FINAL, or RESULTS
+        description: PREMATCH, MIDDAY, FINAL, RESULTS, or COMPACT
         required: true
         type: choice
-        options: [PREMATCH, MIDDAY, FINAL, RESULTS]
+        options: [PREMATCH, MIDDAY, FINAL, RESULTS, COMPACT]
       date:
         description: YYYY-MM-DD
         required: true
@@ -65,7 +65,7 @@ jobs:
           fi
           [[ "$REPORT" != /* && "$REPORT" != *".."* ]]
           [[ "$DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
-          case "$KIND" in PREMATCH|MIDDAY|FINAL|RESULTS) ;; *) echo "Unsupported kind: $KIND"; exit 2;; esac
+          case "$KIND" in PREMATCH|MIDDAY|FINAL|RESULTS|COMPACT) ;; *) echo "Unsupported kind: $KIND"; exit 2;; esac
           test -f "state/$REPORT"
           echo "report=$REPORT" >> "$GITHUB_OUTPUT"
           echo "kind=$KIND" >> "$GITHUB_OUTPUT"
