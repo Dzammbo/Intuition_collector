@@ -1,4 +1,4 @@
-name: Prepare Tennis Day
+name: Prepare Tennis Day (Manual)
 
 on:
   workflow_dispatch:
@@ -30,11 +30,7 @@ jobs:
           set -euo pipefail
           DAY="${{ inputs.date_moscow }}"
           if [ -z "$DAY" ]; then
-            if [ "${{ github.event_name }}" = "schedule" ]; then
-              DAY="$(TZ=Europe/Moscow date -d 'tomorrow' +%F)"
-            else
-              DAY="$(TZ=Europe/Moscow date +%F)"
-            fi
+            DAY="$(TZ=Europe/Moscow date +%F)"
           fi
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           echo "DAY=$DAY" >> "$GITHUB_ENV"
@@ -54,30 +50,7 @@ jobs:
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
 
-      - name: Skip fallback when canonical prematch preflight already exists
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          day = os.environ["DAY"]
-          path = Path("state") / f"status/preflight-{day}.json"
-          skip = False
-          if path.exists():
-              try:
-                  data = json.loads(path.read_text())
-                  skip = data.get("status") in {"READY_FOR_ASSESSMENT", "NO_ELIGIBLE_EVENTS"}
-              except Exception:
-                  skip = False
-          with open(os.environ["GITHUB_ENV"], "a") as handle:
-              handle.write(f"SKIP_PREPARE={'true' if skip else 'false'}\n")
-          print({"date_moscow": day, "skip_prepare": skip, "preflight": str(path)})
-          PY
-
       - name: Collect and classify complete 24h tennis universe
-        if: env.SKIP_PREPARE != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -86,7 +59,6 @@ jobs:
           python3 classify_universe.py
 
       - name: Collect prices and Event View
-        if: env.SKIP_PREPARE != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -97,7 +69,6 @@ jobs:
           python3 build_model_prescreen_packet.py l1-market-raw.json event-view-singles.json
 
       - name: Download frozen historical tennis archive
-        if: env.SKIP_PREPARE != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -106,7 +77,6 @@ jobs:
           done
 
       - name: Capture optional provider ranking snapshots
-        if: env.SKIP_PREPARE != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -132,14 +102,12 @@ jobs:
           done
 
       - name: Build immutable player dossiers
-        if: env.SKIP_PREPARE != 'true'
         shell: bash
         run: |
           set -euo pipefail
           python3 build_player_dossiers.py             --universe classified-universe.json             --matches valuebetennis-matchs-2024.csv valuebetennis-matchs-2025.csv valuebetennis-matchs-2026.csv             --output full-player-dossiers.json             --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)"             --ranking-snapshots betsapi-ranking-1.json betsapi-ranking-3.json
 
       - name: Build assessment index and readiness audit
-        if: env.SKIP_PREPARE != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -218,7 +186,6 @@ jobs:
           PY
 
       - name: Persist prepared day to canonical repository
-        if: env.SKIP_PREPARE != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -234,7 +201,7 @@ jobs:
           git push origin HEAD:main
 
       - uses: actions/upload-artifact@v4
-        if: always() && env.SKIP_PREPARE != 'true'
+        if: always()
         with:
           name: prepared-tennis-day-${{ env.DAY }}
           path: |
