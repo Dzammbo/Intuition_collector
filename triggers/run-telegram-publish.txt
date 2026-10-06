@@ -1,4 +1,4 @@
-telegram_reports/2026-10-04-results.md
-RESULTS
-2026-10-04
-refresh-results-2026-10-04T19:15:00Z
+telegram_reports/2026-10-06-compact.md
+COMPACT
+2026-10-06
+publish-compact-127-2026-10-06T18:52:00Z
