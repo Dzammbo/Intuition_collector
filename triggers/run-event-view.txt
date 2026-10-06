@@ -1,6 +1,6 @@
-37413341872
-37419316386
+37471337118
+37479451083
 2026-10-06
-requested_at=2026-10-06T05:44:17Z
-reason=rerun-after-provider-event-id-normalization-fix
-canon_commit=348878d5238d8c83aeae01aad05c63bfc72d98bb
+requested_at=2026-10-06T14:39:03Z
+reason=explicit-user-manual-command-event-view-all-333-singles
+canon_commit=868b152a2607d00ab98404a223c6c10151cbc29c
