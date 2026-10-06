@@ -15,6 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install PDF text extractor
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils
+
       - name: Download official ranking publications
         shell: bash
         run: |
