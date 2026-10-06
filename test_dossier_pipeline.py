@@ -8,7 +8,9 @@ from pathlib import Path
 
 from build_player_dossiers import prematch_safe_event_context
 from collect_tennis_rankings import parse_atp_html, parse_wta_text
-from collect_tennis_profiles import parse_profile_html, parse_search_html
+from collect_tennis_profiles import (
+    load_previous_profiles, parse_profile_html, parse_search_html, reusable_profile,
+)
 
 
 class StaticProfileTests(unittest.TestCase):
@@ -36,6 +38,36 @@ class StaticProfileTests(unittest.TestCase):
         )
         ambiguous = one + '<a href="/player/sari-other/">Pelin Sari</a>'
         self.assertEqual(parse_search_html(ambiguous, "Serife Pelin Sari")[0], None)
+
+    def test_resolved_profile_is_reused_only_for_same_provider_identity(self):
+        previous = {
+            "provider_player_id": "100", "canonical_name": "Hontama Mai",
+            "status": "RESOLVED", "fields": {"handedness": "RIGHT"},
+        }
+        self.assertTrue(reusable_profile(previous, {
+            "provider_player_id": "100", "canonical_name": "Mai Hontama",
+        }))
+        self.assertFalse(reusable_profile(previous, {
+            "provider_player_id": "100", "canonical_name": "Other Player",
+        }))
+        self.assertFalse(reusable_profile(previous, {
+            "provider_player_id": "200", "canonical_name": "Mai Hontama",
+        }))
+        self.assertFalse(reusable_profile({**previous, "status": "UNRESOLVED"}, {
+            "provider_player_id": "100", "canonical_name": "Mai Hontama",
+        }))
+
+    def test_previous_profile_registry_is_loaded(self):
+        with tempfile.TemporaryDirectory() as raw_dir:
+            path = Path(raw_dir) / "profiles.json"
+            path.write_text(json.dumps({
+                "stage": "TENNIS_PLAYER_STATIC_PROFILE_SNAPSHOT",
+                "retrieved_at_utc": "2026-10-06T00:00:00Z",
+                "players": [{"provider_player_id": "100", "canonical_name": "Alice"}],
+            }), encoding="utf-8")
+            profiles, retrieved = load_previous_profiles(str(path))
+            self.assertEqual(profiles["100"]["canonical_name"], "Alice")
+            self.assertEqual(retrieved, "2026-10-06T00:00:00Z")
 
 
 class RankingPublicationTests(unittest.TestCase):
