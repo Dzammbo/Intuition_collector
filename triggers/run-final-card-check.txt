@@ -1,3 +1,3 @@
 2026-10-06
-requested_at=2026-10-06T20:18:30Z
-purpose=refresh-current-results-manual-frozen-portfolio
+requested_at=2026-10-06T20:24:30Z
+purpose=refresh-current-results-after-checker-fix
