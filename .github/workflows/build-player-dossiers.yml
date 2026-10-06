@@ -218,6 +218,7 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json
+          import os
           h = json.load(open("player-history.json"))
           s = json.load(open("baseline-history-snapshot.json"))
           c = json.load(open("match-context-snapshots.json"))
