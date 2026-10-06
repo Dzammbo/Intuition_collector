@@ -34,7 +34,8 @@ class ATPTableParser(HTMLParser):
             self.row_depth += 1
             self.row_text = []
             self.player_text = []
-        if self.in_row and tag == "a" and "/players/" in (attrs_dict.get("href") or ""):
+        href = attrs_dict.get("href") or ""
+        if self.in_row and tag == "a" and ("/players/" in href or "/player/" in href):
             self.in_player_link = True
 
     def handle_endtag(self, tag: str) -> None:
