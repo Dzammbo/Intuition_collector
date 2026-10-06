@@ -1,9 +1,6 @@
 name: Prepare Tennis Day
 
 on:
-  schedule:
-    - cron: '20 18 * * *'
-    - cron: '40 18 * * *'
   workflow_dispatch:
     inputs:
       date_moscow:
