@@ -19,10 +19,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --retry 3 --silent --show-error \
-            -A 'Mozilla/5.0' \
-            'https://www.atptour.com/en/rankings/singles?RankRange=0-5000&Region=all' \
-            -o atp-rankings.html
+          : > atp-rankings.html
+          for page in $(seq 1 50); do
+            curl --fail --location --retry 3 --silent --show-error \
+              -A 'Mozilla/5.0' \
+              "https://www.tennisexplorer.com/ranking/atp-men/?page=$page&sort=rank" \
+              >> atp-rankings.html
+            sleep 0.2
+          done
           curl --fail --location --retry 3 --silent --show-error \
             'https://wtafiles.wtatennis.com/pdf/rankings/Singles_Numeric.pdf' \
             -o wta-rankings.pdf
