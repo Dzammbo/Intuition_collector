@@ -7,6 +7,17 @@ on:
         description: Optional Moscow card date in YYYY-MM-DD format
         required: false
         type: string
+      window_start_utc:
+        description: Optional exact UTC start for a rolling 24h window
+        required: false
+        type: string
+      exclude_final_portfolio_ref:
+        description: Optional canonical final portfolio whose selected event IDs must be excluded
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths: [triggers/run-prepare-tennis-day.json]
 
 permissions:
   contents: read
@@ -24,26 +35,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve Moscow card date
+      - name: Resolve Moscow card date and exact window
         shell: bash
         run: |
           set -euo pipefail
-          DAY="${{ inputs.date_moscow }}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            REQUEST_FILE="triggers/run-prepare-tennis-day.json"
+            DAY="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("date_moscow", ""))')"
+            WINDOW_START="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("window_start_utc", ""))')"
+            WINDOW_MODE="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("window_mode", ""))')"
+            EXCLUDE_REF="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("exclude_final_portfolio_ref", ""))')"
+          else
+            DAY="${{ inputs.date_moscow }}"
+            WINDOW_START="${{ inputs.window_start_utc }}"
+            WINDOW_MODE=""
+            EXCLUDE_REF="${{ inputs.exclude_final_portfolio_ref }}"
+          fi
           if [ -z "$DAY" ]; then
             DAY="$(TZ=Europe/Moscow date +%F)"
           fi
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
-          echo "DAY=$DAY" >> "$GITHUB_ENV"
-          CARD_WINDOW_START_UTC="$(DAY="$DAY" python3 - <<'PY'
+          if [ -z "$WINDOW_START" ]; then
+            if [ "$WINDOW_MODE" = "ROLLING_24H_FROM_RUN_START" ]; then
+              WINDOW_START="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            else
+              WINDOW_START="$(DAY="$DAY" python3 - <<'PY'
           import os
           from datetime import datetime, timezone
           from zoneinfo import ZoneInfo
           day = datetime.strptime(os.environ["DAY"], "%Y-%m-%d").replace(tzinfo=ZoneInfo("Europe/Moscow"))
           print(day.astimezone(timezone.utc).isoformat().replace("+00:00", "Z"))
           PY
-          )"
-          echo "CARD_WINDOW_START_UTC=$CARD_WINDOW_START_UTC" >> "$GITHUB_ENV"
-
+              )"
+            fi
+          fi
+          python3 -c 'from datetime import datetime; import os; datetime.fromisoformat(os.environ["WINDOW_START"].replace("Z", "+00:00"))' WINDOW_START="$WINDOW_START"
+          echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "CARD_WINDOW_START_UTC=$WINDOW_START" >> "$GITHUB_ENV"
+          echo "EXCLUDE_FINAL_PORTFOLIO_REF=$EXCLUDE_REF" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
           repository: Dzammbo/jarvis-intuition
@@ -56,6 +85,35 @@ jobs:
           set -euo pipefail
           test -n "${BETSAPI_TOKEN:-}"
           python3 collector.py
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          universe_path = Path("universe.json")
+          universe = json.loads(universe_path.read_text())
+          ref = os.environ.get("EXCLUDE_FINAL_PORTFOLIO_REF", "").strip()
+          if ref:
+              portfolio_path = Path("state") / ref
+              if not portfolio_path.is_file():
+                  raise SystemExit(f"exclusion portfolio not found: {ref}")
+              portfolio = json.loads(portfolio_path.read_text())
+              excluded = {str(row["event_id"]) for row in portfolio.get("selections", []) if row.get("event_id") is not None}
+              before = universe.get("window_events") or []
+              after = [row for row in before if str(row.get("id")) not in excluded]
+              matched = sorted({str(row.get("id")) for row in before if str(row.get("id")) in excluded})
+              universe["window_events"] = after
+              universe["window_event_count"] = len(after)
+              universe["exclusion"] = {
+                  "mode": "EXCLUDE_PREVIOUSLY_SELECTED_PROVIDER_EVENT_IDS",
+                  "source_ref": ref,
+                  "requested_event_ids": len(excluded),
+                  "matched_and_excluded": len(matched),
+                  "excluded_event_ids": matched,
+              }
+              universe_path.write_text(json.dumps(universe, ensure_ascii=False))
+              print(json.dumps(universe["exclusion"], ensure_ascii=False))
+          PY
           python3 classify_universe.py
 
       - name: Collect prices and Event View
@@ -146,6 +204,7 @@ jobs:
               "status": "READY_FOR_ASSESSMENT" if rows else "NO_ELIGIBLE_EVENTS",
               "prepared_at_utc": now.isoformat(),
               "source_captured_at_utc": universe["captured_at"],
+              "exclusion": universe.get("exclusion"),
               "card_window_start_utc": datetime.fromtimestamp(universe["window_start"], timezone.utc).isoformat(),
               "card_window_end_utc": datetime.fromtimestamp(universe["window_end"], timezone.utc).isoformat(),
               "eligible_singles": len(rows),
