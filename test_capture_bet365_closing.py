@@ -47,6 +47,37 @@ class ClosingLineTests(unittest.TestCase):
             targets = closing.load_targets(root, datetime(2026, 10, 4, tzinfo=timezone.utc))
             self.assertEqual([target["provider_event_id"] for target in targets], ["1"])
 
+    def test_loads_current_manual_checkpoint_shape_and_normalizes_target(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "status").mkdir()
+            checkpoint = root / "assessment_checkpoints" / "day" / "manual"
+            checkpoint.mkdir(parents=True)
+            (root / "status" / "current-run.json").write_text(json.dumps({
+                "checkpoint_root": "assessment_checkpoints/day/manual"
+            }))
+            row = {
+                "event_id": "7",
+                "scheduled_start_utc": "2026-10-05T10:00:00Z",
+                "status": "PASS",
+                "sport": "tennis",
+                "estimated_probability": 0.6,
+                "evaluated_target": {
+                    "target_status": "RECORDED",
+                    "market": "MATCH_WINNER",
+                    "side": "AWAY",
+                    "selection": "B match winner",
+                    "decimal_odds": 2.1,
+                },
+            }
+            (checkpoint / "assessment-batch-001.json").write_text(json.dumps({"decisions": [row]}))
+            targets = closing.load_targets(root, datetime(2026, 10, 4, tzinfo=timezone.utc))
+            self.assertEqual(len(targets), 1)
+            self.assertEqual(targets[0]["side"], "away")
+            self.assertEqual(targets[0]["market_key"], "13_1")
+            self.assertEqual(targets[0]["entry_odds"], 2.1)
+            self.assertEqual(targets[0]["entry_probability"], 0.6)
+
 
 if __name__ == "__main__":
     unittest.main()

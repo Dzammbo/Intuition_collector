@@ -65,22 +65,26 @@ def target_from_decision(row: dict[str, Any], source_ref: str) -> dict[str, Any]
     event_id = provider_id(row)
     start = row.get("start_time_utc") or row.get("scheduled_start_utc") or row.get("start_time")
     market_key = target.get("market_key") or row.get("market_key")
-    side = target.get("side") or row.get("side")
+    side = str(target.get("side") or row.get("side") or "").lower()
+    raw_market = target.get("market_type") or target.get("market") or row.get("market_type") or row.get("market")
+    if not market_key and str(raw_market or "").upper().replace(" ", "_") == "MATCH_WINNER":
+        market_key = "13_1"
     if not all((event_id, start, market_key, side in SIDE_FIELD)):
         return None
+    entry_odds = target.get("captured_odds", target.get("decimal_odds", row.get("captured_odds")))
     return {
         "decision_key": safe_key(row),
         "decision_status": status,
         "provider_event_id": event_id,
         "scheduled_start_utc": utc(start).isoformat(),
         "market_key": str(market_key),
-        "market_type": target.get("market_type") or target.get("market") or row.get("market_type") or row.get("market"),
+        "market_type": raw_market,
         "period": target.get("period") or row.get("period"),
         "line": target.get("line", row.get("line")),
         "selection": target.get("selection") or row.get("selection"),
         "side": side,
-        "entry_odds": target.get("captured_odds", row.get("captured_odds")),
-        "entry_probability": row.get("jarvis_fair_probability") or (row.get("assessment") or {}).get("jarvis_fair_probability"),
+        "entry_odds": entry_odds,
+        "entry_probability": row.get("estimated_probability") or row.get("jarvis_fair_probability") or (row.get("assessment") or {}).get("jarvis_fair_probability"),
         "source_ref": source_ref,
     }
 
@@ -97,7 +101,7 @@ def load_targets(state_root: Path, now: datetime) -> list[dict[str, Any]]:
     current_path = state_root / "status" / "current-run.json"
     if current_path.exists():
         current = json.loads(current_path.read_text(encoding="utf-8"))
-        checkpoint_root = ((current.get("assessment") or {}).get("checkpoint_root"))
+        checkpoint_root = current.get("checkpoint_root") or (current.get("assessment") or {}).get("checkpoint_root")
         if checkpoint_root:
             root = state_root / checkpoint_root
             if root.exists():
