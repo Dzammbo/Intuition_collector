@@ -1,0 +1,7 @@
+{
+  "date_moscow": "2026-10-07",
+  "window_mode": "ROLLING_24H_FROM_RUN_START",
+  "exclude_final_portfolio_ref": "final_portfolios/2026-10-06/manual-rerun-2026-10-06.json",
+  "requested_at_utc": "2026-10-07T15:52:00Z",
+  "purpose": "manual-user-request-rolling-24h-exclude-prior-selected-events"
+}
