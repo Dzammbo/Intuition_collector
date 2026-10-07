@@ -258,7 +258,7 @@ jobs:
               "dossier_players": len(history_snapshot.get("players") or []),
               "match_contexts": len(match_context.get("events") or []),
               "pre_deep_enrichment_events": len(enrichment.get("events") or []),
-              "ranking_pages_complete": dossier_manifest["coverage"]["ranking_pages_complete"],
+              "ranking_pages_complete": dossier_manifest["coverage"]["ranking_full_coverage"],
               "earliest_start_utc": datetime.fromtimestamp(earliest, timezone.utc).isoformat() if earliest else None,
               "lead_to_first_start_seconds": lead_seconds,
               "timing_status": "NO_ELIGIBLE_EVENTS" if lead_seconds is None else ("PREMATCH_READY" if lead_seconds >= 0 else "MISSED_EARLIEST_START"),
