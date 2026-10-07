@@ -2,6 +2,6 @@
   "date_moscow": "2026-10-07",
   "window_start_utc": "2026-10-07T15:51:24Z",
   "exclude_final_portfolio_ref": "final_portfolios/2026-10-06/manual-rerun-2026-10-06.json",
-  "requested_at_utc": "2026-10-07T16:03:00Z",
-  "purpose": "retry-after-ranking-workflow-repair-preserve-original-window"
+  "requested_at_utc": "2026-10-07T16:26:00Z",
+  "purpose": "retry-after-readiness-field-fix-preserve-original-window"
 }
