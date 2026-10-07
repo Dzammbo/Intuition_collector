@@ -47,12 +47,23 @@ jobs:
               git config user.email "jarvis-intuition-bot@users.noreply.github.com"
               git add diagnostics/bet365_closing/
               if [ -d closing_line_snapshots ]; then git add closing_line_snapshots/; fi
-              if [ "$captured" -eq 0 ] && [ "$closed" -eq 0 ] && [ "$remaining" -ne 0 ]; then
+              if [ "$captured" -eq 0 ] && [ "$closed" -eq 0 ] && [ "$remaining" -ne 0 ] && [ "$(git rev-list --count origin/main..HEAD)" -eq 0 ]; then
                 git reset
               elif ! git diff --cached --quiet; then
                 git commit -m "Capture Bet365 closing-line snapshots"
-                git pull --rebase origin main
-                git push origin HEAD:main
+              fi
+              if [ "$(git rev-list --count origin/main..HEAD)" -gt 0 ]; then
+                pushed=0
+                for attempt in 1 2 3; do
+                  if git pull --rebase origin main && git push origin HEAD:main; then
+                    pushed=1
+                    break
+                  fi
+                  sleep $(( attempt * 10 ))
+                done
+                if [ "$pushed" -ne 1 ]; then
+                  echo "::warning::Closing snapshots remain local after three push attempts"
+                fi
               fi
             )
             if [ "$remaining" -eq 0 ]; then break; fi
