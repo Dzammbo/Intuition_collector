@@ -59,7 +59,8 @@ jobs:
           set -euo pipefail
           git config user.name "jarvis-intuition-bot"
           git config user.email "jarvis-intuition-bot@users.noreply.github.com"
-          git add diagnostics/check_only/ analysis/final_card_reviews/
+          git add diagnostics/check_only/
+          if [ -d analysis/final_card_reviews ]; then git add analysis/final_card_reviews/; fi
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Check final card settlement"
           git pull --rebase origin main
