@@ -78,6 +78,18 @@ class ClosingLineTests(unittest.TestCase):
             self.assertEqual(targets[0]["entry_odds"], 2.1)
             self.assertEqual(targets[0]["entry_probability"], 0.6)
 
+    def test_closed_unavailable_is_terminal_for_future_polls(self):
+        self.assertIn("CLOSED", closing.TERMINAL_LIFECYCLE_STATUSES)
+        self.assertIn("CLOSED_UNAVAILABLE", closing.TERMINAL_LIFECYCLE_STATUSES)
+
+    def test_empty_capture_finishes_monitoring_session(self):
+        with tempfile.TemporaryDirectory() as directory:
+            summary = closing.capture_once(
+                Path(directory), "unused", datetime(2026, 10, 7, tzinfo=timezone.utc)
+            )
+            self.assertEqual(summary["targets_open"], 0)
+            self.assertEqual(summary["targets_discovered"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

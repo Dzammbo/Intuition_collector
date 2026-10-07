@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: capture-bet365-closing
@@ -13,7 +14,7 @@ concurrency:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 355
     env:
       BETSAPI_TOKEN: ${{ secrets.BETS_API }}
       STATE_ROOT: state
@@ -26,19 +27,40 @@ jobs:
           repository: Dzammbo/jarvis-intuition
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
-      - name: Capture non-blocking Bet365 snapshots
-        run: python3 ops/capture_bet365_closing.py
       - name: Validate collector functions
         working-directory: ops
         run: python3 -m unittest -v test_capture_bet365_closing.py
-      - name: Commit append-only snapshots to private state
-        working-directory: state
+      - name: Monitor and commit closing snapshots every five minutes
+        id: monitor
         run: |
           set -euo pipefail
-          git config user.name "jarvis-intuition-bot"
-          git config user.email "jarvis-intuition-bot@users.noreply.github.com"
-          git add closing_line_snapshots/ diagnostics/bet365_closing/
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Capture Bet365 closing-line snapshots"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          deadline=$(( $(date +%s) + 20400 ))
+          remaining=1
+          while [ "$(date +%s)" -lt "$deadline" ]; do
+            python3 ops/capture_bet365_closing.py
+            remaining=$(python3 -c 'import json; print(json.load(open("state/diagnostics/bet365_closing/latest.json"))["targets_open"])')
+            captured=$(python3 -c 'import json; print(json.load(open("state/diagnostics/bet365_closing/latest.json"))["snapshots_created"])')
+            closed=$(python3 -c 'import json; print(json.load(open("state/diagnostics/bet365_closing/latest.json"))["targets_closed"])')
+            (
+              cd state
+              git config user.name "jarvis-intuition-bot"
+              git config user.email "jarvis-intuition-bot@users.noreply.github.com"
+              git add diagnostics/bet365_closing/
+              if [ -d closing_line_snapshots ]; then git add closing_line_snapshots/; fi
+              if [ "$captured" -eq 0 ] && [ "$closed" -eq 0 ] && [ "$remaining" -ne 0 ]; then
+                git reset
+              elif ! git diff --cached --quiet; then
+                git commit -m "Capture Bet365 closing-line snapshots"
+                git pull --rebase origin main
+                git push origin HEAD:main
+              fi
+            )
+            if [ "$remaining" -eq 0 ]; then break; fi
+            sleep 300
+          done
+          echo "remaining=$remaining" >> "$GITHUB_OUTPUT"
+      - name: Continue the same manually started monitoring session
+        if: steps.monitor.outputs.remaining != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run capture-bet365-closing.yml --repo "$GITHUB_REPOSITORY" --ref main

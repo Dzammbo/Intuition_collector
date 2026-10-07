@@ -21,6 +21,7 @@ BASE_URL = "https://api.b365api.com"
 MOSCOW = timezone(timedelta(hours=3))
 WINDOW_SECONDS = 20 * 60
 ACTIVE_STATUSES = {"0", ""}
+TERMINAL_LIFECYCLE_STATUSES = {"CLOSED", "CLOSED_UNAVAILABLE"}
 SIDE_FIELD = {
     "home": "home_od",
     "away": "away_od",
@@ -271,15 +272,13 @@ def write_lifecycle(root: Path, target: dict[str, Any], patch: dict[str, Any]) -
     path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def main() -> None:
-    state_root = Path(os.environ.get("STATE_ROOT", "state")).resolve()
-    token = os.environ["BETSAPI_TOKEN"]
-    now = datetime.now(timezone.utc)
+def capture_once(state_root: Path, token: str, now: datetime | None = None) -> dict[str, Any]:
+    now = now or datetime.now(timezone.utc)
     targets = load_targets(state_root, now)
     due = []
     for target in targets:
         lifecycle = read_lifecycle(state_root, target["decision_key"])
-        if lifecycle.get("status") == "CLOSED":
+        if lifecycle.get("status") in TERMINAL_LIFECYCLE_STATUSES:
             continue
         seconds = (utc(target["scheduled_start_utc"]) - now).total_seconds()
         if seconds <= WINDOW_SECONDS or lifecycle.get("first_snapshot_at_utc"):
@@ -347,14 +346,23 @@ def main() -> None:
                 "closed_at_utc": now.isoformat(),
                 "unavailable_reason": "NO_EXACT_PREMATCH_BET365_QUOTE",
             })
+            closed += 1
 
+    open_targets = [
+        target for target in targets
+        if read_lifecycle(state_root, target["decision_key"]).get("status") not in TERMINAL_LIFECYCLE_STATUSES
+    ]
+    next_start = min((utc(target["scheduled_start_utc"]) for target in open_targets), default=None)
     summary = {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_at_utc": now.isoformat(),
         "targets_discovered": len(targets),
         "targets_due": len(due),
         "snapshots_created": captured,
         "targets_closed": closed,
+        "targets_open": len(open_targets),
+        "next_open_target_start_utc": next_start.isoformat() if next_start else None,
+        "recommended_poll_seconds": 300,
         "errors": errors,
         "decision_blocking": False,
     }
@@ -362,6 +370,13 @@ def main() -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False))
+    return summary
+
+
+def main() -> None:
+    state_root = Path(os.environ.get("STATE_ROOT", "state")).resolve()
+    token = os.environ["BETSAPI_TOKEN"]
+    capture_once(state_root, token)
 
 
 if __name__ == "__main__":
