@@ -16,14 +16,65 @@ jobs:
     timeout-minutes: 15
     env:
       BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+      PRIVATE_REPO_TOKEN: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
       - name: Collect
         shell: bash
         run: |
           set -euo pipefail
           test -n "${BETSAPI_TOKEN:-}"
           python3 collector.py
+      - name: Exclude events already selected in prior frozen portfolio
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF=$(sed -n 's/^exclude_final_portfolio_ref=//p' triggers/run-universe.txt | head -1)
+          if [ -z "$REF" ]; then
+            echo "No prior portfolio exclusion requested"
+            exit 0
+          fi
+          test -f "state/$REF"
+          EXCLUDE_REF="$REF" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          universe_path = Path("universe.json")
+          universe = json.loads(universe_path.read_text())
+          ref = os.environ["EXCLUDE_REF"]
+          portfolio = json.loads((Path("state") / ref).read_text())
+          excluded = {
+              str(row["event_id"])
+              for row in portfolio.get("selections", [])
+              if row.get("event_id") is not None
+          }
+          before = universe.get("window_events") or []
+          matched = sorted({
+              str(row.get("id"))
+              for row in before
+              if str(row.get("id")) in excluded
+          })
+          universe["window_events"] = [
+              row for row in before if str(row.get("id")) not in excluded
+          ]
+          universe["window_event_count"] = len(universe["window_events"])
+          universe["exclusion"] = {
+              "mode": "EXCLUDE_PREVIOUSLY_SELECTED_PROVIDER_EVENT_IDS",
+              "source_ref": ref,
+              "requested_event_ids": len(excluded),
+              "matched_and_excluded": len(matched),
+              "excluded_event_ids": matched,
+          }
+          universe_path.write_text(json.dumps(universe, ensure_ascii=False))
+          print(json.dumps(universe["exclusion"], ensure_ascii=False))
+          PY
       - name: Classify canonical 24h Universe
         if: success()
         run: python3 classify_universe.py
