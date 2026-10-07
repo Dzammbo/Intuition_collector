@@ -69,7 +69,7 @@ jobs:
               )"
             fi
           fi
-          python3 -c 'from datetime import datetime; import os; datetime.fromisoformat(os.environ["WINDOW_START"].replace("Z", "+00:00"))' WINDOW_START="$WINDOW_START"
+          WINDOW_START="$WINDOW_START" python3 -c 'from datetime import datetime; import os; datetime.fromisoformat(os.environ["WINDOW_START"].replace("Z", "+00:00"))'
           echo "DAY=$DAY" >> "$GITHUB_ENV"
           echo "CARD_WINDOW_START_UTC=$WINDOW_START" >> "$GITHUB_ENV"
           echo "EXCLUDE_FINAL_PORTFOLIO_REF=$EXCLUDE_REF" >> "$GITHUB_ENV"
