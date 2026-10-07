@@ -1,6 +1,7 @@
-37471337118
-37479451083
-2026-10-06
-requested_at=2026-10-06T14:39:03Z
-reason=explicit-user-manual-command-event-view-all-333-singles
-canon_commit=868b152a2607d00ab98404a223c6c10151cbc29c
+37679195174
+37680637526
+2026-10-07
+requested_at=2026-10-07T20:27:44Z
+reason=explicit-user-manual-command-event-view-all-302-singles
+stage=EVENT_VIEW_ONLY
+canon_version=2026-10-07-canon-v28-stage-approval-gate
