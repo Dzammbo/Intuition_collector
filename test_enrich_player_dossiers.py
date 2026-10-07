@@ -60,6 +60,12 @@ class EnrichmentTests(unittest.TestCase):
         self.assertEqual(second["coverage"]["reused"], 1)
         self.assertEqual(second["events"][0]["source_fingerprint"], first["events"][0]["source_fingerprint"])
 
+    def test_unknown_strength_is_preserved_without_crashing(self):
+        self.history["players"][0]["baseline_history"]["archive_strength_context"] = "UNKNOWN"
+        output = build(self.history, self.context)
+        home = output["events"][0]["players"][0]
+        self.assertEqual(home["opponent_quality"]["player_current_archive_elo"], "UNKNOWN")
+
 
 if __name__ == "__main__":
     unittest.main()

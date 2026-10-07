@@ -76,7 +76,9 @@ def current_elo(history: dict[str, Any]) -> float | None:
     strength = history.get("archive_strength_context")
     if not isinstance(strength, dict):
         strength = history.get("opponent_strength_context")
-    return as_number((strength or {}).get("current_archive_elo"))
+    if not isinstance(strength, dict):
+        return None
+    return as_number(strength.get("current_archive_elo"))
 
 
 def detail_rows(history: dict[str, Any]) -> list[dict[str, Any]]:
@@ -91,6 +93,8 @@ def exact_surface_view(history: dict[str, Any], event_surface: Any) -> dict[str,
     strength = history.get("archive_strength_context")
     if not isinstance(strength, dict):
         strength = history.get("opponent_strength_context")
+    if not isinstance(strength, dict):
+        strength = {}
     ratings = (strength or {}).get("current_surface_archive_elo")
     record = records.get(key, UNKNOWN) if isinstance(records, dict) else UNKNOWN
     rating = ratings.get(key, UNKNOWN) if isinstance(ratings, dict) else UNKNOWN
