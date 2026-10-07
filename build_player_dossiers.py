@@ -153,6 +153,11 @@ def closing_odds_for(row: dict, player_key: str) -> float | None:
     return row["closing_odds_1"] if player_key == normalise(row["joueur1"]) else row["closing_odds_2"]
 
 
+def opponent_pre_elo_for(row: dict, player_key: str) -> float | None:
+    value = row["joueur2_pre_elo"] if player_key == normalise(row["joueur1"]) else row["joueur1_pre_elo"]
+    return float(value) if isinstance(value, (int, float)) else None
+
+
 def compact_matches(matches: list[dict], player_key: str, take: int) -> dict:
     detail = []
     wins = 0
@@ -170,6 +175,7 @@ def compact_matches(matches: list[dict], player_key: str, take: int) -> dict:
             "score": row["score"] or UNKNOWN,
             "duration_minutes": row["duration_minutes"],
             "closing_odds": closing_odds_for(row, player_key) or UNKNOWN,
+            "opponent_pre_match_archive_elo": opponent_pre_elo_for(row, player_key) or UNKNOWN,
         })
     return {"matches": len(detail), "wins": wins, "losses": len(detail) - wins, "detail": detail}
 
@@ -329,6 +335,15 @@ def build_history_record(
     profile: dict | None,
 ) -> dict:
     key = normalise(player["canonical_name"])
+    opponent_elos = [
+        value for row in matches[:20]
+        if (value := opponent_pre_elo_for(row, key)) is not None
+    ]
+    known_durations = [
+        float(row["duration_minutes"]) for row in matches[:20]
+        if isinstance(row.get("duration_minutes"), (int, float))
+    ]
+    known_dates = [row["date_utc"] for row in matches[:20] if row.get("date_utc")]
     surface: defaultdict[str, list[int]] = defaultdict(lambda: [0, 0])
     retirements = 0
     score_rows = []
@@ -402,6 +417,10 @@ def build_history_record(
                     name: round(surface_elo[(key, name)], 1)
                     for name in sorted(surface) if (key, name) in surface_elo
                 } or UNKNOWN,
+                "last_20_average_opponent_pre_match_archive_elo": (
+                    round(sum(opponent_elos) / len(opponent_elos), 1) if opponent_elos else UNKNOWN
+                ),
+                "last_20_opponents_with_archive_elo": len(opponent_elos),
                 "role": "STRENGTH_PROXY_NOT_OFFICIAL_RANKING",
             } if matches else UNKNOWN),
             "score_derived_metrics": ({
@@ -422,6 +441,27 @@ def build_history_record(
                 "matches_previous_30_days": month,
                 "latest_completed_match_utc": iso(latest),
                 "calendar_days_rest_at_frozen_cutoff": ((cutoff.date() - latest.date()).days if latest else UNKNOWN),
+                "last_20_known_duration_count": len(known_durations),
+                "last_20_known_duration_total_minutes": (
+                    round(sum(known_durations), 1) if known_durations else UNKNOWN
+                ),
+                "last_20_known_duration_average_minutes": (
+                    round(sum(known_durations) / len(known_durations), 1)
+                    if known_durations else UNKNOWN
+                ),
+                "latest_known_tournament": matches[0]["tournament"] if matches else UNKNOWN,
+                "latest_known_surface": matches[0]["surface"] if matches else UNKNOWN,
+                "travel_and_time_zone": UNKNOWN,
+            },
+            "sample_stability": {
+                "historical_matches_found": len(matches),
+                "last_20_rows_available": min(20, len(matches)),
+                "last_20_rows_with_score": sum(bool(score_sets(row["score"])) for row in matches[:20]),
+                "last_20_rows_with_duration": len(known_durations),
+                "last_20_rows_with_opponent_elo": len(opponent_elos),
+                "last_20_date_span": ({
+                    "newest": max(known_dates), "oldest": min(known_dates)
+                } if known_dates else UNKNOWN),
             },
             "historical_performance_by_price_band": dict(sorted(price_stats.items())) or UNKNOWN,
             "prior_system_decisions": UNKNOWN,
