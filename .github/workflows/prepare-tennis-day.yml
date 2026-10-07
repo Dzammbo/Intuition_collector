@@ -134,16 +134,42 @@ jobs:
             curl --fail --location --retry 3 --silent --show-error               "https://www.valuebetennis.com/datasets/valuebetennis-matchs-${year}.csv"               --output "valuebetennis-matchs-${year}.csv"
           done
 
-      - name: Capture all pages of provider singles rankings
+      - name: Capture complete ATP and WTA singles rankings
         shell: bash
         run: |
           set -euo pipefail
-          python3 collect_tennis_rankings.py --output-dir rankings
+          sudo apt-get update
+          sudo apt-get install --yes poppler-utils
+          mkdir -p rankings
+          : > rankings/atp-rankings.html
+          for page in $(seq 1 50); do
+            curl --fail --location --retry 3 --silent --show-error \
+              -A 'Mozilla/5.0' \
+              "https://www.tennisexplorer.com/ranking/atp-men/?page=$page&sort=rank" \
+              >> rankings/atp-rankings.html
+          done
+          curl --fail --location --retry 3 --silent --show-error \
+            'https://wtafiles.wtatennis.com/pdf/rankings/Singles_Numeric.pdf' \
+            --output rankings/wta-rankings.pdf
+          pdftotext -layout rankings/wta-rankings.pdf rankings/wta-rankings.txt
+          python3 collect_tennis_rankings.py \
+            --atp-html rankings/atp-rankings.html \
+            --wta-text rankings/wta-rankings.txt \
+            --atp-pages 50 \
+            --output-dir rankings
 
       - name: Build separated baseline dossier layers
         shell: bash
         run: |
           set -euo pipefail
+          PROFILE_ARGS=()
+          if [ -f state/player_dossiers/player-profiles.json ]; then
+            PROFILE_ARGS=(--previous-profile-snapshot state/player_dossiers/player-profiles.json)
+          fi
+          python3 collect_tennis_profiles.py \
+            --universe classified-universe.json \
+            --output rankings/player-profiles.json \
+            "${PROFILE_ARGS[@]}"
           PREVIOUS_ARGS=()
           if [ -f state/player_dossiers/player-history.json ]; then
             PREVIOUS_ARGS=(--previous-player-history state/player_dossiers/player-history.json)
@@ -153,13 +179,30 @@ jobs:
             --event-view event-view-singles.json \
             --matches valuebetennis-matchs-2024.csv valuebetennis-matchs-2025.csv valuebetennis-matchs-2026.csv \
             --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --ranking-snapshots rankings/betsapi-ranking-1.json rankings/betsapi-ranking-3.json \
+            --ranking-snapshots rankings/atp-ranking.json rankings/wta-ranking.json \
+            --profile-snapshot rankings/player-profiles.json \
             --history-output player-history.json \
             --snapshot-output baseline-history-snapshot.json \
             --match-context-output match-context-snapshots.json \
             --manifest-output baseline-dossier-manifest.json \
             "${PREVIOUS_ARGS[@]}"
 
+      - name: Build non-scoring pre-deep-research enrichment
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENRICH_ARGS=()
+          if [ -f "state/player_dossiers/$DAY/pre-deep-research-enrichment.json" ]; then
+            ENRICH_ARGS+=(--previous-enrichment "state/player_dossiers/$DAY/pre-deep-research-enrichment.json")
+          fi
+          if [ -f "state/player_dossiers/$DAY/external-observations.json" ]; then
+            ENRICH_ARGS+=(--external-observations "state/player_dossiers/$DAY/external-observations.json")
+          fi
+          python3 enrich_player_dossiers.py \
+            --history-snapshot baseline-history-snapshot.json \
+            --match-context match-context-snapshots.json \
+            --output pre-deep-research-enrichment.json \
+            "${ENRICH_ARGS[@]}"
       - name: Build assessment index and readiness audit
         shell: bash
         run: |
@@ -176,6 +219,7 @@ jobs:
           history_snapshot = json.loads(Path("baseline-history-snapshot.json").read_text())
           match_context = json.loads(Path("match-context-snapshots.json").read_text())
           dossier_manifest = json.loads(Path("baseline-dossier-manifest.json").read_text())
+          enrichment = json.loads(Path("pre-deep-research-enrichment.json").read_text())
           cards = packet["cards"]
           rows = []
           for index, card in enumerate(cards, 1):
@@ -213,6 +257,7 @@ jobs:
               "dossier_classification": dossier_manifest["classification"],
               "dossier_players": len(history_snapshot.get("players") or []),
               "match_contexts": len(match_context.get("events") or []),
+              "pre_deep_enrichment_events": len(enrichment.get("events") or []),
               "ranking_pages_complete": dossier_manifest["coverage"]["ranking_pages_complete"],
               "earliest_start_utc": datetime.fromtimestamp(earliest, timezone.utc).isoformat() if earliest else None,
               "lead_to_first_start_seconds": lead_seconds,
@@ -224,12 +269,14 @@ jobs:
           root = Path("state")
           index_path = root / f"assessment_inputs/{day}/assessment-candidate-index.json"
           packet_path = root / f"candidate_screen_inputs/{day}/tennis-singles-research-packet.json"
+          profile_registry_path = root / "player_dossiers/player-profiles.json"
           history_registry_path = root / "player_dossiers/player-history.json"
           history_snapshot_path = root / f"player_dossiers/{day}/baseline-history-snapshot.json"
           match_context_path = root / f"player_dossiers/{day}/match-context-snapshots.json"
           dossier_manifest_path = root / f"player_dossiers/{day}/baseline-dossier-manifest.json"
+          enrichment_path = root / f"player_dossiers/{day}/pre-deep-research-enrichment.json"
           status_path = root / f"status/preflight-{day}.json"
-          for path in (index_path, packet_path, history_registry_path, history_snapshot_path, match_context_path, dossier_manifest_path, status_path):
+          for path in (index_path, packet_path, profile_registry_path, history_registry_path, history_snapshot_path, match_context_path, dossier_manifest_path, enrichment_path, status_path):
               path.parent.mkdir(parents=True, exist_ok=True)
 
           index_path.write_text(json.dumps({
@@ -242,10 +289,12 @@ jobs:
               "candidates": rows,
           }, ensure_ascii=False, indent=2) + "\n")
           packet_path.write_text(json.dumps(packet, ensure_ascii=False, indent=2) + "\n")
+          profile_registry_path.write_text(Path("rankings/player-profiles.json").read_text())
           history_registry_path.write_text(Path("player-history.json").read_text())
           history_snapshot_path.write_text(json.dumps(history_snapshot, ensure_ascii=False, indent=2) + "\n")
           match_context_path.write_text(json.dumps(match_context, ensure_ascii=False, indent=2) + "\n")
           dossier_manifest_path.write_text(json.dumps(dossier_manifest, ensure_ascii=False, indent=2) + "\n")
+          enrichment_path.write_text(json.dumps(enrichment, ensure_ascii=False, indent=2) + "\n")
           status_path.write_text(json.dumps(readiness, ensure_ascii=False, indent=2) + "\n")
           print(json.dumps(readiness, ensure_ascii=False))
           PY
@@ -260,10 +309,12 @@ jobs:
           git add \
             "assessment_inputs/$DAY/assessment-candidate-index.json" \
             "candidate_screen_inputs/$DAY/tennis-singles-research-packet.json" \
+            "player_dossiers/player-profiles.json" \
             "player_dossiers/player-history.json" \
             "player_dossiers/$DAY/baseline-history-snapshot.json" \
             "player_dossiers/$DAY/match-context-snapshots.json" \
             "player_dossiers/$DAY/baseline-dossier-manifest.json" \
+            "player_dossiers/$DAY/pre-deep-research-enrichment.json" \
             "status/preflight-$DAY.json"
           if git diff --cached --quiet; then
             exit 0
@@ -286,7 +337,9 @@ jobs:
             baseline-history-snapshot.json
             match-context-snapshots.json
             baseline-dossier-manifest.json
+            pre-deep-research-enrichment.json
             rankings/manifest.json
+            rankings/player-profiles.json
           if-no-files-found: error
           retention-days: 7
 
