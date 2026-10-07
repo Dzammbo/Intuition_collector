@@ -59,9 +59,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ -f state/diagnostics/bet365_closing/latest.json ]; then
-            remaining=$(python3 -c 'import json; print(json.load(open("state/diagnostics/bet365_closing/latest.json")).get("targets_open", 1))')
+            remaining=$(python3 -c 'import json; print(json.load(open("state/diagnostics/bet365_closing/latest.json")).get("targets_open", 0))')
           else
-            remaining=1
+            remaining=0
           fi
           active=-1
           for attempt in 1 2 3; do
