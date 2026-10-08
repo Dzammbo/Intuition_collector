@@ -1,0 +1,78 @@
+name: Validate Price-Blind Sporting Freeze
+
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/run-validate-price-blind-freeze.json']
+  workflow_dispatch:
+    inputs:
+      manifest_ref:
+        description: Canonical manifest path in private repository
+        required: true
+        type: string
+      card_key:
+        description: Immutable card/run key
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+
+      - name: Resolve request
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            MANIFEST_REF=$(python3 -c 'import json; print(json.load(open("triggers/run-validate-price-blind-freeze.json"))["manifest_ref"])')
+            CARD_KEY=$(python3 -c 'import json; print(json.load(open("triggers/run-validate-price-blind-freeze.json"))["card_key"])')
+          else
+            MANIFEST_REF="${{ inputs.manifest_ref }}"
+            CARD_KEY="${{ inputs.card_key }}"
+          fi
+          [[ "$MANIFEST_REF" != /* ]]
+          [[ "$MANIFEST_REF" != *..* ]]
+          [[ "$CARD_KEY" =~ ^[A-Za-z0-9._-]+$ ]]
+          echo "MANIFEST_REF=$MANIFEST_REF" >> "$GITHUB_ENV"
+          echo "CARD_KEY=$CARD_KEY" >> "$GITHUB_ENV"
+
+      - name: Run strict pre-freeze validator
+        run: |
+          python3 state/scripts/validate_price_blind_sporting_freeze.py \
+            --root state \
+            --manifest "$MANIFEST_REF" \
+            --report price-blind-freeze-validation.json
+
+      - name: Persist validation receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p state/audits/price-blind-freeze
+          cp price-blind-freeze-validation.json "state/audits/price-blind-freeze/$CARD_KEY.json"
+          cd state
+          git config user.name "Jarvis Intuition Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "audits/price-blind-freeze/$CARD_KEY.json"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Validate price-blind sporting freeze for $CARD_KEY"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: price-blind-freeze-validation-${{ github.run_id }}
+          path: price-blind-freeze-validation.json
+          if-no-files-found: error
+          retention-days: 7
