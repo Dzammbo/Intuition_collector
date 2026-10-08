@@ -6,12 +6,21 @@ BASE="https://api.b365api.com"
 TOKEN=os.environ["BETSAPI_TOKEN"]
 TRIGGER="triggers/run-assessment-price-refresh.json"
 cfg=json.load(open(TRIGGER,encoding="utf-8"))
-ids=[str(x) for x in cfg.get("event_ids") or []]
-if not ids or len(ids)>50 or len(ids)!=len(set(ids)):
- raise SystemExit("event_ids must contain 1-50 unique ids")
+events=cfg.get("events") or []
+if not events or len(events)>50:
+ raise SystemExit("events must contain 1-50 rows")
+ids=[str(x["event_id"]) for x in events]
+if len(ids)!=len(set(ids)):
+ raise SystemExit("event ids must be unique")
 
-def iso():
- return datetime.now(timezone.utc).isoformat().replace("+00:00","Z")
+def now():
+ return datetime.now(timezone.utc)
+
+def iso(dt=None):
+ return (dt or now()).isoformat().replace("+00:00","Z")
+
+def parse_iso(value):
+ return datetime.fromisoformat(value.replace("Z","+00:00"))
 
 def get(eid):
  q=urllib.parse.urlencode({"token":TOKEN,"event_id":eid,"source":"bet365"})
@@ -28,11 +37,22 @@ def get(eid):
    if attempt<3: time.sleep(1.5*(attempt+1))
  raise last
 
-rows=[];errors=[]
-for i,eid in enumerate(ids,1):
- try: rows.append(get(eid))
- except Exception as exc: errors.append({"event_id":eid,"retrieved_at":iso(),"error":str(exc)})
- print(json.dumps({"progress":i,"total":len(ids),"errors":len(errors)}),flush=True)
-out={"schema_version":1,"stage":"ASSESSMENT_CURRENT_PRICE_REFRESH","date_moscow":cfg["date_moscow"],"batch":cfg["batch"],"trigger_requested_at":cfg.get("requested_at"),"generated_at":iso(),"input_count":len(ids),"completed":len(rows),"errors":errors,"records":rows}
-open("assessment-price-refresh.json","w",encoding="utf-8").write(json.dumps(out,ensure_ascii=False))
-print(json.dumps({"completed":len(rows),"errors":len(errors)}))
+rows=[]; errors=[]; skipped=[]
+for i,event in enumerate(events,1):
+ eid=str(event["event_id"])
+ if now() >= parse_iso(event["scheduled_start_utc"]):
+  skipped.append({"event_id":eid,"checked_at":iso(),"reason":"STARTED_BEFORE_PRICE_QUERY"})
+ else:
+  try:
+   record=get(eid)
+   record["scheduled_start_utc"]=event["scheduled_start_utc"]
+   record["supported_side"]=event["supported_side"]
+   record["assessment_ref"]=event["assessment_ref"]
+   record["assessment_sha256"]=event["assessment_sha256"]
+   rows.append(record)
+  except Exception as exc:
+   errors.append({"event_id":eid,"retrieved_at":iso(),"error":str(exc)})
+ print(json.dumps({"progress":i,"total":len(ids),"completed":len(rows),"skipped":len(skipped),"errors":len(errors)}),flush=True)
+out={"schema_version":1,"stage":"PRICE_REVEAL_RAW_CAPTURE","date_moscow":cfg["date_moscow"],"batch":cfg["batch"],"trigger_requested_at":cfg.get("requested_at"),"generated_at":iso(),"input_count":len(ids),"completed":len(rows),"skipped_started":skipped,"errors":errors,"records":rows}
+open("assessment-price-refresh.json","w",encoding="utf-8").write(json.dumps(out,ensure_ascii=False,indent=2)+"\n")
+print(json.dumps({"completed":len(rows),"skipped":len(skipped),"errors":len(errors)}))
