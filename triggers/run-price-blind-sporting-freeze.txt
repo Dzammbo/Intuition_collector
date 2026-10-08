@@ -1,0 +1,6 @@
+2026-10-08
+149
+requested_at=2026-10-08T10:27:00Z
+reason=explicit-user-manual-command-price-blind-sporting-freeze-all-cleared-events
+stage=PRICE_BLIND_SPORTING_FREEZE_ONLY
+canon_version=2026-10-07-runbook-v26-stage-approval-gate
