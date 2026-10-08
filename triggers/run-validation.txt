@@ -1,1 +1,1 @@
-validate 2026-10-08 player dossiers checkpoint 2026-10-08T05:08:30Z
+validate 2026-10-08 pre-deep enrichment checkpoint 2026-10-08T06:25:55.390Z
