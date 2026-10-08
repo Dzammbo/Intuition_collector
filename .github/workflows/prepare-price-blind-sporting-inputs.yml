@@ -7,6 +7,10 @@ on:
         description: Canonical Moscow card date in YYYY-MM-DD format
         required: true
         type: string
+      card_key:
+        description: Optional immutable card/run key for same-day reruns
+        required: false
+        type: string
       expected_cleared:
         description: Expected cleared event count
         required: true
@@ -36,13 +40,18 @@ jobs:
           if [ "${{ github.event_name }}" = "push" ]; then
             DAY="$(sed -n '1p' triggers/run-price-blind-sporting-freeze.txt)"
             EXPECTED="$(sed -n '2p' triggers/run-price-blind-sporting-freeze.txt)"
+            CARD_KEY="$(sed -n '3p' triggers/run-price-blind-sporting-freeze.txt)"
           else
             DAY="${{ inputs.date_moscow }}"
             EXPECTED="${{ inputs.expected_cleared }}"
+            CARD_KEY="${{ inputs.card_key }}"
           fi
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          if [ -z "$CARD_KEY" ]; then CARD_KEY="$DAY"; fi
+          [[ "$CARD_KEY" =~ ^[A-Za-z0-9._-]+$ ]]
           [[ "$EXPECTED" =~ ^[1-9][0-9]*$ ]]
           echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "CARD_KEY=$CARD_KEY" >> "$GITHUB_ENV"
           echo "EXPECTED=$EXPECTED" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v4
@@ -55,17 +64,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -f "state/status/deep-research-timing-check-$DAY.json"
-          test -f "state/assessment_inputs/$DAY/deep-research-timing-check.json"
-          test -f "state/player_dossiers/$DAY/pre-deep-research-enrichment.json"
+          test -f "state/status/deep-research-timing-check-$CARD_KEY.json"
+          test -f "state/assessment_inputs/$CARD_KEY/deep-research-timing-check.json"
+          test -f "state/player_dossiers/$CARD_KEY/pre-deep-research-enrichment.json"
           python3 - <<'PY'
           import json
           import os
           from pathlib import Path
 
-          day = os.environ["DAY"]
+          card_key = os.environ["CARD_KEY"]
           expected = int(os.environ["EXPECTED"])
-          status = json.loads((Path("state/status") / f"deep-research-timing-check-{day}.json").read_text())
+          status = json.loads((Path("state/status") / f"deep-research-timing-check-{card_key}.json").read_text())
           assert status["status"] == "SUCCESS"
           assert status["next_stage"] == "PRICE_BLIND_SPORTING_FREEZE"
           assert status["coverage"]["cleared_for_price_blind_sporting_freeze"] == expected
@@ -76,8 +85,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 prepare_price_blind_sporting_inputs.py \
-            --enrichment "state/player_dossiers/$DAY/pre-deep-research-enrichment.json" \
-            --timing "state/assessment_inputs/$DAY/deep-research-timing-check.json" \
+            --enrichment "state/player_dossiers/$CARD_KEY/pre-deep-research-enrichment.json" \
+            --timing "state/assessment_inputs/$CARD_KEY/deep-research-timing-check.json" \
             --date-moscow "$DAY" \
             --output-dir "price-blind-sporting-inputs"
           python3 - <<'PY'
@@ -103,21 +112,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf "state/price_blind_inputs/$DAY"
-          mkdir -p "state/price_blind_inputs/$DAY"
-          cp -R price-blind-sporting-inputs/. "state/price_blind_inputs/$DAY/"
+          if [ -e "state/price_blind_inputs/$CARD_KEY" ]; then
+            echo "immutable target already exists: price_blind_inputs/$CARD_KEY" >&2
+            exit 1
+          fi
+          mkdir -p "state/price_blind_inputs/$CARD_KEY"
+          cp -R price-blind-sporting-inputs/. "state/price_blind_inputs/$CARD_KEY/"
           cd state
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add "price_blind_inputs/$DAY"
+          git add "price_blind_inputs/$CARD_KEY"
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Prepare $DAY price-blind sporting inputs"
+          git commit -m "Prepare $CARD_KEY price-blind sporting inputs"
           git pull --rebase origin main
           git push origin HEAD:main
 
       - uses: actions/upload-artifact@v4
         with:
-          name: price-blind-sporting-inputs-${{ env.DAY }}-run-${{ github.run_id }}
+          name: price-blind-sporting-inputs-${{ env.CARD_KEY }}-run-${{ github.run_id }}
           path: price-blind-sporting-inputs
           if-no-files-found: error
           retention-days: 7
