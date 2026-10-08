@@ -1,0 +1,6 @@
+2026-10-08
+278
+requested_at=2026-10-08T06:22:24Z
+reason=explicit-user-manual-command-pre-deep-enrichment-all-278
+stage=PRE_DEEP_ENRICHMENT_ONLY
+canon_version=2026-10-07-runbook-v26-stage-approval-gate
