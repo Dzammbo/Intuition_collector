@@ -1,1 +1,1 @@
-validate 2026-10-08 deep-research timing checkpoint 2026-10-08T08:56:32.224Z
+validate 2026-10-08-rerun-001 RAW_UNIVERSE 2026-10-08T12:36:50Z
