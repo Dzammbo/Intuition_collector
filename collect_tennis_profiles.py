@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import os
+from concurrent.futures import ThreadPoolExecutor
 import itertools
 import json
 import re
@@ -222,62 +224,86 @@ def main() -> None:
     parser.add_argument("--universe", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--previous-profile-snapshot")
-    parser.add_argument("--delay-seconds", type=float, default=0.25)
+    parser.add_argument("--delay-seconds", type=float, default=0.0)
+    parser.add_argument("--workers", type=int, default=int(os.environ.get("PROFILE_FETCH_WORKERS", "4")))
     args = parser.parse_args()
 
     previous, previous_retrieved_at = load_previous_profiles(args.previous_profile_snapshot)
     registry = dict(previous)
-    current_players = []
-    reused = fetched = 0
+    roster = roster_from_universe(args.universe)
     retrieved_at = iso_now()
-    for roster in roster_from_universe(args.universe):
-        name = roster["canonical_name"]
+
+    def build_record(player: dict) -> tuple[dict, bool]:
+        name = player["canonical_name"]
         search_url = SEARCH_URL.format(quote(name))
-        cached = previous.get(roster["provider_player_id"])
-        if reusable_profile(cached, roster):
-            record = {
+        cached = previous.get(player["provider_player_id"])
+        if reusable_profile(cached, player):
+            return ({
                 **cached,
-                **roster,
+                **player,
                 "profile_cache_status": "REUSED_PERSISTENT_PROFILE",
                 "profile_retrieved_at_utc": (
                     cached.get("profile_retrieved_at_utc") or previous_retrieved_at or UNKNOWN
                 ),
-            }
-            registry[roster["provider_player_id"]] = record
-            current_players.append(record)
-            reused += 1
-            continue
+            }, True)
         try:
             profile_url, method, search_attempts = resolve_profile_url(name)
             if not profile_url:
                 record = {
-                    **roster, "status": "UNRESOLVED", "resolution_method": method,
-                    "source": SOURCE_NAME, "search_url": search_url, "profile_url": UNKNOWN,
-                    "search_attempts": search_attempts, "fields": {},
+                    **player,
+                    "status": "UNRESOLVED",
+                    "resolution_method": method,
+                    "source": SOURCE_NAME,
+                    "search_url": search_url,
+                    "profile_url": UNKNOWN,
+                    "search_attempts": search_attempts,
+                    "fields": {},
                     "profile_cache_status": "FETCHED_CURRENT_RUN",
                     "profile_retrieved_at_utc": retrieved_at,
                 }
             else:
                 fields = parse_profile_html(fetch(profile_url))
                 record = {
-                    **roster, "status": "RESOLVED", "resolution_method": method,
-                    "source": SOURCE_NAME, "search_url": search_url, "profile_url": profile_url,
-                    "search_attempts": search_attempts, "fields": fields,
+                    **player,
+                    "status": "RESOLVED",
+                    "resolution_method": method,
+                    "source": SOURCE_NAME,
+                    "search_url": search_url,
+                    "profile_url": profile_url,
+                    "search_attempts": search_attempts,
+                    "fields": fields,
                     "profile_cache_status": "FETCHED_CURRENT_RUN",
                     "profile_retrieved_at_utc": retrieved_at,
                 }
         except RuntimeError as exc:
             record = {
-                **roster, "status": "TECHNICAL_ERROR", "resolution_method": "FETCH_FAILED",
-                "source": SOURCE_NAME, "search_url": search_url, "profile_url": UNKNOWN,
-                "fields": {}, "error": str(exc),
+                **player,
+                "status": "TECHNICAL_ERROR",
+                "resolution_method": "FETCH_FAILED",
+                "source": SOURCE_NAME,
+                "search_url": search_url,
+                "profile_url": UNKNOWN,
+                "fields": {},
+                "error": str(exc),
                 "profile_cache_status": "FETCHED_CURRENT_RUN",
                 "profile_retrieved_at_utc": retrieved_at,
             }
-        registry[roster["provider_player_id"]] = record
+        if args.delay_seconds:
+            time.sleep(max(0.0, args.delay_seconds))
+        return record, False
+
+    with ThreadPoolExecutor(max_workers=args.workers) as executor:
+        built = list(executor.map(build_record, roster))
+
+    current_players = []
+    reused = fetched = 0
+    for record, was_reused in built:
+        registry[record["provider_player_id"]] = record
         current_players.append(record)
-        fetched += 1
-        time.sleep(max(0.0, args.delay_seconds))
+        if was_reused:
+            reused += 1
+        else:
+            fetched += 1
 
     resolved = sum(row["status"] == "RESOLVED" for row in current_players)
     output = {
@@ -290,6 +316,7 @@ def main() -> None:
         "profiles_resolved": resolved,
         "profiles_reused": reused,
         "profiles_fetched": fetched,
+        "execution": {"mode": "BOUNDED_PARALLEL_PROFILE_FETCH", "workers": args.workers},
         "registry_players": len(registry),
         "players": sorted(
             registry.values(),
