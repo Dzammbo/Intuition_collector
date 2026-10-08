@@ -1,7 +1,7 @@
-37679195174
-37680637526
-2026-10-07
-requested_at=2026-10-07T20:27:44Z
-reason=explicit-user-manual-command-event-view-all-302-singles
+37725074505
+37726998462
+2026-10-08
+requested_at=2026-10-08T04:42:36Z
+reason=explicit-user-manual-command-event-view-all-278-singles
 stage=EVENT_VIEW_ONLY
-canon_version=2026-10-07-canon-v28-stage-approval-gate
+canon_version=2026-10-07-runbook-v26-stage-approval-gate
