@@ -1,6 +1,7 @@
-2026-10-07T20:03:49Z
+2026-10-08T03:55:37Z
 window=next-24-hours-from-collection
+card_date_moscow=2026-10-08
 reason=explicit-user-manual-command
 stage=RAW_UNIVERSE_ONLY
 exclude_final_portfolio_ref=final_portfolios/2026-10-06/manual-rerun-2026-10-06.json
-canon_commit=290578b1e9e21c470a9c3c0ec53621abc51987d0
+canon_commit=635729c4773d2edfe370755a2c448e21dad9b11c
