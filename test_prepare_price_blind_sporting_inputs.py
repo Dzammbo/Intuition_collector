@@ -41,8 +41,10 @@ class PreparePriceBlindSportingInputsTest(unittest.TestCase):
             self.assertEqual(manifest["coverage"]["sporting_inputs"], 1)
             self.assertEqual(manifest["date_moscow"], "2026-10-08")
             payload = json.loads((Path(tmp) / "events/001-1.json").read_text())
+            compact = json.loads((Path(tmp) / "compact-research-index.json").read_text())
             self.assertTrue(payload["market_data_redacted"])
             self.assertFalse(payload["price_information_consulted"])
+            self.assertEqual(compact["coverage"]["events"], 1)
 
     def test_redacts_market_keys(self):
         enrichment, timing = self.source()
