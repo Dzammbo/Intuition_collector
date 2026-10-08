@@ -1,6 +1,7 @@
 2026-10-08
-149
-requested_at=2026-10-08T10:36:13Z
-reason=build-readable-compact-research-batches-explicit-user-manual-command
-stage=PRICE_BLIND_SPORTING_FREEZE_ONLY
-canon_version=2026-10-07-runbook-v26-stage-approval-gate
+113
+2026-10-08-rerun-001
+requested_at=2026-10-08T13:40:45Z
+reason=continuous-authorization-price-blind-sporting-inputs-all-113
+stage=PRICE_BLIND_SPORTING_FREEZE_PREPARATION
+canon_version=2026-10-08-canon-v29-technical-fast-path
