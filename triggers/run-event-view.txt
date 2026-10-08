@@ -1,7 +1,8 @@
-37725074505
-37726998462
+37777687290
+37784913705
 2026-10-08
-requested_at=2026-10-08T04:42:36Z
-reason=explicit-user-manual-command-event-view-all-278-singles
+card_key=2026-10-08-rerun-001
+requested_at=2026-10-08T13:33:28Z
+reason=continuous-authorization-event-view-all-128-singles
 stage=EVENT_VIEW_ONLY
-canon_version=2026-10-07-runbook-v26-stage-approval-gate
+canon_version=2026-10-08-canon-v29-technical-fast-path
