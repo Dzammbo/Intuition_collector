@@ -58,6 +58,37 @@ def assert_market_redacted(value: Any, path: str = "$") -> None:
             assert_market_redacted(child, f"{path}[{index}]")
 
 
+def forbidden_key(key: Any) -> bool:
+    normalized = str(key).casefold()
+    return normalized not in ALLOWED_CONTROL_KEYS and (
+        normalized in FORBIDDEN_EXACT_KEYS
+        or any(part in normalized for part in FORBIDDEN_KEY_PARTS)
+    )
+
+
+def redact_market_fields(value: Any) -> tuple[Any, int]:
+    if isinstance(value, dict):
+        redacted: dict[str, Any] = {}
+        removed = 0
+        for key, child in value.items():
+            if forbidden_key(key):
+                removed += 1
+                continue
+            clean_child, child_removed = redact_market_fields(child)
+            redacted[key] = clean_child
+            removed += child_removed
+        return redacted, removed
+    if isinstance(value, list):
+        redacted_list = []
+        removed = 0
+        for child in value:
+            clean_child, child_removed = redact_market_fields(child)
+            redacted_list.append(clean_child)
+            removed += child_removed
+        return redacted_list, removed
+    return value, 0
+
+
 def build(enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path) -> dict[str, Any]:
     if enrichment.get("stage") != "TENNIS_PRE_DEEP_RESEARCH_ENRICHMENT":
         raise ValueError("invalid enrichment stage")
@@ -81,6 +112,7 @@ def build(enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path) 
             raise ValueError(f"missing enriched event {event_id or 'UNKNOWN'}")
         if source.get("status") != "READY_FOR_DEEP_RESEARCH":
             raise ValueError(f"event {event_id} is not ready for deep research")
+        redacted_source, removed_market_fields = redact_market_fields(source)
         payload = {
             "schema_version": 1,
             "stage": "PRICE_BLIND_SPORTING_INPUT",
@@ -90,7 +122,8 @@ def build(enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path) 
             "market_data_redacted": True,
             "price_information_consulted": False,
             "timing_gate_record": timing_row,
-            "sporting_research_baseline": source,
+            "sporting_research_baseline": redacted_source,
+            "market_fields_removed_count": removed_market_fields,
             "requirements": {
                 "fresh_event_specific_research_required": True,
                 "structured_two_player_comparison_required": True,
