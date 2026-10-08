@@ -45,6 +45,7 @@ class PreparePriceBlindSportingInputsTest(unittest.TestCase):
             self.assertTrue(payload["market_data_redacted"])
             self.assertFalse(payload["price_information_consulted"])
             self.assertEqual(compact["coverage"]["events"], 1)
+            self.assertTrue((Path(tmp) / "compact-batches/batch-001.json").exists())
 
     def test_redacts_market_keys(self):
         enrichment, timing = self.source()
