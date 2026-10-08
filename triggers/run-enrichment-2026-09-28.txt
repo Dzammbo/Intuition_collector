@@ -1,6 +1,6 @@
-37679195174
-2026-10-07
-requested_at=2026-10-07T20:15:29Z
-reason=explicit-user-manual-command-l1-all-302-singles
+37725074505
+2026-10-08
+requested_at=2026-10-08T04:19:32Z
+reason=explicit-user-manual-command-l1-all-278-singles
 stage=L1_ONLY
-canon_version=2026-10-07-canon-v28-stage-approval-gate
+canon_version=2026-10-07-runbook-v26-stage-approval-gate
