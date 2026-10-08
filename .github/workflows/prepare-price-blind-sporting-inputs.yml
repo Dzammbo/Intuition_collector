@@ -1,0 +1,117 @@
+name: Prepare Price-Blind Sporting Inputs
+
+on:
+  workflow_dispatch:
+    inputs:
+      date_moscow:
+        description: Canonical Moscow card date in YYYY-MM-DD format
+        required: true
+        type: string
+      expected_cleared:
+        description: Expected cleared event count
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths: ['triggers/run-price-blind-sporting-freeze.txt']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prepare-price-blind-sporting-inputs
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve explicit inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            DAY="$(sed -n '1p' triggers/run-price-blind-sporting-freeze.txt)"
+            EXPECTED="$(sed -n '2p' triggers/run-price-blind-sporting-freeze.txt)"
+          else
+            DAY="${{ inputs.date_moscow }}"
+            EXPECTED="${{ inputs.expected_cleared }}"
+          fi
+          [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          [[ "$EXPECTED" =~ ^[1-9][0-9]*$ ]]
+          echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "EXPECTED=$EXPECTED" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+
+      - name: Verify authorized stage boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "state/status/deep-research-timing-check-$DAY.json"
+          test -f "state/assessment_inputs/$DAY/deep-research-timing-check.json"
+          test -f "state/player_dossiers/$DAY/pre-deep-research-enrichment.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          day = os.environ["DAY"]
+          expected = int(os.environ["EXPECTED"])
+          status = json.loads((Path("state/status") / f"deep-research-timing-check-{day}.json").read_text())
+          assert status["status"] == "SUCCESS"
+          assert status["next_stage"] == "PRICE_BLIND_SPORTING_FREEZE"
+          assert status["coverage"]["cleared_for_price_blind_sporting_freeze"] == expected
+          PY
+
+      - name: Build market-redacted research inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 prepare_price_blind_sporting_inputs.py \
+            --enrichment "state/player_dossiers/$DAY/pre-deep-research-enrichment.json" \
+            --timing "state/assessment_inputs/$DAY/deep-research-timing-check.json" \
+            --output-dir "price-blind-sporting-inputs"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          expected = int(os.environ["EXPECTED"])
+          root = Path("price-blind-sporting-inputs")
+          manifest = json.loads((root / "manifest.json").read_text())
+          assert manifest["coverage"]["sporting_inputs"] == expected
+          assert len(list((root / "events").glob("*.json"))) == expected
+          assert manifest["market_data_redacted"] is True
+          assert manifest["price_information_consulted"] is False
+          PY
+
+      - name: Persist research inputs to canonical state
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "state/price_blind_inputs/$DAY"
+          mkdir -p "state/price_blind_inputs/$DAY"
+          cp -R price-blind-sporting-inputs/. "state/price_blind_inputs/$DAY/"
+          cd state
+          git config user.name "Jarvis Intuition Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "price_blind_inputs/$DAY"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Prepare $DAY price-blind sporting inputs"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: price-blind-sporting-inputs-${{ env.DAY }}-run-${{ github.run_id }}
+          path: price-blind-sporting-inputs
+          if-no-files-found: error
+          retention-days: 7
