@@ -1,8 +1,8 @@
-37777687290
+37830393232
 2026-10-08
-card_key=2026-10-08-rerun-001
-requested_at=2026-10-08T13:30:30Z
-reason=explicit-user-compound-authorization-all-remaining-stages
-stage=L1
-expected_singles=128
-canon_version=2026-10-08-canon-v29-technical-fast-path
+card_key=2026-10-08-part-2
+card_name=08.10 part 2
+requested_at=2026-10-08T19:16:00Z
+reason=continuous-authorization-l1-all-174
+stage=L1_MARKET_SCAN
+canon_version=2026-10-08-canon-v30-player-specific-deep-research
