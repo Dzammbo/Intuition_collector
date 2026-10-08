@@ -4,313 +4,313 @@
   "events": [
     {
       "event_id": "13256545",
-      "side": "AWAY",
-      "start": "2026-10-08T12:30:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T12:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13256545.json",
       "assessment_sha256": "8d27411e715aa904c9a87879d0e31b31d3443aa307e4bc3c6fbf8c1382c7cab9"
     },
     {
       "event_id": "13257023",
-      "side": "HOME",
-      "start": "2026-10-08T12:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T12:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13257023.json",
       "assessment_sha256": "6df3d30c8fd988ea7c5b03caa329aadaf443d1c7afa19133224e95b2e82989e4"
     },
     {
       "event_id": "13259488",
-      "side": "HOME",
-      "start": "2026-10-08T12:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T12:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13259488.json",
       "assessment_sha256": "7c71b8adb03a1bd06a8d8555e0059de4d9e1a498ce8d185fa17dff2287c791c1"
     },
     {
       "event_id": "13262211",
-      "side": "HOME",
-      "start": "2026-10-08T12:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T12:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13262211.json",
       "assessment_sha256": "9ebe5cab1a12fab023d36944c95f5d37d129c877c7135809718444aafc9e732f"
     },
     {
       "event_id": "13249927",
-      "side": "AWAY",
-      "start": "2026-10-08T13:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T13:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13249927.json",
       "assessment_sha256": "c4f8914d89bc1d08a6143e761c5ee7a913e7dce6e99826ff5c06909df67bbb00"
     },
     {
       "event_id": "13252516",
-      "side": "AWAY",
-      "start": "2026-10-08T13:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T13:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13252516.json",
       "assessment_sha256": "b8cb812377f0098dad73b70a671612cf9a2085510350e9fd4b206fa611a5bf63"
     },
     {
       "event_id": "13255694",
-      "side": "HOME",
-      "start": "2026-10-08T13:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T13:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13255694.json",
       "assessment_sha256": "125711a8e92e0b8b1329f9a7fb5b3aeaf48894fa3150c685b86d690082e6c526"
     },
     {
       "event_id": "13259648",
-      "side": "AWAY",
-      "start": "2026-10-08T13:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T13:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13259648.json",
       "assessment_sha256": "ea5497f28259dfb6257f39153c645b5b0b311c50b87b2bb2f98627b1e5964d62"
     },
     {
       "event_id": "13261829",
-      "side": "HOME",
-      "start": "2026-10-08T13:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T13:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261829.json",
       "assessment_sha256": "1b4c57575fedce8223eea131a9482f1e7e286d16540c1c79e7ceab555be17e49"
     },
     {
       "event_id": "13262155",
-      "side": "HOME",
-      "start": "2026-10-08T13:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T13:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13262155.json",
       "assessment_sha256": "ee7e6d12a9f39e0a07c57c798dba2da0bf6789ab19cd868da18eebcb601ab4d7"
     },
     {
       "event_id": "13246054",
-      "side": "AWAY",
-      "start": "2026-10-08T13:30:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T13:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13246054.json",
       "assessment_sha256": "89770a7246d012c4dd7dbc10259335a364eb72044a606771769f122468aabc32"
     },
     {
       "event_id": "13246120",
-      "side": "HOME",
-      "start": "2026-10-08T13:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T13:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13246120.json",
       "assessment_sha256": "880728b493987dd925a8c1a383da82f5ab1e0e86186b447de46b1ff3d258f43d"
     },
     {
       "event_id": "13255979",
-      "side": "AWAY",
-      "start": "2026-10-08T13:30:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T13:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13255979.json",
       "assessment_sha256": "0226bad78608328819388f29105e25d9778c0018011c3d20ade01d053e0f2830"
     },
     {
       "event_id": "13256701",
-      "side": "AWAY",
-      "start": "2026-10-08T14:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T14:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13256701.json",
       "assessment_sha256": "aec6b2533b0b77ddbb5501864932e6a4fab02e71ec2c41be902fed32b45379a5"
     },
     {
       "event_id": "13256901",
-      "side": "HOME",
-      "start": "2026-10-08T14:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T14:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13256901.json",
       "assessment_sha256": "939dad773973bc02e110e95a93d9e91aba6dfcc492faee120b8c3ef0d2e7225a"
     },
     {
       "event_id": "13260851",
-      "side": "HOME",
-      "start": "2026-10-08T14:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T14:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13260851.json",
       "assessment_sha256": "db68dfb7586e35f2f7b3772b91876d3f6b662b8619003611590533e687826280"
     },
     {
       "event_id": "13251868",
-      "side": "AWAY",
-      "start": "2026-10-08T14:10:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T14:10:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13251868.json",
       "assessment_sha256": "b66b7ae10633b0c57fce4e554d443d26f3b11c95fce0320e2e3a136c292ca901"
     },
     {
       "event_id": "13261540",
-      "side": "AWAY",
-      "start": "2026-10-08T14:30:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T14:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261540.json",
       "assessment_sha256": "8dcff278a2bdad0bc69960a8d65509447d1d07ce83fb2e593e328b4b81ce6823"
     },
     {
       "event_id": "13261921",
-      "side": "HOME",
-      "start": "2026-10-08T14:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T14:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261921.json",
       "assessment_sha256": "439489fe9c38e930e807af24eba54cd1e58ede9fb695b1b2bcbd4c49de8b642a"
     },
     {
       "event_id": "13252521",
-      "side": "HOME",
-      "start": "2026-10-08T15:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T15:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13252521.json",
       "assessment_sha256": "b158a3a95e8c3eccd006f1f500da6540b191d5b8d6e0199064c1115a5c9219d9"
     },
     {
       "event_id": "13259329",
-      "side": "HOME",
-      "start": "2026-10-08T15:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T15:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13259329.json",
       "assessment_sha256": "ddef447e0f094f6fdc340e58d0b0fc2d480fea49ed7cfb60549914b6d961b915"
     },
     {
       "event_id": "13256870",
-      "side": "AWAY",
-      "start": "2026-10-08T15:30:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T15:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13256870.json",
       "assessment_sha256": "ad1817fdd013e34ea982c9f6f265e0ebf364d8bf262d982fd603be0415fb2610"
     },
     {
       "event_id": "13256905",
-      "side": "AWAY",
-      "start": "2026-10-08T15:30:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T15:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13256905.json",
       "assessment_sha256": "702b9d83d7c3b1b4467892805545f418e3b497d0eb9972a6942d09c3675ff53f"
     },
     {
       "event_id": "13261928",
-      "side": "HOME",
-      "start": "2026-10-08T15:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T15:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261928.json",
       "assessment_sha256": "a675d580ab0bb031d66973d6bb5b398fc44aa7c79936390394d85a6c0c40c79e"
     },
     {
       "event_id": "13261929",
-      "side": "HOME",
-      "start": "2026-10-08T15:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T15:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261929.json",
       "assessment_sha256": "2ced32e7457c5ff917ea1050170f5696b4944f5ceb300c0b9173bd44b768e299"
     },
     {
       "event_id": "13255489",
-      "side": "AWAY",
-      "start": "2026-10-08T16:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T16:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13255489.json",
       "assessment_sha256": "096ddb98dc86d000479783e63e858d85517890b79fb7cca4db171789e48e53aa"
     },
     {
       "event_id": "13256871",
-      "side": "AWAY",
-      "start": "2026-10-08T16:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T16:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13256871.json",
       "assessment_sha256": "318ba591ee7558c18014dafa31e0ac149de36a762df542a8b74cb487810a47b2"
     },
     {
       "event_id": "13257180",
-      "side": "HOME",
-      "start": "2026-10-08T16:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T16:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13257180.json",
       "assessment_sha256": "0f711f14da1d42efcc3c54a5637988fa2f568c8145efd7e689d421642bf957da"
     },
     {
       "event_id": "13250983",
-      "side": "AWAY",
-      "start": "2026-10-08T17:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T17:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13250983.json",
       "assessment_sha256": "254a1cfd23f792e578e9ad93b1902a63457f49bda807470afc3d3edf37f496a9"
     },
     {
       "event_id": "13261677",
-      "side": "AWAY",
-      "start": "2026-10-08T17:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T17:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261677.json",
       "assessment_sha256": "7d47e4c9491d82c587d9b914e71f70b71a0e90943e23d9cd02b1747fe65e87f2"
     },
     {
       "event_id": "13261440",
-      "side": "HOME",
-      "start": "2026-10-08T17:10:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T17:10:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261440.json",
       "assessment_sha256": "f204bff93ca20f6778009b4d9d19b6656e8ea9f6c5337ab2975bde0310961c26"
     },
     {
       "event_id": "13256904",
-      "side": "HOME",
-      "start": "2026-10-08T18:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T18:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13256904.json",
       "assessment_sha256": "9468a27ce378a48c88336a88b0a0e068ad7aade164265acf553e27d78214eedf"
     },
     {
       "event_id": "13259328",
-      "side": "AWAY",
-      "start": "2026-10-08T18:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-08T18:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13259328.json",
       "assessment_sha256": "1804e0353d591b08f3ed96c5fd3c4901002c26062ff467d7a5e56f550884ef11"
     },
     {
       "event_id": "13240936",
-      "side": "HOME",
-      "start": "2026-10-08T18:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T18:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13240936.json",
       "assessment_sha256": "8a96cd2cbe53eeda66a03c2457e432715b46e5450c1cde24d9c00f1082134f7c"
     },
     {
       "event_id": "13250628",
-      "side": "HOME",
-      "start": "2026-10-08T18:30:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T18:30:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13250628.json",
       "assessment_sha256": "92f378e7226dee4270a44bf6130f0c6024c89a8bb533c7a732be3081ffd648b1"
     },
     {
       "event_id": "13251895",
-      "side": "HOME",
-      "start": "2026-10-08T21:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T21:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13251895.json",
       "assessment_sha256": "ff935fb4b540d69eb568966ca8a3c2166716190e227c56ab065c9d4158d84159"
     },
     {
       "event_id": "13251158",
-      "side": "HOME",
-      "start": "2026-10-08T21:10:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-08T21:10:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13251158.json",
       "assessment_sha256": "e76a5852df03a7665e6cca492ff088963b56036f9881b9cb606dd19d745293b4"
     },
     {
       "event_id": "13236059",
-      "side": "HOME",
-      "start": "2026-10-09T00:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-09T00:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13236059.json",
       "assessment_sha256": "0752f40c9193d8b74343907b42f2f8530e7d0b810ed6eb3e3d0a9e7bdb23457e"
     },
     {
       "event_id": "13244583",
-      "side": "HOME",
-      "start": "2026-10-09T00:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-09T00:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13244583.json",
       "assessment_sha256": "49d08dee32af6bdca04f951136c7e7206e2c991916854b6f886980b9d371bff6"
     },
     {
       "event_id": "13250638",
-      "side": "AWAY",
-      "start": "2026-10-09T00:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-09T00:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13250638.json",
       "assessment_sha256": "a1489bce2c3c848a7a0566299056e8ebb377780067c04efd73b3bae3793c5073"
     },
     {
       "event_id": "13250984",
-      "side": "AWAY",
-      "start": "2026-10-09T00:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-09T00:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13250984.json",
       "assessment_sha256": "bfdeb1f45ac70f050fb8e35f7667b1a66824df2ff2c7468b57348fa384ba1f3e"
     },
     {
       "event_id": "13251010",
-      "side": "HOME",
-      "start": "2026-10-09T00:00:00.000000Z",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-09T00:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13251010.json",
       "assessment_sha256": "23069dd3dd71cd3d220e6ae4cd3203742ac7e6da89effd55ed06103d8f060e7e"
     },
     {
       "event_id": "13251894",
-      "side": "AWAY",
-      "start": "2026-10-09T00:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-09T00:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13251894.json",
       "assessment_sha256": "44bd72e2325478017cdab2b0bf38222efa610c7805b5c1bc186bb78801dfc988"
     },
     {
       "event_id": "13261618",
-      "side": "AWAY",
-      "start": "2026-10-09T00:00:00.000000Z",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-09T00:00:00.000000Z",
       "assessment_ref": "price_blind_assessments/2026-10-08-repair/repair-2026-10-08-event-13261618.json",
       "assessment_sha256": "1a5f4ec80131a2e4e24191e5754779cc0bea6293c1cb0ee814a521444a2df509"
     }
   ],
-  "requested_at": "2026-10-08T12:03:39.073Z",
+  "requested_at": "2026-10-08T12:05:03.794Z",
   "reason": "PRICE_REVEAL for still-prematch SIDE_SUPPORTED events from repaired canonical sporting freeze; no final decisions"
 }
