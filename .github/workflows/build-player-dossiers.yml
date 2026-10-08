@@ -296,11 +296,11 @@ jobs:
           git add \
             player_dossiers/player-profiles.json \
             player_dossiers/player-history.json \
-            "player_dossiers/$DAY/baseline-history-snapshot.json" \
-            "player_dossiers/$DAY/match-context-snapshots.json" \
-            "player_dossiers/$DAY/baseline-dossier-manifest.json"
+            "player_dossiers/$CARD_KEY/baseline-history-snapshot.json" \
+            "player_dossiers/$CARD_KEY/match-context-snapshots.json" \
+            "player_dossiers/$CARD_KEY/baseline-dossier-manifest.json"
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Persist $DAY baseline player dossier layers"
+          git commit -m "Persist $CARD_KEY baseline player dossier layers"
           git pull --rebase origin main
           git push origin HEAD:main
 
