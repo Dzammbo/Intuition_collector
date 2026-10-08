@@ -1,11 +1,13 @@
-2026-10-08T12:33:04Z
+2026-10-08T19:14:00Z
 window=next-24-hours-from-collection
-window_start_utc=2026-10-08T12:33:04Z
-window_end_utc=2026-10-09T12:33:04Z
+window_start_utc=2026-10-08T19:14:00Z
+window_end_utc=2026-10-09T19:14:00Z
 window_mode=ROLLING_24H_FROM_RUN_START
 card_date_moscow=2026-10-08
-card_key=2026-10-08-rerun-001
-reason=explicit-user-manual-command-after-technical-optimization
+card_key=2026-10-08-part-2
+card_name=08.10 part 2
+reason=explicit-user-command-new-non-overlapping-card
 stage=RAW_UNIVERSE_ONLY
 exclude_final_portfolio_ref=
-canon_commit=4512acc534f23436c42676ce06759f1f037f7e06
+exclude_event_ids=13260851,13259329,13251895,13263597,13258567,13258927,13263487
+canon_version=2026-10-08-canon-v30-player-specific-deep-research
