@@ -35,6 +35,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      PROFILE_FETCH_WORKERS: "4"
     steps:
       - uses: actions/checkout@v4
 
@@ -168,8 +170,9 @@ jobs:
           for year in 2024 2025 2026; do
             curl --fail --location --retry 3 --silent --show-error \
               "https://www.valuebetennis.com/datasets/valuebetennis-matchs-${year}.csv" \
-              --output "valuebetennis-matchs-${year}.csv"
+              --output "valuebetennis-matchs-${year}.csv" &
           done
+          wait
 
       - name: Capture complete ATP and WTA singles rankings
         shell: bash
@@ -178,12 +181,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes poppler-utils
           mkdir -p rankings
-          : > rankings/atp-rankings.html
-          for page in $(seq 1 50); do
+          mkdir -p rankings/atp-pages
+          seq 1 50 | xargs -P 8 -I{} sh -c '
+            page="$1"
+            file=$(printf "rankings/atp-pages/%02d.html" "$page")
             curl --fail --location --retry 3 --silent --show-error \
-              -A 'Mozilla/5.0' \
+              -A "Mozilla/5.0" \
               "https://www.tennisexplorer.com/ranking/atp-men/?page=$page&sort=rank" \
-              >> rankings/atp-rankings.html
+              --output "$file"
+          ' _ {}
+          : > rankings/atp-rankings.html
+          for file in rankings/atp-pages/*.html; do
+            cat "$file" >> rankings/atp-rankings.html
           done
           curl --fail --location --retry 3 --silent --show-error \
             'https://wtafiles.wtatennis.com/pdf/rankings/Singles_Numeric.pdf' \
