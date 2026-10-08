@@ -234,23 +234,6 @@ jobs:
             --manifest-output baseline-dossier-manifest.json \
             "${PREVIOUS_ARGS[@]}"
 
-      - name: Build non-scoring pre-deep-research enrichment
-        shell: bash
-        run: |
-          set -euo pipefail
-          ENRICH_ARGS=()
-          if [ -f "state/player_dossiers/$DAY/pre-deep-research-enrichment.json" ]; then
-            ENRICH_ARGS+=(--previous-enrichment "state/player_dossiers/$DAY/pre-deep-research-enrichment.json")
-          fi
-          if [ -f "state/player_dossiers/$DAY/external-observations.json" ]; then
-            ENRICH_ARGS+=(--external-observations "state/player_dossiers/$DAY/external-observations.json")
-          fi
-          python3 enrich_player_dossiers.py \
-            --history-snapshot baseline-history-snapshot.json \
-            --match-context match-context-snapshots.json \
-            --output pre-deep-research-enrichment.json \
-            "${ENRICH_ARGS[@]}"
-
       - name: Validate baseline dossier contract
         shell: bash
         run: |
@@ -276,19 +259,7 @@ jobs:
           assert p["profiles_reused"] + p["profiles_fetched"] == m["coverage"]["current_players"]
           forbidden = {"ss", "points", "stats", "events", "scores", "time_status"}
           assert all(not (forbidden & set(row)) for row in c["events"])
-          e = json.load(open("pre-deep-research-enrichment.json"))
-          assert e["stage"] == "TENNIS_PRE_DEEP_RESEARCH_ENRICHMENT"
-          assert e["coverage"]["input_events"] == len(c["events"])
-          assert e["coverage"]["output_events"] == len(c["events"])
-          assert all(
-              row["status"] == "UNRESOLVED_PLAYER_IDENTITY"
-              or {player["side"] for player in row["players"]} == {"HOME", "AWAY"}
-              for row in e["events"]
-          )
-          assert all("decision" not in row for row in e["events"])
           PY
-          python3 state/scripts/validate_pre_deep_research_enrichment.py \
-            pre-deep-research-enrichment.json
 
       - name: Persist baseline dossier layers to canonical state
         if: env.DIAGNOSTIC_LIMIT == ''
@@ -301,7 +272,6 @@ jobs:
           cp baseline-history-snapshot.json "state/player_dossiers/$DAY/baseline-history-snapshot.json"
           cp match-context-snapshots.json "state/player_dossiers/$DAY/match-context-snapshots.json"
           cp baseline-dossier-manifest.json "state/player_dossiers/$DAY/baseline-dossier-manifest.json"
-          cp pre-deep-research-enrichment.json "state/player_dossiers/$DAY/pre-deep-research-enrichment.json"
           cd state
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
@@ -310,8 +280,7 @@ jobs:
             player_dossiers/player-history.json \
             "player_dossiers/$DAY/baseline-history-snapshot.json" \
             "player_dossiers/$DAY/match-context-snapshots.json" \
-            "player_dossiers/$DAY/baseline-dossier-manifest.json" \
-            "player_dossiers/$DAY/pre-deep-research-enrichment.json"
+            "player_dossiers/$DAY/baseline-dossier-manifest.json"
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Persist $DAY baseline player dossier layers"
           git pull --rebase origin main
@@ -325,7 +294,6 @@ jobs:
             baseline-history-snapshot.json
             match-context-snapshots.json
             baseline-dossier-manifest.json
-            pre-deep-research-enrichment.json
             rankings/manifest.json
             rankings/player-profiles.json
           retention-days: 7
