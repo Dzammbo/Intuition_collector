@@ -1,8 +1,9 @@
-37777687290
-37784913705
+37830393232
+37830663524
 2026-10-08
-card_key=2026-10-08-rerun-001
-requested_at=2026-10-08T13:33:28Z
-reason=continuous-authorization-event-view-all-128-singles
-stage=EVENT_VIEW_ONLY
-canon_version=2026-10-08-canon-v29-technical-fast-path
+card_key=2026-10-08-part-2
+card_name=08.10 part 2
+requested_at=2026-10-08T19:18:00Z
+reason=continuous-authorization-event-view-all-174
+stage=EVENT_VIEW
+canon_version=2026-10-08-canon-v30-player-specific-deep-research
