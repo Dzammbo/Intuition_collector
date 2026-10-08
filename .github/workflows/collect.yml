@@ -36,12 +36,15 @@ jobs:
         run: |
           set -euo pipefail
           REF=$(sed -n 's/^exclude_final_portfolio_ref=//p' triggers/run-universe.txt | head -1)
-          if [ -z "$REF" ]; then
+          EVENT_IDS=$(sed -n 's/^exclude_event_ids=//p' triggers/run-universe.txt | head -1)
+          if [ -z "$REF" ] && [ -z "$EVENT_IDS" ]; then
             echo "No prior portfolio exclusion requested"
             exit 0
           fi
-          test -f "state/$REF"
-          EXCLUDE_REF="$REF" python3 - <<'PY'
+          if [ -n "$REF" ]; then
+            test -f "state/$REF"
+          fi
+          EXCLUDE_REF="$REF" EXCLUDE_EVENT_IDS="$EVENT_IDS" python3 - <<'PY'
           import json
           import os
           from pathlib import Path
@@ -49,12 +52,19 @@ jobs:
           universe_path = Path("universe.json")
           universe = json.loads(universe_path.read_text())
           ref = os.environ["EXCLUDE_REF"]
-          portfolio = json.loads((Path("state") / ref).read_text())
-          excluded = {
-              str(row["event_id"])
-              for row in portfolio.get("selections", [])
-              if row.get("event_id") is not None
+          explicit_ids = {
+              value.strip()
+              for value in os.environ.get("EXCLUDE_EVENT_IDS", "").split(",")
+              if value.strip()
           }
+          excluded = set(explicit_ids)
+          if ref:
+              portfolio = json.loads((Path("state") / ref).read_text())
+              excluded.update(
+                  str(row["event_id"])
+                  for row in portfolio.get("selections", [])
+                  if row.get("event_id") is not None
+              )
           before = universe.get("window_events") or []
           matched = sorted({
               str(row.get("id"))
@@ -67,7 +77,7 @@ jobs:
           universe["window_event_count"] = len(universe["window_events"])
           universe["exclusion"] = {
               "mode": "EXCLUDE_PREVIOUSLY_SELECTED_PROVIDER_EVENT_IDS",
-              "source_ref": ref,
+              "source_ref": ref or "EXPLICIT_PROVIDER_EVENT_IDS",
               "requested_event_ids": len(excluded),
               "matched_and_excluded": len(matched),
               "excluded_event_ids": matched,
