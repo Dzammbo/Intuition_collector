@@ -78,6 +78,7 @@ jobs:
           python3 prepare_price_blind_sporting_inputs.py \
             --enrichment "state/player_dossiers/$DAY/pre-deep-research-enrichment.json" \
             --timing "state/assessment_inputs/$DAY/deep-research-timing-check.json" \
+            --date-moscow "$DAY" \
             --output-dir "price-blind-sporting-inputs"
           python3 - <<'PY'
           import json
@@ -88,6 +89,7 @@ jobs:
           root = Path("price-blind-sporting-inputs")
           manifest = json.loads((root / "manifest.json").read_text())
           assert manifest["coverage"]["sporting_inputs"] == expected
+          assert manifest["date_moscow"] == os.environ["DAY"]
           assert len(list((root / "events").glob("*.json"))) == expected
           assert manifest["market_data_redacted"] is True
           assert manifest["price_information_consulted"] is False
