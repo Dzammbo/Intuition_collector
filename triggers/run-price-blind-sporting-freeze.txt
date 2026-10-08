@@ -1,7 +1,8 @@
 2026-10-08
-113
-2026-10-08-rerun-001
-requested_at=2026-10-08T13:40:45Z
-reason=continuous-authorization-price-blind-sporting-inputs-all-113
+173
+2026-10-08-part-2
+requested_at=2026-10-08T19:26:00Z
+reason=continuous-authorization-price-blind-sporting-inputs-all-173
 stage=PRICE_BLIND_SPORTING_FREEZE_PREPARATION
-canon_version=2026-10-08-canon-v29-technical-fast-path
+card_name=08.10 part 2
+canon_version=2026-10-08-canon-v30-player-specific-deep-research
