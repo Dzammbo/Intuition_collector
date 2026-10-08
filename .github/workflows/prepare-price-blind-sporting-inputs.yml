@@ -91,6 +91,8 @@ jobs:
           assert manifest["coverage"]["sporting_inputs"] == expected
           assert manifest["date_moscow"] == os.environ["DAY"]
           assert len(list((root / "events").glob("*.json"))) == expected
+          compact = json.loads((root / "compact-research-index.json").read_text())
+          assert compact["coverage"]["events"] == expected
           assert manifest["market_data_redacted"] is True
           assert manifest["price_information_consulted"] is False
           PY
