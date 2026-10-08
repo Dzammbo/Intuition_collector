@@ -26,6 +26,7 @@ jobs:
     env:
       BETSAPI_TOKEN: ${{ secrets.BETS_API }}
       GH_TOKEN: ${{ github.token }}
+      BETSAPI_HTTP_WORKERS: "8"
     steps:
       - uses: actions/checkout@v4
       - name: Validate explicit inputs
