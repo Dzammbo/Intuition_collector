@@ -21,33 +21,53 @@ jobs:
           repository: Dzammbo/jarvis-intuition
           token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
           path: state
-      - name: Verify canonical assessment candidate index
+      - name: Verify canonical sporting freeze
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
           trigger=json.loads(Path("triggers/run-assessment-price-refresh.json").read_text())
           day=trigger["date_moscow"]
-          index=json.loads((Path("state")/f"assessment_inputs/{day}/assessment-candidate-index.json").read_text())
-          candidates={str(row["event_id"]) for row in index["candidates"]}
-          requested={str(event_id) for event_id in trigger["event_ids"]}
-          missing=sorted(requested-candidates)
-          if missing:
-              raise SystemExit(f"requested events absent from canonical candidate index: {missing}")
-          print({"candidate_count": index["count"], "requested": len(requested)})
+          manifest=json.loads((Path("state")/f"price_blind_assessments/{day}-repair/manifest.json").read_text())
+          supported={str(row["event_id"]):row for row in manifest["assessments"] if row["sporting_verdict"]=="SIDE_SUPPORTED"}
+          for event in trigger["events"]:
+              eid=str(event["event_id"])
+              if eid not in supported:
+                  raise SystemExit(f"event absent from supported sporting freeze: {eid}")
+              frozen=supported[eid]
+              for key in ("supported_side","assessment_ref","assessment_sha256"):
+                  if event[key] != frozen[key]:
+                      raise SystemExit(f"freeze mismatch for {eid}: {key}")
+          print({"supported_count":len(supported),"requested":len(trigger["events"])})
           PY
       - name: Validate trigger
         run: |
           python3 - <<'PY'
           import json
+          from datetime import datetime
           d=json.load(open("triggers/run-assessment-price-refresh.json"))
           assert d["date_moscow"]
-          assert isinstance(d["batch"], int)
-          assert 1 <= len(d["event_ids"]) <= 50
-          assert len(d["event_ids"]) == len(set(map(str,d["event_ids"])))
+          assert isinstance(d["batch"],int)
+          assert 1 <= len(d["events"]) <= 50
+          ids=[str(x["event_id"]) for x in d["events"]]
+          assert len(ids)==len(set(ids))
+          for row in d["events"]:
+              datetime.fromisoformat(row["scheduled_start_utc"].replace("Z","+00:00"))
           PY
-      - name: Refresh exact event markets
+      - name: Capture exact event markets
         run: python3 assessment_price_refresh.py
+      - name: Persist raw capture in canonical repository
+        run: |
+          DAY=$(python3 -c 'import json; print(json.load(open("triggers/run-assessment-price-refresh.json"))["date_moscow"])')
+          BATCH=$(python3 -c 'import json; print(json.load(open("triggers/run-assessment-price-refresh.json"))["batch"])')
+          mkdir -p "state/price_reveals/$DAY/raw"
+          cp assessment-price-refresh.json "state/price_reveals/$DAY/raw/price-reveal-batch-$BATCH.json"
+          cd state
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "price_reveals/$DAY/raw/price-reveal-batch-$BATCH.json"
+          git commit -m "price reveal: persist raw batch $BATCH for $DAY"
+          git push
       - uses: actions/upload-artifact@v4
         if: always()
         with:
