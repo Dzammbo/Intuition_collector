@@ -2,6 +2,9 @@ name: Capture Bet365 Closing Line (Manual)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [triggers/run-bet365-closing.txt]
 
 permissions:
   contents: read
