@@ -1,6 +1,6 @@
 2026-10-08
 149
-requested_at=2026-10-08T10:31:59Z
-reason=retry-after-market-field-redaction-explicit-user-manual-command
+requested_at=2026-10-08T10:33:20Z
+reason=retry-after-manifest-date-repair-explicit-user-manual-command
 stage=PRICE_BLIND_SPORTING_FREEZE_ONLY
 canon_version=2026-10-07-runbook-v26-stage-approval-gate
