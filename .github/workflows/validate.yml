@@ -14,6 +14,7 @@ on:
       - 'collect_event_view.py'
       - 'build_model_prescreen_packet.py'
       - 'build_player_dossiers.py'
+      - 'enrich_player_dossiers.py'
       - 'collect_tennis_rankings.py'
       - 'test_dossier_pipeline.py'
       - 'config/**'
@@ -90,7 +91,7 @@ jobs:
               "check-final-card-settlement.yml", "daily-settlement.yml",
               "assessment-price-refresh.yml", "bet365-trial-probe.yml",
               "rerender-results.yml", "tennis-architecture-test.yml",
-              "telegram-native-publish.yml", "capture-bet365-closing.yml", "recover-bet365-closing.yml", "build-player-dossiers.yml", "probe-official-rankings.yml", "prepare-tennis-day.yml", "validate.yml",
+              "telegram-native-publish.yml", "capture-bet365-closing.yml", "recover-bet365-closing.yml", "build-player-dossiers.yml", "build-pre-deep-enrichment.yml", "probe-official-rankings.yml", "prepare-tennis-day.yml", "validate.yml",
           }
           present = {p.name for p in workflows.glob("*.yml")}
           assert present == required, (present, required)
