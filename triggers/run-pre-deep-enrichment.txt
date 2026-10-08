@@ -1,6 +1,7 @@
 2026-10-08
-278
-requested_at=2026-10-08T06:24:28.110Z
-reason=retry-after-validator-fix-explicit-user-manual-command-pre-deep-enrichment-all-278
+128
+2026-10-08-rerun-001
+requested_at=2026-10-08T13:38:00Z
+reason=continuous-authorization-pre-deep-enrichment-all-128
 stage=PRE_DEEP_ENRICHMENT_ONLY
-canon_version=2026-10-07-runbook-v26-stage-approval-gate
+canon_version=2026-10-08-canon-v29-technical-fast-path
