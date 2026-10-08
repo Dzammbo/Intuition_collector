@@ -37,8 +37,9 @@ class PreparePriceBlindSportingInputsTest(unittest.TestCase):
     def test_builds_only_cleared_events(self):
         enrichment, timing = self.source()
         with tempfile.TemporaryDirectory() as tmp:
-            manifest = build(enrichment, timing, Path(tmp))
+            manifest = build(enrichment, timing, Path(tmp), date_moscow="2026-10-08")
             self.assertEqual(manifest["coverage"]["sporting_inputs"], 1)
+            self.assertEqual(manifest["date_moscow"], "2026-10-08")
             payload = json.loads((Path(tmp) / "events/001-1.json").read_text())
             self.assertTrue(payload["market_data_redacted"])
             self.assertFalse(payload["price_information_consulted"])
@@ -47,7 +48,7 @@ class PreparePriceBlindSportingInputsTest(unittest.TestCase):
         enrichment, timing = self.source()
         enrichment["events"][0]["odds"] = 1.8
         with tempfile.TemporaryDirectory() as tmp:
-            build(enrichment, timing, Path(tmp))
+            build(enrichment, timing, Path(tmp), date_moscow="2026-10-08")
             payload = json.loads((Path(tmp) / "events/001-1.json").read_text())
             self.assertNotIn("odds", payload["sporting_research_baseline"])
             self.assertEqual(payload["market_fields_removed_count"], 1)
