@@ -1,9 +1,9 @@
 {
   "date_moscow": "2026-10-08",
-  "card_key": "2026-10-08-rerun-001",
+  "card_key": "2026-10-08-part-2",
   "batch": 1,
-  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-08-rerun-001/manifest.json",
-  "compact_batch_dir": "price_blind_inputs/2026-10-08-rerun-001/compact-batches",
-  "requested_at_utc": "2026-10-08T13:49:53.716Z",
-  "reason": "PRICE_REVEAL under continuous authorization for canonical rerun; derive all SIDE_SUPPORTED events from frozen manifest; no final decisions"
+  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-08-part-2/manifest.json",
+  "compact_batch_dir": "price_blind_inputs/2026-10-08-part-2/compact-batches",
+  "requested_at_utc": "2026-10-08T19:43:00Z",
+  "reason": "PRICE_REVEAL under continuous authorization for 08.10 part 2; derive all SIDE_SUPPORTED events from frozen manifest; no final decisions"
 }
