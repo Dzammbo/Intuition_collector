@@ -1,8 +1,8 @@
 2026-10-08
 174
 2026-10-08-part-2
-requested_at=2026-10-08T19:23:00Z
-reason=continuous-authorization-deep-research-timing-check-all-174
+requested_at=2026-10-08T19:25:00Z
+reason=retry-after-pre-deep-status-persistence-repair
 stage=DEEP_RESEARCH_TIMING_CHECK_ONLY
 card_name=08.10 part 2
 canon_version=2026-10-08-canon-v30-player-specific-deep-research
