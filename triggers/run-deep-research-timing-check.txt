@@ -1,7 +1,8 @@
 2026-10-08
-128
-2026-10-08-rerun-001
-requested_at=2026-10-08T13:39:20Z
-reason=continuous-authorization-deep-research-timing-check-all-128
+174
+2026-10-08-part-2
+requested_at=2026-10-08T19:23:00Z
+reason=continuous-authorization-deep-research-timing-check-all-174
 stage=DEEP_RESEARCH_TIMING_CHECK_ONLY
-canon_version=2026-10-08-canon-v29-technical-fast-path
+card_name=08.10 part 2
+canon_version=2026-10-08-canon-v30-player-specific-deep-research
