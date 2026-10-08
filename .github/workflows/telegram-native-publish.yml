@@ -20,6 +20,10 @@ on:
         description: Optional same-day card key suffix
         required: false
         type: string
+      absorb_marker:
+        description: Optional prior Telegram publication marker to absorb
+        required: false
+        type: string
   push:
     branches: [main]
     paths: [triggers/run-telegram-publish.txt]
@@ -63,11 +67,13 @@ jobs:
             KIND="${{ inputs.kind }}"
             DATE="${{ inputs.date }}"
             LOGICAL_SUFFIX="${{ inputs.logical_suffix }}"
+            ABSORB_MARKER="${{ inputs.absorb_marker }}"
           else
             REPORT=$(sed -n '1p' ops/triggers/run-telegram-publish.txt)
             KIND=$(sed -n '2p' ops/triggers/run-telegram-publish.txt)
             DATE=$(sed -n '3p' ops/triggers/run-telegram-publish.txt)
             LOGICAL_SUFFIX=$(sed -n '4p' ops/triggers/run-telegram-publish.txt)
+            ABSORB_MARKER=$(sed -n 's/^absorb_marker=//p' ops/triggers/run-telegram-publish.txt | head -1)
           fi
           [[ "$REPORT" != /* && "$REPORT" != *".."* ]]
           [[ "$DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
@@ -78,11 +84,22 @@ jobs:
           [[ -z "$LOGICAL_SUFFIX" || "$LOGICAL_SUFFIX" =~ ^[a-z0-9-]+$ ]]
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
           echo "logical_suffix=$LOGICAL_SUFFIX" >> "$GITHUB_OUTPUT"
+          [[ -z "$ABSORB_MARKER" || ( "$ABSORB_MARKER" != /* && "$ABSORB_MARKER" != *".."* ) ]]
+          echo "absorb_marker=$ABSORB_MARKER" >> "$GITHUB_OUTPUT"
       - name: Publish explicitly requested report
         working-directory: state
         run: |
-          python3 scripts/publish_telegram.py             --report "${{ steps.request.outputs.report }}"             --kind "${{ steps.request.outputs.kind }}"             --date "${{ steps.request.outputs.date }}" \
-            --logical-suffix "${{ steps.request.outputs.logical_suffix }}"
+          set -euo pipefail
+          ABSORB_ARGS=()
+          if [ -n "${{ steps.request.outputs.absorb_marker }}" ]; then
+            ABSORB_ARGS=(--absorb-marker "${{ steps.request.outputs.absorb_marker }}")
+          fi
+          python3 scripts/publish_telegram.py \
+            --report "${{ steps.request.outputs.report }}" \
+            --kind "${{ steps.request.outputs.kind }}" \
+            --date "${{ steps.request.outputs.date }}" \
+            --logical-suffix "${{ steps.request.outputs.logical_suffix }}" \
+            "${ABSORB_ARGS[@]}"
       - name: Commit publication markers to private repository
         working-directory: state
         run: |
