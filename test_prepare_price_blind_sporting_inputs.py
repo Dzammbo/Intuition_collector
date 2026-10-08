@@ -43,12 +43,14 @@ class PreparePriceBlindSportingInputsTest(unittest.TestCase):
             self.assertTrue(payload["market_data_redacted"])
             self.assertFalse(payload["price_information_consulted"])
 
-    def test_rejects_market_keys(self):
+    def test_redacts_market_keys(self):
         enrichment, timing = self.source()
         enrichment["events"][0]["odds"] = 1.8
         with tempfile.TemporaryDirectory() as tmp:
-            with self.assertRaisesRegex(ValueError, "forbidden market-derived key"):
-                build(enrichment, timing, Path(tmp))
+            build(enrichment, timing, Path(tmp))
+            payload = json.loads((Path(tmp) / "events/001-1.json").read_text())
+            self.assertNotIn("odds", payload["sporting_research_baseline"])
+            self.assertEqual(payload["market_fields_removed_count"], 1)
 
 
 if __name__ == "__main__":
