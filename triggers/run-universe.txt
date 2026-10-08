@@ -1,7 +1,11 @@
-2026-10-08T03:55:37Z
+2026-10-08T12:33:04Z
 window=next-24-hours-from-collection
+window_start_utc=2026-10-08T12:33:04Z
+window_end_utc=2026-10-09T12:33:04Z
+window_mode=ROLLING_24H_FROM_RUN_START
 card_date_moscow=2026-10-08
-reason=explicit-user-manual-command
+card_key=2026-10-08-rerun-001
+reason=explicit-user-manual-command-after-technical-optimization
 stage=RAW_UNIVERSE_ONLY
-exclude_final_portfolio_ref=final_portfolios/2026-10-06/manual-rerun-2026-10-06.json
-canon_commit=635729c4773d2edfe370755a2c448e21dad9b11c
+exclude_final_portfolio_ref=
+canon_commit=4512acc534f23436c42676ce06759f1f037f7e06
