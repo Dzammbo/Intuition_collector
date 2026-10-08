@@ -1,8 +1,9 @@
-37725074505
-37728800400
+37777687290
+37785361695
 2026-10-08
 
-reason=explicit-user-manual-command-player-dossiers-all-278
-requested_at=2026-10-08T05:02:27Z
+2026-10-08-rerun-001
+reason=continuous-authorization-player-dossiers-all-128
+requested_at=2026-10-08T13:36:00Z
 stage=PLAYER_DOSSIERS_ONLY
-canon_version=2026-10-07-runbook-v26-stage-approval-gate
+canon_version=2026-10-08-canon-v29-technical-fast-path
