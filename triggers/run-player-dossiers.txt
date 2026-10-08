@@ -1,9 +1,10 @@
-37777687290
-37785361695
+37830393232
+37830869611
 2026-10-08
 
-2026-10-08-rerun-001
-reason=continuous-authorization-player-dossiers-all-128
-requested_at=2026-10-08T13:36:00Z
+2026-10-08-part-2
+reason=continuous-authorization-player-dossiers-all-174
+requested_at=2026-10-08T19:19:00Z
 stage=PLAYER_DOSSIERS_ONLY
-canon_version=2026-10-08-canon-v29-technical-fast-path
+card_name=08.10 part 2
+canon_version=2026-10-08-canon-v30-player-specific-deep-research
