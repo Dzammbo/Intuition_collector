@@ -15,6 +15,10 @@ on:
         description: Canonical Moscow card date in YYYY-MM-DD format
         required: true
         type: string
+      card_key:
+        description: Optional immutable card/run key for same-day reruns
+        required: false
+        type: string
       diagnostic_match_limit:
         description: Optional earliest-start subset for a non-persistent smoke test
         required: false
@@ -49,19 +53,24 @@ jobs:
             EVENT_VIEW_RUN="$(sed -n '2p' triggers/run-player-dossiers.txt)"
             DAY="$(sed -n '3p' triggers/run-player-dossiers.txt)"
             DIAGNOSTIC_LIMIT="$(sed -n '4p' triggers/run-player-dossiers.txt)"
+            CARD_KEY="$(sed -n '5p' triggers/run-player-dossiers.txt)"
           else
             UNIVERSE_RUN="${{ inputs.universe_run_id }}"
             EVENT_VIEW_RUN="${{ inputs.event_view_run_id }}"
             DAY="${{ inputs.date_moscow }}"
             DIAGNOSTIC_LIMIT="${{ inputs.diagnostic_match_limit }}"
+            CARD_KEY="${{ inputs.card_key }}"
           fi
           [[ "$UNIVERSE_RUN" =~ ^[0-9]+$ ]]
           [[ "$EVENT_VIEW_RUN" =~ ^[0-9]+$ ]]
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          if [ -z "$CARD_KEY" ]; then CARD_KEY="$DAY"; fi
+          [[ "$CARD_KEY" =~ ^[A-Za-z0-9._-]+$ ]]
           [[ "$DIAGNOSTIC_LIMIT" =~ ^$|^[1-9][0-9]*$ ]]
           echo "UNIVERSE_RUN=$UNIVERSE_RUN" >> "$GITHUB_ENV"
           echo "EVENT_VIEW_RUN=$EVENT_VIEW_RUN" >> "$GITHUB_ENV"
           echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "CARD_KEY=$CARD_KEY" >> "$GITHUB_ENV"
           echo "DIAGNOSTIC_LIMIT=$DIAGNOSTIC_LIMIT" >> "$GITHUB_ENV"
 
       - name: Download classified tennis universe
@@ -275,12 +284,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "state/player_dossiers/$DAY"
+          mkdir -p "state/player_dossiers/$CARD_KEY"
           cp rankings/player-profiles.json state/player_dossiers/player-profiles.json
           cp player-history.json state/player_dossiers/player-history.json
-          cp baseline-history-snapshot.json "state/player_dossiers/$DAY/baseline-history-snapshot.json"
-          cp match-context-snapshots.json "state/player_dossiers/$DAY/match-context-snapshots.json"
-          cp baseline-dossier-manifest.json "state/player_dossiers/$DAY/baseline-dossier-manifest.json"
+          cp baseline-history-snapshot.json "state/player_dossiers/$CARD_KEY/baseline-history-snapshot.json"
+          cp match-context-snapshots.json "state/player_dossiers/$CARD_KEY/match-context-snapshots.json"
+          cp baseline-dossier-manifest.json "state/player_dossiers/$CARD_KEY/baseline-dossier-manifest.json"
           cd state
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
@@ -297,7 +306,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: baseline-tennis-player-dossiers-${{ env.DAY }}-run-${{ github.run_id }}
+          name: baseline-tennis-player-dossiers-${{ env.CARD_KEY }}-run-${{ github.run_id }}
           path: |
             player-history.json
             baseline-history-snapshot.json
