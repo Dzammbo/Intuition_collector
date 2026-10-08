@@ -1,0 +1,140 @@
+name: Build Tennis Pre-Deep Enrichment
+
+on:
+  workflow_dispatch:
+    inputs:
+      date_moscow:
+        description: Canonical Moscow card date in YYYY-MM-DD format
+        required: true
+        type: string
+      expected_matches:
+        description: Expected complete Event View match count
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths: ['triggers/run-pre-deep-enrichment.txt']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: persist-tennis-pre-deep-enrichment
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve explicit inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            DAY="$(sed -n '1p' triggers/run-pre-deep-enrichment.txt)"
+            EXPECTED="$(sed -n '2p' triggers/run-pre-deep-enrichment.txt)"
+          else
+            DAY="${{ inputs.date_moscow }}"
+            EXPECTED="${{ inputs.expected_matches }}"
+          fi
+          [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          [[ "$EXPECTED" =~ ^[1-9][0-9]*$ ]]
+          echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "EXPECTED=$EXPECTED" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+
+      - name: Verify frozen dossier inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "state/player_dossiers/$DAY/baseline-history-snapshot.json"
+          test -f "state/player_dossiers/$DAY/match-context-snapshots.json"
+          test -f "state/player_dossiers/$DAY/baseline-dossier-manifest.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          day = os.environ["DAY"]
+          expected = int(os.environ["EXPECTED"])
+          root = Path("state/player_dossiers") / day
+          manifest = json.loads((root / "baseline-dossier-manifest.json").read_text())
+          contexts = json.loads((root / "match-context-snapshots.json").read_text())
+          assert manifest["status"] == "READY"
+          assert manifest["coverage"]["eligible_matches"] == expected
+          assert manifest["coverage"]["match_contexts"] == expected
+          assert len(contexts["events"]) == expected
+          print({"eligible_matches": expected, "current_players": manifest["coverage"]["current_players"]})
+          PY
+
+      - name: Build non-scoring pre-deep-research enrichment
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENRICH_ARGS=()
+          if [ -f "state/player_dossiers/$DAY/pre-deep-research-enrichment.json" ]; then
+            ENRICH_ARGS+=(--previous-enrichment "state/player_dossiers/$DAY/pre-deep-research-enrichment.json")
+          fi
+          if [ -f "state/player_dossiers/$DAY/external-observations.json" ]; then
+            ENRICH_ARGS+=(--external-observations "state/player_dossiers/$DAY/external-observations.json")
+          fi
+          python3 enrich_player_dossiers.py \
+            --history-snapshot "state/player_dossiers/$DAY/baseline-history-snapshot.json" \
+            --match-context "state/player_dossiers/$DAY/match-context-snapshots.json" \
+            --output pre-deep-research-enrichment.json \
+            "${ENRICH_ARGS[@]}"
+
+      - name: Validate non-scoring enrichment contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+
+          expected = int(os.environ["EXPECTED"])
+          data = json.load(open("pre-deep-research-enrichment.json"))
+          assert data["stage"] == "TENNIS_PRE_DEEP_RESEARCH_ENRICHMENT"
+          assert data["coverage"]["input_events"] == expected
+          assert data["coverage"]["output_events"] == expected
+          assert len(data["events"]) == expected
+          assert all(
+              row["status"] == "UNRESOLVED_PLAYER_IDENTITY"
+              or {player["side"] for player in row["players"]} == {"HOME", "AWAY"}
+              for row in data["events"]
+          )
+          assert all("decision" not in row for row in data["events"])
+          PY
+          python3 state/scripts/validate_pre_deep_research_enrichment.py \
+            pre-deep-research-enrichment.json
+
+      - name: Persist enrichment to canonical state
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "state/player_dossiers/$DAY"
+          cp pre-deep-research-enrichment.json \
+            "state/player_dossiers/$DAY/pre-deep-research-enrichment.json"
+          cd state
+          git config user.name "Jarvis Intuition Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add "player_dossiers/$DAY/pre-deep-research-enrichment.json"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Persist $DAY pre-deep enrichment"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tennis-pre-deep-enrichment-${{ env.DAY }}-run-${{ github.run_id }}
+          path: pre-deep-research-enrichment.json
+          if-no-files-found: error
+          retention-days: 7
