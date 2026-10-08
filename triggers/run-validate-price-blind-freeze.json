@@ -1,6 +1,6 @@
 {
-  "card_key": "2026-10-08-test-pass-001",
-  "manifest_ref": "price_blind_assessments/2026-10-08-repair/manifest.json",
-  "requested_at_utc": "2026-10-08T12:25:36.967Z",
-  "reason": "Validate the repaired first full-path test pass and verify the new fail-closed pre-freeze validator"
+  "card_key": "2026-10-08-rerun-001",
+  "manifest_ref": "price_blind_assessments/2026-10-08-rerun-001/manifest.json",
+  "requested_at_utc": "2026-10-08T13:46:00Z",
+  "reason": "Validate rerun price-blind sporting freeze before price reveal"
 }
