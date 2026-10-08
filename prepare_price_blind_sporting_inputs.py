@@ -89,6 +89,51 @@ def redact_market_fields(value: Any) -> tuple[Any, int]:
     return value, 0
 
 
+def compact_player(player: dict[str, Any]) -> dict[str, Any]:
+    surface = player.get("surface_form") if isinstance(player.get("surface_form"), dict) else {}
+    quality = player.get("opponent_quality") if isinstance(player.get("opponent_quality"), dict) else {}
+    workload = player.get("workload_qualification_and_duration") if isinstance(player.get("workload_qualification_and_duration"), dict) else {}
+    sample = player.get("age_experience_and_sample") if isinstance(player.get("age_experience_and_sample"), dict) else {}
+    readiness = player.get("retirement_health_and_readiness") if isinstance(player.get("retirement_health_and_readiness"), dict) else {}
+    recent = quality.get("historical_matches_ordered_by_similarity_to_current_opponent")
+    recent = recent if isinstance(recent, list) else []
+    return {
+        "side": player.get("side"),
+        "player_id": player.get("player_id"),
+        "canonical_name": player.get("canonical_name"),
+        "current_archive_elo": quality.get("player_current_archive_elo"),
+        "surface_record": surface.get("record"),
+        "surface_archive_elo": surface.get("archive_surface_elo"),
+        "surface_status": surface.get("status"),
+        "highest_published_singles_rank": sample.get("highest_published_singles_rank"),
+        "date_of_birth": sample.get("date_of_birth"),
+        "age_at_frozen_cutoff": sample.get("age_at_frozen_cutoff"),
+        "handedness": sample.get("handedness"),
+        "historical_matches_found": sample.get("historical_matches_found"),
+        "matches_previous_7_days": workload.get("matches_previous_7_days"),
+        "matches_previous_30_days": workload.get("matches_previous_30_days"),
+        "calendar_days_rest_at_frozen_cutoff": workload.get("calendar_days_rest_at_frozen_cutoff"),
+        "latest_known_tournament": workload.get("latest_known_tournament"),
+        "latest_known_match_surface": workload.get("latest_known_match_surface"),
+        "score_derived_sample": sample.get("score_derived_sample"),
+        "recent_archive_matches": recent[:10],
+        "retirement_health_and_readiness": readiness,
+        "research_gaps": player.get("research_gaps"),
+    }
+
+
+def compact_event(payload: dict[str, Any]) -> dict[str, Any]:
+    baseline = payload["sporting_research_baseline"]
+    return {
+        "ordinal": payload["ordinal"],
+        "event_id": payload["event_id"],
+        "scheduled_start_utc": payload["timing_gate_record"].get("scheduled_start_utc"),
+        "match_context": baseline.get("match_context"),
+        "players": [compact_player(row) for row in baseline.get("players") or []],
+        "input_content_sha256": payload["content_sha256"],
+    }
+
+
 def build(
     enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path,
     date_moscow: str | None = None,
@@ -108,6 +153,7 @@ def build(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     items = []
+    compact_events = []
     for ordinal, timing_row in enumerate(cleared, 1):
         event_id = str(timing_row.get("event_id") or "")
         source = enriched.get(event_id)
@@ -138,6 +184,7 @@ def build(
         payload["content_sha256"] = fingerprint(payload)
         relative = Path("events") / f"{ordinal:03d}-{event_id}.json"
         write_json(output_dir / relative, payload)
+        compact_events.append(compact_event(payload))
         items.append({
             "ordinal": ordinal,
             "event_id": event_id,
@@ -164,8 +211,20 @@ def build(
         "ordering": "TIMING_CHECK_ORDER",
         "events": items,
         "next_action": "MANUAL_PRICE_BLIND_SPORTING_RESEARCH_AND_FREEZE",
+        "compact_index_ref": "compact-research-index.json",
     }
     assert_market_redacted(manifest)
+    compact_index = {
+        "schema_version": 1,
+        "stage": "PRICE_BLIND_SPORTING_COMPACT_RESEARCH_INDEX",
+        "date_moscow": date_moscow or timing.get("date_moscow"),
+        "market_data_redacted": True,
+        "price_information_consulted": False,
+        "coverage": {"events": len(compact_events)},
+        "events": compact_events,
+    }
+    assert_market_redacted(compact_index)
+    write_json(output_dir / "compact-research-index.json", compact_index)
     write_json(output_dir / "manifest.json", manifest)
     return manifest
 
