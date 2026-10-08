@@ -1,1 +1,1 @@
-validate 2026-10-08 Event View checkpoint 2026-10-08T04:46:00Z
+validate 2026-10-08 player dossiers checkpoint 2026-10-08T05:08:30Z
