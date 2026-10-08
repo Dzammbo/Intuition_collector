@@ -1,4 +1,4 @@
-telegram_reports/2026-10-08-rerun-001-compact.md
+telegram_reports/2026-10-08-part-2-compact.md
 COMPACT
 2026-10-08
-rerun-001-2026-10-08T13:56:02.207Z
+part-2
