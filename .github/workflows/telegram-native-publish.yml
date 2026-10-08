@@ -16,6 +16,10 @@ on:
         description: YYYY-MM-DD
         required: true
         type: string
+      logical_suffix:
+        description: Optional same-day card key suffix
+        required: false
+        type: string
   push:
     branches: [main]
     paths: [triggers/run-telegram-publish.txt]
@@ -58,10 +62,12 @@ jobs:
             REPORT="${{ inputs.report }}"
             KIND="${{ inputs.kind }}"
             DATE="${{ inputs.date }}"
+            LOGICAL_SUFFIX="${{ inputs.logical_suffix }}"
           else
             REPORT=$(sed -n '1p' ops/triggers/run-telegram-publish.txt)
             KIND=$(sed -n '2p' ops/triggers/run-telegram-publish.txt)
             DATE=$(sed -n '3p' ops/triggers/run-telegram-publish.txt)
+            LOGICAL_SUFFIX=$(sed -n '4p' ops/triggers/run-telegram-publish.txt)
           fi
           [[ "$REPORT" != /* && "$REPORT" != *".."* ]]
           [[ "$DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
@@ -69,11 +75,14 @@ jobs:
           test -f "state/$REPORT"
           echo "report=$REPORT" >> "$GITHUB_OUTPUT"
           echo "kind=$KIND" >> "$GITHUB_OUTPUT"
+          [[ -z "$LOGICAL_SUFFIX" || "$LOGICAL_SUFFIX" =~ ^[a-z0-9-]+$ ]]
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "logical_suffix=$LOGICAL_SUFFIX" >> "$GITHUB_OUTPUT"
       - name: Publish explicitly requested report
         working-directory: state
         run: |
-          python3 scripts/publish_telegram.py             --report "${{ steps.request.outputs.report }}"             --kind "${{ steps.request.outputs.kind }}"             --date "${{ steps.request.outputs.date }}"
+          python3 scripts/publish_telegram.py             --report "${{ steps.request.outputs.report }}"             --kind "${{ steps.request.outputs.kind }}"             --date "${{ steps.request.outputs.date }}" \
+            --logical-suffix "${{ steps.request.outputs.logical_suffix }}"
       - name: Commit publication markers to private repository
         working-directory: state
         run: |
