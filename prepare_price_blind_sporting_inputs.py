@@ -89,7 +89,10 @@ def redact_market_fields(value: Any) -> tuple[Any, int]:
     return value, 0
 
 
-def build(enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path) -> dict[str, Any]:
+def build(
+    enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path,
+    date_moscow: str | None = None,
+) -> dict[str, Any]:
     if enrichment.get("stage") != "TENNIS_PRE_DEEP_RESEARCH_ENRICHMENT":
         raise ValueError("invalid enrichment stage")
     if timing.get("stage") != "DEEP_RESEARCH_TIMING_CHECK":
@@ -116,7 +119,7 @@ def build(enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path) 
         payload = {
             "schema_version": 1,
             "stage": "PRICE_BLIND_SPORTING_INPUT",
-            "date_moscow": timing.get("date_moscow"),
+            "date_moscow": date_moscow or timing.get("date_moscow"),
             "ordinal": ordinal,
             "event_id": event_id,
             "market_data_redacted": True,
@@ -148,7 +151,7 @@ def build(enrichment: dict[str, Any], timing: dict[str, Any], output_dir: Path) 
         "stage": OUTPUT_STAGE,
         "status": "READY",
         "created_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "date_moscow": timing.get("date_moscow"),
+        "date_moscow": date_moscow or timing.get("date_moscow"),
         "source_timing_check_sha256": fingerprint(timing),
         "source_enrichment_sha256": fingerprint(enrichment),
         "coverage": {
@@ -172,8 +175,12 @@ def main() -> None:
     parser.add_argument("--enrichment", required=True)
     parser.add_argument("--timing", required=True)
     parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--date-moscow", required=True)
     args = parser.parse_args()
-    manifest = build(read_json(args.enrichment), read_json(args.timing), Path(args.output_dir))
+    manifest = build(
+        read_json(args.enrichment), read_json(args.timing), Path(args.output_dir),
+        date_moscow=args.date_moscow,
+    )
     print(json.dumps(manifest["coverage"], ensure_ascii=False))
 
 
