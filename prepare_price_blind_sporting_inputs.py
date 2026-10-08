@@ -212,6 +212,7 @@ def build(
         "events": items,
         "next_action": "MANUAL_PRICE_BLIND_SPORTING_RESEARCH_AND_FREEZE",
         "compact_index_ref": "compact-research-index.json",
+        "compact_batch_root": "compact-batches",
     }
     assert_market_redacted(manifest)
     compact_index = {
@@ -225,6 +226,25 @@ def build(
     }
     assert_market_redacted(compact_index)
     write_json(output_dir / "compact-research-index.json", compact_index)
+    compact_batch_root = output_dir / "compact-batches"
+    for start in range(0, len(compact_events), 25):
+        batch_events = compact_events[start:start + 25]
+        batch_number = start // 25 + 1
+        write_json(
+            compact_batch_root / f"batch-{batch_number:03d}.json",
+            {
+                "schema_version": 1,
+                "stage": "PRICE_BLIND_SPORTING_COMPACT_RESEARCH_BATCH",
+                "date_moscow": date_moscow or timing.get("date_moscow"),
+                "batch_number": batch_number,
+                "ordinal_start": batch_events[0]["ordinal"],
+                "ordinal_end": batch_events[-1]["ordinal"],
+                "market_data_redacted": True,
+                "price_information_consulted": False,
+                "coverage": {"events": len(batch_events)},
+                "events": batch_events,
+            },
+        )
     write_json(output_dir / "manifest.json", manifest)
     return manifest
 
