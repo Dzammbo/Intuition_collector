@@ -1,9 +1,6 @@
-37830393232
-37830663524
-2026-10-08
-card_key=2026-10-08-part-2
-card_name=08.10 part 2
-requested_at=2026-10-08T19:18:00Z
-reason=continuous-authorization-event-view-all-174
-stage=EVENT_VIEW
-canon_version=2026-10-08-canon-v30-player-specific-deep-research
+37983552873
+37983738196
+2026-10-09
+card_key=2026-10-09-part-2
+reason=corrected-second-pass
+requested_at=2026-10-09T19:58:20.282Z
