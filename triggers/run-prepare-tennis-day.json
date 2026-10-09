@@ -1,7 +1,8 @@
 {
-  "date_moscow": "2026-10-07",
-  "window_start_utc": "2026-10-07T15:51:24Z",
-  "exclude_final_portfolio_ref": "final_portfolios/2026-10-06/manual-rerun-2026-10-06.json",
-  "requested_at_utc": "2026-10-07T16:26:00Z",
-  "purpose": "retry-after-readiness-field-fix-preserve-original-window"
+  "date_moscow": "2026-10-09",
+  "window_mode": "ROLLING_24H_FROM_RUN_START",
+  "window_start_utc": "2026-10-09T11:07:00Z",
+  "exclude_final_portfolio_ref": "exclusions/2026-10-08-bet-pass-events.json",
+  "requested_at_utc": "2026-10-09T11:07:00Z",
+  "purpose": "first-pass-2026-10-09-exclude-2026-10-08-bet-and-pass"
 }
