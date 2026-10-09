@@ -50,6 +50,8 @@ jobs:
           fi
           [[ "$D" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           echo "date=$D" >> "$GITHUB_OUTPUT"
+      - name: Enforce price-independent deep-research decisions
+        run: python3 ops/validate_holistic_decision_contract.py state
       - name: Check final card
         working-directory: state
         run: python3 scripts/check_final_card_settlement.py --date-moscow "${{ steps.request.outputs.date }}"
