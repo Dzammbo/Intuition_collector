@@ -1,8 +1,8 @@
-2026-10-08
-174
-2026-10-08-part-2
-requested_at=2026-10-08T19:25:00Z
-reason=retry-after-pre-deep-status-persistence-repair
+2026-10-09
+98
+2026-10-09
+requested_at=2026-10-09T11:12:00Z
+reason=first-pass-09.10-continuous-authorization
 stage=DEEP_RESEARCH_TIMING_CHECK_ONLY
-card_name=08.10 part 2
-canon_version=2026-10-08-canon-v30-player-specific-deep-research
+card_name=09.10 first pass
+canon_version=2026-10-08-runbook-v27-player-specific-deep-research
