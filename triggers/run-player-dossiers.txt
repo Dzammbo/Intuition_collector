@@ -1,10 +1,10 @@
-37830393232
-37830869611
-2026-10-08
+37983552873
+37983830625
+2026-10-09
 
-2026-10-08-part-2
-reason=continuous-authorization-player-dossiers-all-174
-requested_at=2026-10-08T19:19:00Z
+2026-10-09-part-2
+reason=continuous-authorization-player-dossiers-all-73
+requested_at=2026-10-09T19:59:08.732Z
 stage=PLAYER_DOSSIERS_ONLY
-card_name=08.10 part 2
-canon_version=2026-10-08-canon-v30-player-specific-deep-research
+card_name=09.10 второй проход - исправленный
+canon_version=2026-10-09-holistic-price-blind
