@@ -1,5 +1,5 @@
-telegram_reports/2026-10-08-combined-compact.md
+telegram_reports/2026-10-09-first-pass-compact.md
 COMPACT
-2026-10-08
+2026-10-09
 
-absorb_marker=telegram_publications/COMPACT-2026-10-08-part-2.json
+
