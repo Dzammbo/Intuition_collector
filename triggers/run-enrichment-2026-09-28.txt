@@ -1,8 +1,5 @@
-37830393232
-2026-10-08
-card_key=2026-10-08-part-2
-card_name=08.10 part 2
-requested_at=2026-10-08T19:16:00Z
-reason=continuous-authorization-l1-all-174
-stage=L1_MARKET_SCAN
-canon_version=2026-10-08-canon-v30-player-specific-deep-research
+37983552873
+2026-10-09
+card_key=2026-10-09-part-2
+reason=corrected-second-pass
+requested_at=2026-10-09T19:57:28.699Z
