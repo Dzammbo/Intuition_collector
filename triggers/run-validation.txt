@@ -1,4 +1,4 @@
-2026-10-09T20:17:29.484Z
-reason=validate-2026-10-09-part-2
-card_key=2026-10-09-part-2
-stages=repository,holistic,tests
+2026-10-09T20:54:21.049Z
+reason=validate-2026-10-09-combined-final
+card_key=2026-10-09-combined
+stages=repository,holistic,coverage,portfolio,pass-counterfactuals
