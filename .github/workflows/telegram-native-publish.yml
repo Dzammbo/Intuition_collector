@@ -86,6 +86,8 @@ jobs:
           echo "logical_suffix=$LOGICAL_SUFFIX" >> "$GITHUB_OUTPUT"
           [[ -z "$ABSORB_MARKER" || ( "$ABSORB_MARKER" != /* && "$ABSORB_MARKER" != *".."* ) ]]
           echo "absorb_marker=$ABSORB_MARKER" >> "$GITHUB_OUTPUT"
+      - name: Enforce price-independent deep-research decisions
+        run: python3 ops/validate_holistic_decision_contract.py state
       - name: Publish explicitly requested report
         working-directory: state
         run: |
