@@ -36,6 +36,10 @@ active tennis singles event.
 
 Operational workflows run on public GitHub-hosted runners, check out the private state repository with a restricted token, execute its canonical scripts, and write generated state back to the private repository.
 
+## Decision methodology
+
+New tennis decisions follow the [holistic deep-research decision contract](docs/HOLISTIC_DECISION_CONTRACT.md). The exact side and `BET`/`PASS`/`NO_DATA` status are frozen from player-specific research before any bookmaker price is inspected. Price and EV-like fields are post-decision diagnostics only and cannot change the decision.
+
 ## Required Actions secrets
 
 - `BETS_API`
