@@ -1,6 +1,4 @@
 {
-  "card_key": "2026-10-09",
-  "manifest_ref": "price_blind_assessments/2026-10-09/manifest.json",
-  "requested_at_utc": "2026-10-09T11:19:00Z",
-  "reason": "validate-09.10-first-pass-player-specific-v2-full-coverage"
+  "manifest_ref": "price_blind_assessments/2026-10-09-rerun-001/manifest.json",
+  "card_key": "2026-10-09-rerun-001"
 }
