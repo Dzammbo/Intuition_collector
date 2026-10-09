@@ -1,8 +1,5 @@
 2026-10-09
-95
-2026-10-09
-requested_at=2026-10-09T11:14:00Z
-reason=first-pass-09.10-continuous-authorization
-stage=PRICE_BLIND_SPORTING_FREEZE_PREPARATION
-card_name=09.10 first pass
-canon_version=2026-10-08-runbook-v27-player-specific-deep-research
+73
+2026-10-09-part-2
+reason=continuous-authorization-prepare-price-blind-inputs
+requested_at=2026-10-09T20:03:53.272Z
