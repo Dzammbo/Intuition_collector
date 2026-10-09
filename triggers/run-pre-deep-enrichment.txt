@@ -1,8 +1,6 @@
-2026-10-08
-174
-2026-10-08-part-2
-requested_at=2026-10-08T19:21:00Z
-reason=continuous-authorization-pre-deep-enrichment-all-174
-stage=PRE_DEEP_ENRICHMENT_ONLY
-card_name=08.10 part 2
-canon_version=2026-10-08-canon-v30-player-specific-deep-research
+2026-10-09
+73
+2026-10-09-part-2
+reason=continuous-authorization-pre-deep
+requested_at=2026-10-09T20:00:38.896Z
+card_name=09.10 второй проход - исправленный
