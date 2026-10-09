@@ -40,11 +40,19 @@ jobs:
           manifest_ref = trigger.get("sporting_freeze_manifest_ref") or f"price_blind_assessments/{day}-repair/manifest.json"
           manifest_path = Path("state") / manifest_ref
           manifest = json.loads(manifest_path.read_text())
-          supported = {
-              str(row["event_id"]): row
-              for row in manifest["assessments"]
-              if row["sporting_verdict"] == "SIDE_SUPPORTED"
-          }
+          supported = {}
+          for row in manifest["assessments"]:
+              is_holistic = manifest.get("contract_version") == "2026-10-09-holistic-deep-research-v1"
+              if is_holistic:
+                  if row.get("research_decision") not in {"BET", "PASS"}:
+                      continue
+                  normalized = dict(row)
+                  normalized["supported_side"] = row["selected_side"]
+              else:
+                  if row.get("sporting_verdict") != "SIDE_SUPPORTED":
+                      continue
+                  normalized = row
+              supported[str(row["event_id"])] = normalized
 
           requested = trigger.get("events") or []
           if requested:
