@@ -1,5 +1,4 @@
-telegram_reports/2026-10-09-first-pass-compact.md
+telegram_reports/2026-10-09-rerun-001-compact.md
 COMPACT
 2026-10-09
-
 
