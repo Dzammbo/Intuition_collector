@@ -1,8 +1,5 @@
 2026-10-09
-98
-2026-10-09
-requested_at=2026-10-09T11:12:00Z
-reason=first-pass-09.10-continuous-authorization
-stage=DEEP_RESEARCH_TIMING_CHECK_ONLY
-card_name=09.10 first pass
-canon_version=2026-10-08-runbook-v27-player-specific-deep-research
+73
+2026-10-09-part-2
+reason=continuous-authorization-new-timing-check
+requested_at=2026-10-09T20:02:38.942Z
