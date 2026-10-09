@@ -64,6 +64,8 @@ jobs:
           [[ "$SCOPE" =~ ^(fast|full)$ ]]
           echo "date=$D" >> "$GITHUB_OUTPUT"
           echo "scope=$SCOPE" >> "$GITHUB_OUTPUT"
+      - name: Enforce price-independent deep-research decisions
+        run: python3 ops/validate_holistic_decision_contract.py state
       - name: Download exact model pre-screen packet
         if: steps.request.outputs.scope == 'full'
         id: packet
