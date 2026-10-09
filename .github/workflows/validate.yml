@@ -16,6 +16,8 @@ on:
       - 'build_player_dossiers.py'
       - 'enrich_player_dossiers.py'
       - 'apply_deep_research_timing_check.py'
+      - 'validate_holistic_decision_contract.py'
+      - 'test_validate_holistic_decision_contract.py'
       - 'collect_tennis_rankings.py'
       - 'test_dossier_pipeline.py'
       - 'config/**'
@@ -120,6 +122,7 @@ jobs:
           cd ops
           python3 -m unittest -v test_capture_bet365_closing.py
           python3 -m unittest -v test_dossier_pipeline.py
+          python3 -m unittest -v test_validate_holistic_decision_contract.py
       - name: Verify private repository write permission
         working-directory: state
         run: git push --dry-run origin HEAD:main
@@ -127,5 +130,6 @@ jobs:
         working-directory: state
         run: |
           python3 scripts/validate_repository.py
+          python3 ../ops/validate_holistic_decision_contract.py .
           python3 -m compileall -q collectors models scripts tests
           python3 -m unittest discover -s tests -p 'test_*.py'
