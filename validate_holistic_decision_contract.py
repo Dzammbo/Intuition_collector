@@ -44,6 +44,8 @@ def validate_row(row: dict[str, Any]) -> None:
     status = str(row.get("status") or row.get("decision_status") or "").upper()
     if status not in DECISIONS:
         return
+    if str(row.get("reason_code") or "") == "DEEP_RESEARCH_TIME_GATE":
+        return
     decided = utc(
         row.get("decision_frozen_at_utc")
         or row.get("decision_recorded_at_utc")
