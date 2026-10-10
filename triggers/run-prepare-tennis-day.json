@@ -1,8 +1,8 @@
 {
-  "date_moscow": "2026-10-09",
-  "window_mode": "ROLLING_24H_FROM_RUN_START",
-  "window_start_utc": "2026-10-09T11:07:00Z",
-  "exclude_final_portfolio_ref": "exclusions/2026-10-08-bet-pass-events.json",
-  "requested_at_utc": "2026-10-09T11:07:00Z",
-  "purpose": "first-pass-2026-10-09-exclude-2026-10-08-bet-and-pass"
+  "date_moscow": "2026-10-10",
+  "window_mode": "MOSCOW_CALENDAR_DAY",
+  "window_start_utc": "",
+  "exclude_final_portfolio_ref": "",
+  "requested_at_utc": "2026-10-10T15:28:42Z",
+  "purpose": "prepare-2026-10-10-tennis-card"
 }
