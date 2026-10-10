@@ -1,3 +1,3 @@
 2026-10-09
-requested_at=2026-10-10T19:04:52.745Z
-purpose=manual-combined-card-results-refresh
+requested_at=2026-10-10T19:09:24.579Z
+purpose=manual-combined-card-results-after-external-recovery
