@@ -1,5 +1,5 @@
-2026-10-09
-73
-2026-10-09-part-2
-reason=continuous-authorization-prepare-price-blind-inputs
-requested_at=2026-10-09T20:03:53.272Z
+2026-10-10
+62
+2026-10-10
+reason=user-authorized-continuous-all-stages
+requested_at=2026-10-10T15:59:00Z
