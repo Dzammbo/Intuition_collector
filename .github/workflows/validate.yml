@@ -156,5 +156,14 @@ jobs:
               python3 scripts/validate_pass_counterfactuals.py "$checkpoint"
             done
           fi
+          if [ -f price_blind_assessments/2026-10-10/manifest.json ]; then
+            python3 scripts/validate_price_blind_sporting_freeze.py --root . --manifest price_blind_assessments/2026-10-10/manifest.json
+            python3 scripts/validate_holistic_decision_contract.py validate-root .
+            python3 scripts/validate_rerun_coverage.py coverage_audits/2026-10-10.json --root .
+            python3 scripts/validate_final_portfolio.py final_portfolios/2026-10-10/final-portfolio.json
+            for checkpoint in final_decisions/2026-10-10/final-decision-batch-*.json; do
+              python3 scripts/validate_pass_counterfactuals.py "$checkpoint"
+            done
+          fi
           python3 -m compileall -q collectors models scripts tests
           python3 -m unittest discover -s tests -p 'test_*.py'
