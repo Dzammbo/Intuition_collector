@@ -1,10 +1,10 @@
 {
-  "date_moscow": "2026-10-09",
-  "card_key": "2026-10-09-part-2",
+  "date_moscow": "2026-10-10",
+  "card_key": "2026-10-10",
   "batch": 1,
-  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-09-part-2/manifest.json",
-  "compact_batch_dir": "price_blind_inputs/2026-10-09-part-2/compact-batches",
+  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-10/manifest.json",
+  "compact_batch_dir": "price_blind_inputs/2026-10-10/compact-batches",
   "events": [],
-  "requested_at_utc": "2026-10-09T20:13:34.406Z",
+  "requested_at_utc": "2026-10-10T16:08:30Z",
   "reason": "post-decision-diagnostic-only"
 }
