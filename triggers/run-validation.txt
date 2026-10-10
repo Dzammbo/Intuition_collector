@@ -1,4 +1,4 @@
-2026-10-10T16:14:00Z
-reason=validate-2026-10-10-final
+2026-10-10T16:18:00Z
+reason=validate-2026-10-10-final-retry
 card_key=2026-10-10
 stages=repository,holistic,coverage,portfolio,pass-counterfactuals
