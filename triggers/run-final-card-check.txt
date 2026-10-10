@@ -1,3 +1,3 @@
 2026-10-10
-requested_at=2026-10-10T18:48:30Z
-purpose=manual-results-update-after-dated-artifact-fix
+requested_at=2026-10-10T18:51:00Z
+purpose=manual-results-update-corrected-dated-portfolio-lookup
