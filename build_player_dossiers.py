@@ -39,6 +39,40 @@ def ranking_key(value: object) -> str:
     return " ".join(sorted(re.findall(r"[a-z0-9]+", text.casefold())))
 
 
+def name_tokens(value: object) -> frozenset[str]:
+    """Return an order-independent identity token set for conservative alias recovery."""
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return frozenset(re.findall(r"[a-z0-9]+", text.casefold()))
+
+
+def resolve_archive_name_key(canonical_name: str, archive_names: list[str]) -> tuple[str | None, str]:
+    """Resolve exact names first, then one unique multi-token subset alias.
+
+    The fallback repairs common provider/archive differences such as a missing middle
+    given name or reversed token order. Ambiguous candidates remain unresolved.
+    """
+    exact = normalise(canonical_name)
+    if exact in archive_names:
+        return exact, "EXACT_NORMALIZED_NAME"
+    wanted = name_tokens(canonical_name)
+    if len(wanted) < 2:
+        return None, "UNRESOLVED_IN_VALUEBETENNIS_ARCHIVE"
+    candidates = []
+    for candidate in archive_names:
+        tokens = name_tokens(candidate)
+        if len(tokens) < 2:
+            continue
+        if tokens <= wanted or wanted <= tokens:
+            candidates.append(candidate)
+    candidates = sorted(set(candidates))
+    if len(candidates) == 1:
+        return candidates[0], "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"
+    if candidates:
+        return None, "AMBIGUOUS_MULTI_TOKEN_SUBSET_ALIAS"
+    return None, "UNRESOLVED_IN_VALUEBETENNIS_ARCHIVE"
+
+
 def parse_stamp(value: str) -> datetime:
     text = str(value or "").strip().strip('"')
     parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
@@ -389,7 +423,10 @@ def build_history_record(
             "observed_gender": genders.most_common(1)[0][0] if genders else UNKNOWN,
         },
         "source_resolution": {
-            "historical_name_match": "EXACT_NORMALIZED_NAME" if matches else "UNRESOLVED_IN_VALUEBETENNIS_ARCHIVE",
+            "historical_name_match": player.get(
+                "historical_resolution_method",
+                "EXACT_NORMALIZED_NAME" if matches else "UNRESOLVED_IN_VALUEBETENNIS_ARCHIVE",
+            ),
             "historical_matches_found": len(matches),
             "match_data_source": SOURCE_NAME if matches else UNKNOWN,
         },
@@ -560,8 +597,13 @@ def main() -> None:
     merged = dict(previous)
     current_records = []
     reused = rebuilt = 0
+    archive_names = list(by_name)
     for player_id, player in sorted(roster.items(), key=lambda item: (normalise(item[1]["canonical_name"]), item[0])):
-        matches = by_name.get(normalise(player["canonical_name"]), [])
+        archive_key, history_resolution = resolve_archive_name_key(
+            player["canonical_name"], archive_names
+        )
+        matches = by_name.get(archive_key, []) if archive_key else []
+        player["historical_resolution_method"] = history_resolution
         ranking, ranking_reason = resolve_ranking(player, rankings)
         profile = profiles.get(player_id)
         player["ranking_resolution_reason"] = ranking_reason
