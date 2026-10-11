@@ -1,6 +1,6 @@
-37983552873
-37983738196
-2026-10-09
-card_key=2026-10-09-part-2
-reason=corrected-second-pass
-requested_at=2026-10-09T19:58:20.282Z
+38152010060
+38152269999
+2026-10-11
+card_key=2026-10-11
+reason=authorized-full-pipeline
+requested_at=2026-10-11T15:42:00Z
