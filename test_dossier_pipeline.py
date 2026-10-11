@@ -6,7 +6,7 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
-from build_player_dossiers import prematch_safe_event_context
+from build_player_dossiers import prematch_safe_event_context, resolve_archive_name_key
 from collect_tennis_rankings import parse_atp_html, parse_wta_text
 from collect_tennis_profiles import (
     load_previous_profiles, parse_profile_html, parse_search_html, reusable_profile,
@@ -93,6 +93,26 @@ class RankingPublicationTests(unittest.TestCase):
             rows = parse_wta_text(path)
             self.assertEqual(rows[0]["ranking"], 177)
             self.assertEqual(rows[0]["points"], 440)
+
+
+class ArchiveIdentityResolutionTests(unittest.TestCase):
+    def test_exact_reordered_and_unique_subset_aliases(self):
+        names = ["Osorio Serrano Camila", "Katie Volynets", "Pelin Sari"]
+        self.assertEqual(
+            resolve_archive_name_key("Camila Osorio Serrano", names),
+            ("osorioserranocamila", "EXACT_NORMALIZED_NAME"),
+        )
+        self.assertEqual(
+            resolve_archive_name_key("Maria Camila Osorio Serrano", names),
+            ("osorioserranocamila", "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"),
+        )
+
+    def test_ambiguous_subset_alias_remains_unresolved(self):
+        names = ["Pelin Sari", "Serife Pelin Sari"]
+        self.assertEqual(
+            resolve_archive_name_key("Ayse Serife Pelin Sari", names),
+            (None, "AMBIGUOUS_MULTI_TOKEN_SUBSET_ALIAS"),
+        )
 
 
 class EventContextTests(unittest.TestCase):
