@@ -53,7 +53,8 @@ def resolve_archive_name_key(canonical_name: str, archive_names: list[str]) -> t
     given name or reversed token order. Ambiguous candidates remain unresolved.
     """
     exact = normalise(canonical_name)
-    if exact in archive_names:
+    exact_candidates = sorted({name for name in archive_names if normalise(name) == exact})
+    if len(exact_candidates) == 1:
         return exact, "EXACT_NORMALIZED_NAME"
     wanted = name_tokens(canonical_name)
     if len(wanted) < 2:
@@ -67,7 +68,7 @@ def resolve_archive_name_key(canonical_name: str, archive_names: list[str]) -> t
             candidates.append(candidate)
     candidates = sorted(set(candidates))
     if len(candidates) == 1:
-        return candidates[0], "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"
+        return normalise(candidates[0]), "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"
     if candidates:
         return None, "AMBIGUOUS_MULTI_TOKEN_SUBSET_ALIAS"
     return None, "UNRESOLVED_IN_VALUEBETENNIS_ARCHIVE"
@@ -597,7 +598,12 @@ def main() -> None:
     merged = dict(previous)
     current_records = []
     reused = rebuilt = 0
-    archive_names = list(by_name)
+    archive_names = sorted({
+        str(row[name_field])
+        for row in archive_rows
+        for name_field in ("joueur1", "joueur2")
+        if row.get(name_field)
+    })
     for player_id, player in sorted(roster.items(), key=lambda item: (normalise(item[1]["canonical_name"]), item[0])):
         archive_key, history_resolution = resolve_archive_name_key(
             player["canonical_name"], archive_names
