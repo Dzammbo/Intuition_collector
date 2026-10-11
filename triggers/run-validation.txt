@@ -1,4 +1,4 @@
-2026-10-10T16:18:00Z
-reason=validate-2026-10-10-final-retry
+2026-10-11T06:35:00Z
+reason=validate-no-data-research-quality-remediation
 card_key=2026-10-10
-stages=repository,holistic,coverage,portfolio,pass-counterfactuals
+stages=collector-unit-tests,repository,holistic,coverage,portfolio,pass-counterfactuals
