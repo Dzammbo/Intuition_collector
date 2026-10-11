@@ -1,6 +1,6 @@
 {
-  "manifest_ref": "price_blind_assessments/2026-10-10/manifest.json",
-  "card_key": "2026-10-10",
-  "requested_at_utc": "2026-10-10T16:07:30Z",
-  "reason": "user-authorized-continuous-all-stages"
+  "manifest_ref": "price_blind_assessments/2026-10-11/manifest.json",
+  "card_key": "2026-10-11",
+  "requested_at_utc": "2026-10-11T15:58:00Z",
+  "reason": "authorized-full-pipeline-strict-validation"
 }
