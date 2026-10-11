@@ -99,8 +99,12 @@ class ArchiveIdentityResolutionTests(unittest.TestCase):
     def test_exact_reordered_and_unique_subset_aliases(self):
         names = ["Osorio Serrano Camila", "Katie Volynets", "Pelin Sari"]
         self.assertEqual(
+            resolve_archive_name_key("Katie Volynets", names),
+            ("katievolynets", "EXACT_NORMALIZED_NAME"),
+        )
+        self.assertEqual(
             resolve_archive_name_key("Camila Osorio Serrano", names),
-            ("osorioserranocamila", "EXACT_NORMALIZED_NAME"),
+            ("osorioserranocamila", "UNIQUE_MULTI_TOKEN_SUBSET_ALIAS"),
         )
         self.assertEqual(
             resolve_archive_name_key("Maria Camila Osorio Serrano", names),
