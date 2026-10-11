@@ -1,10 +1,215 @@
 {
   "date_moscow": "2026-10-11",
   "card_key": "2026-10-11",
-  "batch": 1,
+  "batch": 2,
   "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-11/manifest.json",
   "compact_batch_dir": "price_blind_inputs/2026-10-11/compact-batches",
-  "events": [],
-  "requested_at_utc": "2026-10-11T15:59:19.090Z",
-  "reason": "post-freeze-canonical-price-capture"
+  "events": [
+    {
+      "event_id": "13275858",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T07:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13275858.json",
+      "assessment_sha256": "d5466f201353b83f16ebc5552fd930e8e6b94ef0506038ac1f3e7dc43fdaaa16"
+    },
+    {
+      "event_id": "13275847",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13275847.json",
+      "assessment_sha256": "ee1c51d46128a7e53774fb7640a0337f798832dd1a06b6eeb38308ada427f426"
+    },
+    {
+      "event_id": "13278335",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13278335.json",
+      "assessment_sha256": "e9e4eecb0a9d2116dc4593c369cafd0b88dd804df331b778f65024bb63bc916f"
+    },
+    {
+      "event_id": "13278347",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13278347.json",
+      "assessment_sha256": "838dc8a5729fd621b3c288c0cf85b402a3d4783a81c27df5d858f0a88d9688b7"
+    },
+    {
+      "event_id": "13278806",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13278806.json",
+      "assessment_sha256": "334f3afb3adb2ac6f724e14c28a97d5f558ca0321dafcbff5e63993061889b64"
+    },
+    {
+      "event_id": "13279350",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13279350.json",
+      "assessment_sha256": "153fcee22e94de5925f86930bcf0b28b1dc715ab2d6d8cfdab6c0c53ff994f20"
+    },
+    {
+      "event_id": "13279785",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13279785.json",
+      "assessment_sha256": "88937bf21e30aabd09582813761ec782140b43873be299fe10a9408bc48c9deb"
+    },
+    {
+      "event_id": "13280181",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280181.json",
+      "assessment_sha256": "db4b4d120e9ffe867e18c3f3eb822f5aaf6ad9f6ca978f2373fccab73975e7fc"
+    },
+    {
+      "event_id": "13280182",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280182.json",
+      "assessment_sha256": "51d502a1198f4f17d6774e2b55e6cc30362e9c0e5969bf3bc0b497fd00ff7e4f"
+    },
+    {
+      "event_id": "13280183",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280183.json",
+      "assessment_sha256": "d044b31ab251357271d70d071680abdc2e9f9b11eaaec4e13bfd5aef1ad9975c"
+    },
+    {
+      "event_id": "13280184",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280184.json",
+      "assessment_sha256": "a8e3447083e19f20ee3d3ce2231bf33a45341d778c70b31d9565fca5861195c6"
+    },
+    {
+      "event_id": "13280240",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280240.json",
+      "assessment_sha256": "dad2d5a9abf4834fca079a38e4be154a224436292beb72115f13c5fde132758d"
+    },
+    {
+      "event_id": "13280241",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280241.json",
+      "assessment_sha256": "65aa2d02281e438df7015f9304265f26986f7ed2eabf32eb913cce522b7895a8"
+    },
+    {
+      "event_id": "13280242",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280242.json",
+      "assessment_sha256": "1e9626321db889635ef4f56fa64721e5b7d9a786ebc2b7d1e42ae71ce1aa301b"
+    },
+    {
+      "event_id": "13280245",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280245.json",
+      "assessment_sha256": "ffac927090861f51028e78fb204134e696257bc4e81debea8b5682067c0542ad"
+    },
+    {
+      "event_id": "13280247",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280247.json",
+      "assessment_sha256": "cedb8aafdf892ac2e139316ca8377c0ae4fcc5a492983cfed68e60c1c18d2a57"
+    },
+    {
+      "event_id": "13280248",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280248.json",
+      "assessment_sha256": "c5399912c1c8c2d578414a9f3514f53fe6c06c830869cc316069ca70bc318892"
+    },
+    {
+      "event_id": "13280266",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280266.json",
+      "assessment_sha256": "8f560c4fc7ec72ab41f690af76bdc752c597be0e2ba1cc7d374c6d0354116856"
+    },
+    {
+      "event_id": "13274990",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:10:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13274990.json",
+      "assessment_sha256": "ad8ef94ff468d9b9be4a710f68bb2d6233d4bc198885e4bc768992e9be63b6b5"
+    },
+    {
+      "event_id": "13275995",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:10:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13275995.json",
+      "assessment_sha256": "8c173d2ec3853dd9ff532892ae5c87a8535322d12bc5cde6d9c7eb598c332966"
+    },
+    {
+      "event_id": "13279301",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T08:10:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13279301.json",
+      "assessment_sha256": "6f2cb0bf8d613722da827acbd6c03e7332da248e7c07bebe865eae9ce8ce1ab7"
+    },
+    {
+      "event_id": "13279605",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T08:30:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13279605.json",
+      "assessment_sha256": "f92b61985664c6ca618ffcbac1dfdf5f2cd43d1acb42addefedea441affedbe8"
+    },
+    {
+      "event_id": "13279691",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T09:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13279691.json",
+      "assessment_sha256": "43a31547e1593952396f280dc09506f1b1cfda5e3c418e98b40da9505150634a"
+    },
+    {
+      "event_id": "13275991",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13275991.json",
+      "assessment_sha256": "4bd69cad76340f890a91f2e63f40b9b3502dd5485110f8cd353f5382b82dee82"
+    },
+    {
+      "event_id": "13276190",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13276190.json",
+      "assessment_sha256": "1445b5d485f4dd377582c3a689db5e9b21d4151e9e40f795ce3e5e39cc475c1a"
+    },
+    {
+      "event_id": "13280036",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280036.json",
+      "assessment_sha256": "ba7c442da683ca364162cf44e6de2ba61c0c1a44bf9a963c302d8465e1a71e9c"
+    },
+    {
+      "event_id": "13280037",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280037.json",
+      "assessment_sha256": "769f9f1cd7e9458d812e96d0a4df795bf3db26d86c21102ade511638ba0c152b"
+    },
+    {
+      "event_id": "13277495",
+      "supported_side": "AWAY",
+      "scheduled_start_utc": "2026-10-12T11:00:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13277495.json",
+      "assessment_sha256": "33b0ebe8119902d56577c99c0e25f836a64e2a8d6ea3a58881c713bd5307ed9d"
+    },
+    {
+      "event_id": "13278164",
+      "supported_side": "HOME",
+      "scheduled_start_utc": "2026-10-12T13:30:00.000000Z",
+      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13278164.json",
+      "assessment_sha256": "f8e5c24856f0f95b4d8e775c34774c3e7ecc1b6da2869cf0edfe8f80ebfe82b4"
+    }
+  ],
+  "requested_at": "2026-10-11T20:30:29.700Z",
+  "requested_at_utc": "2026-10-11T20:30:29.700Z",
+  "reason": "post-freeze-price-gap-refresh-prematch-only"
 }
