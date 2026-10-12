@@ -16,6 +16,7 @@ jobs:
       BETSAPI_TOKEN: ${{ secrets.BETS_API }}
       BETSAPI_HTTP_WORKERS: "8"
       PRICE_REVEAL_REQUEST: price-reveal-worklist.json
+      STATE_ROOT: state
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -122,6 +123,9 @@ jobs:
               "manifest_ref": manifest_ref,
           })
           PY
+
+      - name: Verify price resolver safeguards
+        run: python3 -m unittest -v test_assessment_price_refresh.py
 
       - name: Capture exact event markets
         run: python3 assessment_price_refresh.py
