@@ -1,4 +1,4 @@
-2026-10-12T16:25:49.257Z
-reason=validate-rolling-24h-additive-card
+2026-10-12T16:27:56.213Z
+reason=validate-rolling-24h-additive-card-pass-counterfactual-repair
 card_key=2026-10-12-combined
 stages=collector-unit-tests,repository,holistic,coverage,portfolio,pass-counterfactuals
