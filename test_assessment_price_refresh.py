@@ -1,4 +1,5 @@
 import unittest
+import json
 from datetime import datetime, timezone
 from unittest.mock import patch
 
@@ -14,6 +15,7 @@ class PriceRefreshTests(unittest.TestCase):
         match = refresh.choose_candidate(candidates, "Bianca Andreescu", "Mia Ristic", datetime(2026, 10, 12, 8, tzinfo=timezone.utc))
         self.assertEqual(match["fi"], "77")
         self.assertTrue(match["reversed"])
+        json.dumps(match)
 
     def test_ambiguous_candidate_is_rejected(self):
         start = datetime(2026, 10, 12, 8, tzinfo=timezone.utc)
