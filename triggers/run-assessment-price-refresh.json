@@ -1,7 +1,7 @@
 {
   "date_moscow": "2026-10-11",
   "card_key": "2026-10-11",
-  "batch": 2,
+  "batch": 3,
   "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-11/manifest.json",
   "compact_batch_dir": "price_blind_inputs/2026-10-11/compact-batches",
   "events": [
@@ -153,20 +153,6 @@
       "assessment_sha256": "6f2cb0bf8d613722da827acbd6c03e7332da248e7c07bebe865eae9ce8ce1ab7"
     },
     {
-      "event_id": "13279605",
-      "supported_side": "HOME",
-      "scheduled_start_utc": "2026-10-12T08:30:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13279605.json",
-      "assessment_sha256": "f92b61985664c6ca618ffcbac1dfdf5f2cd43d1acb42addefedea441affedbe8"
-    },
-    {
-      "event_id": "13279691",
-      "supported_side": "AWAY",
-      "scheduled_start_utc": "2026-10-12T09:00:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13279691.json",
-      "assessment_sha256": "43a31547e1593952396f280dc09506f1b1cfda5e3c418e98b40da9505150634a"
-    },
-    {
       "event_id": "13275991",
       "supported_side": "AWAY",
       "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
@@ -209,7 +195,7 @@
       "assessment_sha256": "f8e5c24856f0f95b4d8e775c34774c3e7ecc1b6da2869cf0edfe8f80ebfe82b4"
     }
   ],
-  "requested_at": "2026-10-11T20:30:29.700Z",
-  "requested_at_utc": "2026-10-11T20:30:29.700Z",
-  "reason": "post-freeze-price-gap-refresh-prematch-only"
+  "requested_at": "2026-10-12T04:02:38.312Z",
+  "requested_at_utc": "2026-10-12T04:02:38.312Z",
+  "reason": "post-freeze-price-gap-refresh-prematch-only-0700-msk"
 }
