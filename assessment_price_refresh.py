@@ -20,6 +20,10 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
+
+class BetsApiError(RuntimeError):
+    pass
+
 BASE = "https://api.b365api.com"
 REQUEST_PATH = os.environ.get("PRICE_REVEAL_REQUEST", "triggers/run-assessment-price-refresh.json")
 STATE_ROOT = Path(os.environ.get("STATE_ROOT", "state"))
@@ -51,8 +55,10 @@ def api_get(token: str, path: str, params: dict[str, Any]) -> dict[str, Any]:
             with urllib.request.urlopen(request, timeout=25) as response:
                 payload = json.load(response)
             if isinstance(payload, dict) and payload.get("success") == 0:
-                raise RuntimeError(f"BetsAPI error: {payload}")
+                raise BetsApiError(f"BetsAPI error: {payload}")
             return payload
+        except BetsApiError:
+            raise
         except Exception as exc:
             last = exc
             if attempt < 3:
@@ -137,6 +143,27 @@ def bet365_candidates(payload: dict[str, Any]) -> list[dict[str, Any]]:
             "away": away,
             "start": parse_candidate_time(node),
             "league": label(node.get("league") or node.get("competition")),
+            "source": "BET365_FI",
+        }
+    return list(found.values())
+
+
+def generic_candidates(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    found: dict[str, dict[str, Any]] = {}
+    for node in payload.get("results") or []:
+        if not isinstance(node, dict) or node.get("id") in (None, ""):
+            continue
+        home, away = label(node.get("home")), label(node.get("away"))
+        if not home or not away:
+            continue
+        event_id = str(node["id"])
+        found[event_id] = {
+            "event_id": event_id,
+            "home": home,
+            "away": away,
+            "start": parse_candidate_time(node),
+            "league": label(node.get("league")),
+            "source": "GENERIC_UPCOMING_SOURCE_BET365",
         }
     return list(found.values())
 
@@ -256,12 +283,14 @@ class PriceResolver:
         self._candidate_error: str | None = None
         self._candidate_shape: dict[str, Any] | None = None
         self._candidate_lock = threading.Lock()
+        self._generic_candidates_by_day: dict[str, list[dict[str, Any]]] = {}
+        self._generic_errors_by_day: dict[str, str] = {}
 
     def direct(self, event_id: str) -> dict[str, Any]:
         payload = api_get(self.token, "/v2/event/odds", {"event_id": event_id, "source": "bet365", "odds_market": 1})
         return payload.get("results") or {}
 
-    def candidates(self) -> list[dict[str, Any]]:
+    def candidates(self, scheduled_start: datetime) -> list[dict[str, Any]]:
         if self._candidates is None:
             with self._candidate_lock:
                 if self._candidates is None:
@@ -277,31 +306,71 @@ class PriceResolver:
                     except Exception as exc:
                         self._candidate_error = str(exc)
                         self._candidates = []
-        return self._candidates
+        if self._candidates:
+            return self._candidates
+        day = scheduled_start.strftime("%Y%m%d")
+        with self._candidate_lock:
+            if day not in self._generic_candidates_by_day:
+                rows: list[dict[str, Any]] = []
+                try:
+                    for page in range(1, 21):
+                        payload = api_get(self.token, "/v3/events/upcoming", {
+                            "sport_id": 13, "day": day, "page": page,
+                            "skip_esports": 1, "source": "bet365",
+                        })
+                        batch = generic_candidates(payload)
+                        rows.extend(batch)
+                        raw = payload.get("results") or []
+                        pager = payload.get("pager") or {}
+                        total_pages = pager.get("total_pages") or pager.get("last_page")
+                        if not raw or (total_pages is not None and page >= int(total_pages)):
+                            break
+                    self._generic_candidates_by_day[day] = list({row["event_id"]: row for row in rows}.values())
+                except Exception as exc:
+                    self._generic_errors_by_day[day] = str(exc)
+                    self._generic_candidates_by_day[day] = []
+        return self._generic_candidates_by_day[day]
 
     def resolve(self, event: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
         event_id = str(event["event_id"])
-        direct = self.direct(event_id)
+        direct_error = None
+        try:
+            direct = self.direct(event_id)
+        except Exception as exc:
+            direct, direct_error = {}, str(exc)
         if has_match_winner_price(direct):
             return direct, {"method": "DIRECT_EVENT_ID", "event_id": event_id}
         metadata = load_match_metadata(event)
         if not metadata:
             return direct, {"method": "NO_PRICE", "reason": "MATCH_METADATA_UNAVAILABLE"}
-        match = choose_candidate(self.candidates(), metadata["home"], metadata["away"], parse_iso(event["scheduled_start_utc"]))
+        scheduled_start = parse_iso(event["scheduled_start_utc"])
+        match = choose_candidate(self.candidates(scheduled_start), metadata["home"], metadata["away"], scheduled_start)
         if not match:
+            day = scheduled_start.strftime("%Y%m%d")
             return direct, {
                 "method": "NO_PRICE",
                 "reason": "NO_UNIQUE_BET365_FI_MATCH",
-                "bet365_candidate_count": len(self._candidates or []),
+                "direct_endpoint_error": direct_error,
+                "candidate_count": len(self._candidates or []) + len(self._generic_candidates_by_day.get(day) or []),
                 "candidate_endpoint_error": self._candidate_error,
                 "candidate_response_shape": self._candidate_shape,
+                "generic_candidate_endpoint_error": self._generic_errors_by_day.get(day),
             }
-        payload = api_get(self.token, "/v1/bet365/event", {"FI": match["fi"]})
-        fallback = extract_match_winner(payload, metadata["home"], metadata["away"], match["reversed"], now())
-        if not fallback:
-            return direct, {"method": "NO_PRICE", "reason": "BET365_FI_MATCH_WITHOUT_MATCH_WINNER", "matched": match}
-        fallback["stats"].update({"matched_bet365_fi": match["fi"], "match_score": match["match_score"]})
-        return fallback, {"method": "BET365_FI_NAME_TIME_MATCH", "original_event_id": event_id, "matched": match}
+        if match["source"] == "BET365_FI":
+            payload = api_get(self.token, "/v1/bet365/event", {"FI": match["fi"]})
+            fallback = extract_match_winner(payload, metadata["home"], metadata["away"], match["reversed"], now())
+        else:
+            try:
+                fallback = self.direct(match["event_id"])
+            except Exception as exc:
+                return direct, {
+                    "method": "NO_PRICE", "reason": "MATCHED_EVENT_PRICE_QUERY_FAILED",
+                    "direct_endpoint_error": direct_error, "matched_endpoint_error": str(exc), "matched": match,
+                }
+        if not has_match_winner_price(fallback):
+            return direct, {"method": "NO_PRICE", "reason": "MATCHED_EVENT_WITHOUT_MATCH_WINNER", "direct_endpoint_error": direct_error, "matched": match}
+        fallback.setdefault("stats", {}).update({"matched_price_event": match.get("fi") or match.get("event_id"), "match_score": match["match_score"]})
+        return fallback, {"method": match["source"] + "_NAME_TIME_MATCH", "original_event_id": event_id, "direct_endpoint_error": direct_error, "matched": match}
 
 
 def collect(event: dict[str, Any], resolver: PriceResolver):

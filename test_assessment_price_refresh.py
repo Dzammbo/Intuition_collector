@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime, timezone
+from unittest.mock import patch
 
 import assessment_price_refresh as refresh
 
@@ -49,6 +50,18 @@ class PriceRefreshTests(unittest.TestCase):
             {"type": "PA", "NA": "Mia Ristic", "OD": "2.00"},
         ]}
         self.assertIsNone(refresh.extract_match_winner(payload, "Bianca Andreescu", "Mia Ristic", False, datetime.now(timezone.utc)))
+
+    def test_generic_candidate_parser(self):
+        payload = {"results": [{
+            "id": 123,
+            "time": "1791799200",
+            "home": {"name": "Bianca Andreescu"},
+            "away": {"name": "Mia Ristic"},
+            "league": {"name": "UTR Beograd Women"},
+        }]}
+        rows = refresh.generic_candidates(payload)
+        self.assertEqual(rows[0]["event_id"], "123")
+        self.assertEqual(rows[0]["source"], "GENERIC_UPCOMING_SOURCE_BET365")
 
 
 if __name__ == "__main__":
