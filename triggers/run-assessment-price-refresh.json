@@ -1,54 +1,10 @@
 {
-  "date_moscow": "2026-10-11",
-  "card_key": "2026-10-11",
-  "batch": 6,
-  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-11/manifest.json",
-  "compact_batch_dir": "price_blind_inputs/2026-10-11/compact-batches",
-  "events": [
-    {
-      "event_id": "13275991",
-      "supported_side": "AWAY",
-      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13275991.json",
-      "assessment_sha256": "4bd69cad76340f890a91f2e63f40b9b3502dd5485110f8cd353f5382b82dee82"
-    },
-    {
-      "event_id": "13276190",
-      "supported_side": "HOME",
-      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13276190.json",
-      "assessment_sha256": "1445b5d485f4dd377582c3a689db5e9b21d4151e9e40f795ce3e5e39cc475c1a"
-    },
-    {
-      "event_id": "13280036",
-      "supported_side": "HOME",
-      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280036.json",
-      "assessment_sha256": "ba7c442da683ca364162cf44e6de2ba61c0c1a44bf9a963c302d8465e1a71e9c"
-    },
-    {
-      "event_id": "13280037",
-      "supported_side": "HOME",
-      "scheduled_start_utc": "2026-10-12T10:00:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13280037.json",
-      "assessment_sha256": "769f9f1cd7e9458d812e96d0a4df795bf3db26d86c21102ade511638ba0c152b"
-    },
-    {
-      "event_id": "13277495",
-      "supported_side": "AWAY",
-      "scheduled_start_utc": "2026-10-12T11:00:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13277495.json",
-      "assessment_sha256": "33b0ebe8119902d56577c99c0e25f836a64e2a8d6ea3a58881c713bd5307ed9d"
-    },
-    {
-      "event_id": "13278164",
-      "supported_side": "HOME",
-      "scheduled_start_utc": "2026-10-12T13:30:00.000000Z",
-      "assessment_ref": "price_blind_assessments/2026-10-11/2026-10-11-event-13278164.json",
-      "assessment_sha256": "f8e5c24856f0f95b4d8e775c34774c3e7ecc1b6da2869cf0edfe8f80ebfe82b4"
-    }
-  ],
-  "requested_at": "2026-10-12T08:37:05.377Z",
-  "requested_at_utc": "2026-10-12T08:37:05.377Z",
-  "reason": "post-freeze-price-gap-refresh-verified-generic-source-bet365-fallback"
+  "date_moscow": "2026-10-12",
+  "card_key": "2026-10-12",
+  "batch": 1,
+  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-12/manifest.json",
+  "compact_batch_dir": "price_blind_inputs/2026-10-12/compact-batches",
+  "events": [],
+  "requested_at_utc": "2026-10-12T15:30:35.251Z",
+  "reason": "post-freeze-canonical-price-capture"
 }
