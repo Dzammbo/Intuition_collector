@@ -1,7 +1,7 @@
 {
   "date_moscow": "2026-10-11",
   "card_key": "2026-10-11",
-  "batch": 4,
+  "batch": 5,
   "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-11/manifest.json",
   "compact_batch_dir": "price_blind_inputs/2026-10-11/compact-batches",
   "events": [
@@ -48,7 +48,7 @@
       "assessment_sha256": "f8e5c24856f0f95b4d8e775c34774c3e7ecc1b6da2869cf0edfe8f80ebfe82b4"
     }
   ],
-  "requested_at": "2026-10-12T08:32:38.918Z",
-  "requested_at_utc": "2026-10-12T08:32:38.918Z",
-  "reason": "post-freeze-price-gap-refresh-guarded-bet365-fi-fallback"
+  "requested_at": "2026-10-12T08:35:44.596Z",
+  "requested_at_utc": "2026-10-12T08:35:44.596Z",
+  "reason": "post-freeze-price-gap-refresh-generic-source-bet365-fallback"
 }
