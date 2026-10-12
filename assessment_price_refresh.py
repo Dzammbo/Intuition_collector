@@ -187,7 +187,10 @@ def choose_candidate(
     if len(ranked) > 1 and ranked[0][0] < 0.98 and ranked[0][0] - ranked[1][0] < 0.05:
         return None
     score, neg_delta, reversed_match, candidate = ranked[0]
-    return {**candidate, "match_score": round(score, 6), "reversed": reversed_match, "time_delta_seconds": -neg_delta}
+    serializable = dict(candidate)
+    if isinstance(serializable.get("start"), datetime):
+        serializable["start"] = iso(serializable["start"])
+    return {**serializable, "match_score": round(score, 6), "reversed": reversed_match, "time_delta_seconds": -neg_delta}
 
 
 def _market_participants(value: Any, inherited_market: str = ""):
