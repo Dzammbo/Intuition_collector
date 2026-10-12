@@ -1,8 +1,10 @@
 {
   "date_moscow": "2026-10-12",
-  "window_mode": "FIXED_MOSCOW_DATE",
-  "window_start_utc": "",
+  "card_key": "2026-10-12-part-2",
+  "window_mode": "ROLLING_24H_EXPLICIT_START",
+  "window_start_utc": "2026-10-12T15:19:34.346659Z",
+  "exclude_universe_ref": "assessment_inputs/2026-10-12/assessment-candidate-index.json",
   "exclude_final_portfolio_ref": "final_portfolios/2026-10-11/final-portfolio.json",
-  "requested_at_utc": "2026-10-12T15:19:16.158Z",
-  "purpose": "authorized-full-pipeline-2026-10-12"
+  "requested_at_utc": "2026-10-12T16:00:49.490Z",
+  "purpose": "additive-second-pass-complete-original-rolling-24h-window"
 }
