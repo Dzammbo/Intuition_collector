@@ -11,6 +11,14 @@ on:
         description: Optional exact UTC start for a rolling 24h window
         required: false
         type: string
+      card_key:
+        description: Optional immutable card/run key
+        required: false
+        type: string
+      exclude_universe_ref:
+        description: Optional canonical universe/index whose event IDs must be excluded
+        required: false
+        type: string
       exclude_final_portfolio_ref:
         description: Optional canonical final portfolio whose selected event IDs must be excluded
         required: false
@@ -44,17 +52,23 @@ jobs:
             DAY="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("date_moscow", ""))')"
             WINDOW_START="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("window_start_utc", ""))')"
             WINDOW_MODE="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("window_mode", ""))')"
+            CARD_KEY="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("card_key", ""))')"
+            EXCLUDE_UNIVERSE_REF="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("exclude_universe_ref", ""))')"
             EXCLUDE_REF="$(python3 -c 'import json; print(json.load(open("triggers/run-prepare-tennis-day.json")).get("exclude_final_portfolio_ref", ""))')"
           else
             DAY="${{ inputs.date_moscow }}"
             WINDOW_START="${{ inputs.window_start_utc }}"
             WINDOW_MODE=""
+            CARD_KEY="${{ inputs.card_key }}"
+            EXCLUDE_UNIVERSE_REF="${{ inputs.exclude_universe_ref }}"
             EXCLUDE_REF="${{ inputs.exclude_final_portfolio_ref }}"
           fi
           if [ -z "$DAY" ]; then
             DAY="$(TZ=Europe/Moscow date +%F)"
           fi
           [[ "$DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          if [ -z "$CARD_KEY" ]; then CARD_KEY="$DAY"; fi
+          [[ "$CARD_KEY" =~ ^[A-Za-z0-9._-]+$ ]]
           if [ -z "$WINDOW_START" ]; then
             if [ "$WINDOW_MODE" = "ROLLING_24H_FROM_RUN_START" ]; then
               WINDOW_START="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -71,7 +85,9 @@ jobs:
           fi
           WINDOW_START="$WINDOW_START" python3 -c 'from datetime import datetime; import os; datetime.fromisoformat(os.environ["WINDOW_START"].replace("Z", "+00:00"))'
           echo "DAY=$DAY" >> "$GITHUB_ENV"
+          echo "CARD_KEY=$CARD_KEY" >> "$GITHUB_ENV"
           echo "CARD_WINDOW_START_UTC=$WINDOW_START" >> "$GITHUB_ENV"
+          echo "EXCLUDE_UNIVERSE_REF=$EXCLUDE_UNIVERSE_REF" >> "$GITHUB_ENV"
           echo "EXCLUDE_FINAL_PORTFOLIO_REF=$EXCLUDE_REF" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
@@ -92,22 +108,35 @@ jobs:
 
           universe_path = Path("universe.json")
           universe = json.loads(universe_path.read_text())
-          ref = os.environ.get("EXCLUDE_FINAL_PORTFOLIO_REF", "").strip()
-          if ref:
-              portfolio_path = Path("state") / ref
+          final_ref = os.environ.get("EXCLUDE_FINAL_PORTFOLIO_REF", "").strip()
+          universe_ref = os.environ.get("EXCLUDE_UNIVERSE_REF", "").strip()
+          excluded = set()
+          sources = []
+          if final_ref:
+              portfolio_path = Path("state") / final_ref
               if not portfolio_path.is_file():
-                  raise SystemExit(f"exclusion portfolio not found: {ref}")
+                  raise SystemExit(f"exclusion portfolio not found: {final_ref}")
               portfolio = json.loads(portfolio_path.read_text())
-              portfolio_rows = portfolio.get("entries") or portfolio.get("selections") or []
-              excluded = {str(row["event_id"]) for row in portfolio_rows if row.get("event_id") is not None}
+              rows = portfolio.get("entries") or portfolio.get("selections") or []
+              excluded.update(str(row["event_id"]) for row in rows if row.get("event_id") is not None)
+              sources.append(final_ref)
+          if universe_ref:
+              source_path = Path("state") / universe_ref
+              if not source_path.is_file():
+                  raise SystemExit(f"exclusion universe not found: {universe_ref}")
+              source = json.loads(source_path.read_text())
+              rows = source.get("candidates") or source.get("events") or source.get("entries") or []
+              excluded.update(str(row.get("event_id") or row.get("id")) for row in rows if row.get("event_id") is not None or row.get("id") is not None)
+              sources.append(universe_ref)
+          if excluded:
               before = universe.get("window_events") or []
               after = [row for row in before if str(row.get("id")) not in excluded]
               matched = sorted({str(row.get("id")) for row in before if str(row.get("id")) in excluded})
               universe["window_events"] = after
               universe["window_event_count"] = len(after)
               universe["exclusion"] = {
-                  "mode": "EXCLUDE_PREVIOUSLY_SELECTED_PROVIDER_EVENT_IDS",
-                  "source_ref": ref,
+                  "mode": "EXCLUDE_PREVIOUSLY_REVIEWED_PROVIDER_EVENT_IDS",
+                  "source_refs": sources,
                   "requested_event_ids": len(excluded),
                   "matched_and_excluded": len(matched),
                   "excluded_event_ids": matched,
@@ -193,11 +222,11 @@ jobs:
         run: |
           set -euo pipefail
           ENRICH_ARGS=()
-          if [ -f "state/player_dossiers/$DAY/pre-deep-research-enrichment.json" ]; then
-            ENRICH_ARGS+=(--previous-enrichment "state/player_dossiers/$DAY/pre-deep-research-enrichment.json")
+          if [ -f "state/player_dossiers/$CARD_KEY/pre-deep-research-enrichment.json" ]; then
+            ENRICH_ARGS+=(--previous-enrichment "state/player_dossiers/$CARD_KEY/pre-deep-research-enrichment.json")
           fi
-          if [ -f "state/player_dossiers/$DAY/external-observations.json" ]; then
-            ENRICH_ARGS+=(--external-observations "state/player_dossiers/$DAY/external-observations.json")
+          if [ -f "state/player_dossiers/$CARD_KEY/external-observations.json" ]; then
+            ENRICH_ARGS+=(--external-observations "state/player_dossiers/$CARD_KEY/external-observations.json")
           fi
           python3 enrich_player_dossiers.py \
             --history-snapshot baseline-history-snapshot.json \
@@ -215,6 +244,7 @@ jobs:
           from pathlib import Path
 
           day = os.environ["DAY"]
+          card_key = os.environ["CARD_KEY"]
           packet = json.loads(Path("model-prescreen-packet.json").read_text())
           universe = json.loads(Path("universe.json").read_text())
           history_snapshot = json.loads(Path("baseline-history-snapshot.json").read_text())
@@ -245,6 +275,7 @@ jobs:
           readiness = {
               "schema_version": 1,
               "date_moscow": day,
+              "card_key": card_key,
               "stage": "MACHINE_PREPARATION_COMPLETE",
               "status": "READY_FOR_ASSESSMENT" if rows else "NO_ELIGIBLE_EVENTS",
               "prepared_at_utc": now.isoformat(),
@@ -268,15 +299,15 @@ jobs:
           }
 
           root = Path("state")
-          index_path = root / f"assessment_inputs/{day}/assessment-candidate-index.json"
-          packet_path = root / f"candidate_screen_inputs/{day}/tennis-singles-research-packet.json"
+          index_path = root / f"assessment_inputs/{card_key}/assessment-candidate-index.json"
+          packet_path = root / f"candidate_screen_inputs/{card_key}/tennis-singles-research-packet.json"
           profile_registry_path = root / "player_dossiers/player-profiles.json"
           history_registry_path = root / "player_dossiers/player-history.json"
-          history_snapshot_path = root / f"player_dossiers/{day}/baseline-history-snapshot.json"
-          match_context_path = root / f"player_dossiers/{day}/match-context-snapshots.json"
-          dossier_manifest_path = root / f"player_dossiers/{day}/baseline-dossier-manifest.json"
-          enrichment_path = root / f"player_dossiers/{day}/pre-deep-research-enrichment.json"
-          status_path = root / f"status/preflight-{day}.json"
+          history_snapshot_path = root / f"player_dossiers/{card_key}/baseline-history-snapshot.json"
+          match_context_path = root / f"player_dossiers/{card_key}/match-context-snapshots.json"
+          dossier_manifest_path = root / f"player_dossiers/{card_key}/baseline-dossier-manifest.json"
+          enrichment_path = root / f"player_dossiers/{card_key}/pre-deep-research-enrichment.json"
+          status_path = root / f"status/preflight-{card_key}.json"
           for path in (index_path, packet_path, profile_registry_path, history_registry_path, history_snapshot_path, match_context_path, dossier_manifest_path, enrichment_path, status_path):
               path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -308,26 +339,26 @@ jobs:
           git config user.name "Jarvis Intuition Bot"
           git config user.email "actions@users.noreply.github.com"
           git add \
-            "assessment_inputs/$DAY/assessment-candidate-index.json" \
-            "candidate_screen_inputs/$DAY/tennis-singles-research-packet.json" \
+            "assessment_inputs/$CARD_KEY/assessment-candidate-index.json" \
+            "candidate_screen_inputs/$CARD_KEY/tennis-singles-research-packet.json" \
             "player_dossiers/player-profiles.json" \
             "player_dossiers/player-history.json" \
-            "player_dossiers/$DAY/baseline-history-snapshot.json" \
-            "player_dossiers/$DAY/match-context-snapshots.json" \
-            "player_dossiers/$DAY/baseline-dossier-manifest.json" \
-            "player_dossiers/$DAY/pre-deep-research-enrichment.json" \
-            "status/preflight-$DAY.json"
+            "player_dossiers/$CARD_KEY/baseline-history-snapshot.json" \
+            "player_dossiers/$CARD_KEY/match-context-snapshots.json" \
+            "player_dossiers/$CARD_KEY/baseline-dossier-manifest.json" \
+            "player_dossiers/$CARD_KEY/pre-deep-research-enrichment.json" \
+            "status/preflight-$CARD_KEY.json"
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m "Prepare $DAY tennis assessment before first start"
+          git commit -m "Prepare $CARD_KEY tennis assessment before first start"
           git pull --rebase origin main
           git push origin HEAD:main
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: prepared-tennis-day-${{ env.DAY }}
+          name: prepared-tennis-day-${{ env.CARD_KEY }}
           path: |
             universe.json
             classified-universe.json
