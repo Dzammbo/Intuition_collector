@@ -1,8 +1,8 @@
 {
-  "date_moscow": "2026-10-10",
-  "window_mode": "ROLLING_24H_FROM_RUN_START",
-  "window_start_utc": "2026-10-10T15:32:00Z",
-  "exclude_final_portfolio_ref": "",
-  "requested_at_utc": "2026-10-10T15:33:00Z",
-  "purpose": "corrected-rolling-24h-preparation-for-2026-10-10-card"
+  "date_moscow": "2026-10-12",
+  "window_mode": "FIXED_MOSCOW_DATE",
+  "window_start_utc": "",
+  "exclude_final_portfolio_ref": "final_portfolios/2026-10-11/final-portfolio.json",
+  "requested_at_utc": "2026-10-12T15:19:16.158Z",
+  "purpose": "authorized-full-pipeline-2026-10-12"
 }
