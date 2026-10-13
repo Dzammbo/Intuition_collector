@@ -1,6 +1,6 @@
 {
-  "manifest_ref": "price_blind_assessments/2026-10-12-part-2/manifest.json",
-  "card_key": "2026-10-12-part-2",
-  "requested_at_utc": "2026-10-12T16:17:11.644Z",
-  "reason": "rolling-24h-additive-second-pass-strict-validation"
+  "manifest_ref": "price_blind_assessments/2026-10-13/manifest.json",
+  "card_key": "2026-10-13",
+  "requested_at_utc": "2026-10-13T17:01:48.302Z",
+  "reason": "continuous-card-13-10-strict-validation"
 }
