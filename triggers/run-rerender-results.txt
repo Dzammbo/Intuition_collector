@@ -1,3 +1,3 @@
-2026-10-12
-requested_at=2026-10-13T14:35:00.000Z
-purpose=rerender-after-open-card-refresh
+2026-09-29
+requested_at=2026-10-13T14:38:00.000Z
+purpose=rerender-after-scorecard-compatibility-fix
