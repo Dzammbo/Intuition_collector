@@ -4,7 +4,8 @@
 
 2026-10-11
 reason=authorized-full-pipeline-all-138
-requested_at=2026-10-11T15:43:00Z
+reason=authorized-strengthen-existing-dossier-evidence
+requested_at=2026-10-13T09:43:00Z
 stage=PLAYER_DOSSIERS
 card_name=11.10
-canon_version=2026-10-11-runbook-v30-no-data-remediation
+canon_version=2026-10-13-base-v18-strengthened-dossiers
