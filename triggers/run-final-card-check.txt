@@ -1,3 +1,3 @@
-2026-09-29
-requested_at=2026-10-13T14:13:00.000Z
+2026-10-02
+requested_at=2026-10-13T14:14:00.000Z
 purpose=manual-refresh-all-open-cards
