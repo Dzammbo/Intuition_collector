@@ -1,6 +1,6 @@
 {
-  "manifest_ref": "price_blind_assessments/2026-10-13/manifest.json",
-  "card_key": "2026-10-13",
-  "requested_at_utc": "2026-10-13T17:01:48.302Z",
-  "reason": "continuous-card-13-10-strict-validation"
+  "manifest_ref": "price_blind_assessments/2026-10-13-rerun-001/manifest.json",
+  "card_key": "2026-10-13-rerun-001",
+  "requested_at_utc": "2026-10-13T19:05:58.918Z",
+  "reason": "rerun-001-strict-pre-price-validation"
 }
