@@ -246,6 +246,8 @@ jobs:
             --materialized-at-utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             --ranking-snapshots rankings/atp-ranking.json rankings/wta-ranking.json \
             --profile-snapshot rankings/player-profiles.json \
+            --prior-system-diagnostics-root state/diagnostics/check_only \
+            --card-date-moscow "$DAY" \
             --history-output player-history.json \
             --snapshot-output baseline-history-snapshot.json \
             --match-context-output match-context-snapshots.json \
@@ -272,6 +274,9 @@ jobs:
           assert m["coverage"]["ranking_full_coverage"] is True
           assert s["coverage"]["players_with_resolved_static_profile"] > 0
           assert s["coverage"]["players_with_age"] > 0
+          assert "players_with_ranking_history" in s["coverage"]
+          assert "players_with_comparable_opponent_strength" in s["coverage"]
+          assert "players_with_prior_system_decisions" in s["coverage"]
           assert m["coverage"]["static_profiles_requested"] == m["coverage"]["current_players"]
           p = json.load(open("rankings/player-profiles.json"))
           assert p["profiles_reused"] + p["profiles_fetched"] == m["coverage"]["current_players"]

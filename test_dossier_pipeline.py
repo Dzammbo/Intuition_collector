@@ -6,7 +6,9 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
-from build_player_dossiers import prematch_safe_event_context, resolve_archive_name_key
+from build_player_dossiers import (
+    load_prior_system_decisions, prematch_safe_event_context, resolve_archive_name_key,
+)
 from collect_tennis_rankings import parse_atp_html, parse_wta_text
 from collect_tennis_profiles import (
     load_previous_profiles, parse_profile_html, parse_search_html, reusable_profile,
@@ -147,6 +149,34 @@ class EventContextTests(unittest.TestCase):
         self.assertEqual(result["format_best_of_sets"], "3")
 
 
+class PriorSystemDecisionTests(unittest.TestCase):
+    def test_indexes_separate_streams_and_excludes_current_card(self):
+        with tempfile.TemporaryDirectory() as raw_dir:
+            root = Path(raw_dir)
+            rows = [
+                {"decision_id": "d1", "population": "BET", "selection": "Alice",
+                 "event_id": "1", "result": "WIN", "captured_odds": 1.8,
+                 "profit_units": 0.8},
+                {"decision_id": "d2", "population": "SUBSTANTIVE_PASS", "selection": "Alice",
+                 "event_id": "2", "result": "LOSS", "captured_odds": 2.1,
+                 "profit_units": -1.0},
+            ]
+            (root / "2026-10-10-intermediate.json").write_text(json.dumps({
+                "date_moscow": "2026-10-10", "checked_at": "2026-10-11T01:00:00Z",
+                "results": rows,
+            }), encoding="utf-8")
+            (root / "2026-10-11-intermediate.json").write_text(json.dumps({
+                "date_moscow": "2026-10-11", "checked_at": "2026-10-11T20:00:00Z",
+                "results": [{"decision_id": "d3", "population": "BET", "selection": "Alice"}],
+            }), encoding="utf-8")
+            index = load_prior_system_decisions(str(root), "2026-10-11")
+            evidence = index["alice"]
+            self.assertTrue(evidence["policy"]["combined_performance_is_not_computed"])
+            self.assertEqual(evidence["streams"]["BET"]["decisions"], 1)
+            self.assertEqual(evidence["streams"]["SUBSTANTIVE_PASS"]["decisions"], 1)
+            self.assertNotIn("COMBINED", evidence["streams"])
+
+
 class EndToEndDossierTests(unittest.TestCase):
     def test_layers_event_view_and_incremental_reuse(self):
         with tempfile.TemporaryDirectory() as raw_dir:
@@ -233,6 +263,14 @@ class EndToEndDossierTests(unittest.TestCase):
             self.assertEqual(alice["identity"]["date_of_birth"], "2000-10-07")
             self.assertEqual(alice["identity"]["age_at_history_cutoff"], 25)
             self.assertEqual(alice["identity"]["handedness"], "RIGHT")
+            baseline = alice["baseline_history"]
+            self.assertEqual(baseline["workload_and_rest"]["calendar_windows"]["7"]["matches"], 1)
+            self.assertEqual(baseline["score_derived_metrics"]["sets_won"], 2)
+            self.assertEqual(baseline["score_derived_metrics"]["games_won"], 12)
+            self.assertEqual(baseline["last_20_by_surface"]["CLAY"]["wins"], 1)
+            self.assertEqual(baseline["data_quality"]["last_20_with_duration"], 1)
+            self.assertTrue(baseline["data_quality"]["ranking_available"])
+            self.assertEqual(len(baseline["ranking_history"]), 1)
             context = json.loads((root / "context.json").read_text())
             self.assertEqual(context["events"][0]["surface"], "Clay")
             self.assertNotIn("ss", context["events"][0])
@@ -241,6 +279,21 @@ class EndToEndDossierTests(unittest.TestCase):
             run(saved)
             snapshot = json.loads((root / "snapshot.json").read_text())
             self.assertEqual(snapshot["coverage"]["persistent_records_reused"], 2)
+
+    def test_ranking_history_derives_direction_without_a_threshold(self):
+        from build_player_dossiers import ranking_timeline
+        previous = {"baseline_history": {"ranking_history": [{
+            "observed_at_utc": "2026-10-01T00:00:00Z", "rank": 120,
+            "points": 300, "tour": "ATP", "source": "TEST",
+        }]}}
+        ranking = {
+            "current_rank": 105, "ranking_points": 350, "tour": "ATP",
+            "source": "TEST", "retrieved_at_utc": "2026-10-08T00:00:00Z",
+        }
+        timeline, movement = ranking_timeline(ranking, previous)
+        self.assertEqual(len(timeline), 2)
+        self.assertEqual(movement["positions_improved"], 15)
+        self.assertEqual(movement["interpretation"], "POSITIVE_MEANS_IMPROVED")
 
 
 if __name__ == "__main__":

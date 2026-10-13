@@ -25,6 +25,7 @@ SOURCE_NAME = "VALUEBETENNIS_OPEN_ATP_WTA_SINGLES_ARCHIVE"
 UNKNOWN = "UNKNOWN"
 ELO_START = 1500.0
 ELO_K = 24.0
+DOSSIER_FEATURE_SCHEMA_VERSION = 3
 
 
 def normalise(value: object) -> str:
@@ -193,6 +194,11 @@ def opponent_pre_elo_for(row: dict, player_key: str) -> float | None:
     return float(value) if isinstance(value, (int, float)) else None
 
 
+def player_pre_elo_for(row: dict, player_key: str) -> float | None:
+    value = row["joueur1_pre_elo"] if player_key == normalise(row["joueur1"]) else row["joueur2_pre_elo"]
+    return float(value) if isinstance(value, (int, float)) else None
+
+
 def compact_matches(matches: list[dict], player_key: str, take: int) -> dict:
     detail = []
     wins = 0
@@ -211,8 +217,70 @@ def compact_matches(matches: list[dict], player_key: str, take: int) -> dict:
             "duration_minutes": row["duration_minutes"],
             "closing_odds": closing_odds_for(row, player_key) or UNKNOWN,
             "opponent_pre_match_archive_elo": opponent_pre_elo_for(row, player_key) or UNKNOWN,
+            "player_pre_match_archive_elo": player_pre_elo_for(row, player_key) or UNKNOWN,
         })
     return {"matches": len(detail), "wins": wins, "losses": len(detail) - wins, "detail": detail}
+
+
+def descriptive_window(matches: list[dict], player_key: str, cutoff: datetime, days: int) -> dict:
+    rows = [row for row in matches if 0 <= (cutoff - parse_stamp(row["date_utc"])).days <= days]
+    durations = [
+        float(row["duration_minutes"]) for row in rows
+        if isinstance(row.get("duration_minutes"), (int, float))
+    ]
+    wins = sum(result_for(row, player_key)[0] == "W" for row in rows)
+    return {
+        "calendar_window_days": days,
+        "matches": len(rows),
+        "wins": wins,
+        "losses": len(rows) - wins,
+        "match_days": len({parse_stamp(row["date_utc"]).date().isoformat() for row in rows}),
+        "known_duration_count": len(durations),
+        "known_duration_total_minutes": round(sum(durations), 1) if durations else UNKNOWN,
+        "known_duration_average_minutes": (
+            round(sum(durations) / len(durations), 1) if durations else UNKNOWN
+        ),
+    }
+
+
+def latest_consecutive_match_days(matches: list[dict]) -> int:
+    days = sorted({parse_stamp(row["date_utc"]).date() for row in matches}, reverse=True)
+    if not days:
+        return 0
+    streak = 1
+    for newer, older in zip(days, days[1:]):
+        if (newer - older).days != 1:
+            break
+        streak += 1
+    return streak
+
+
+def ranking_timeline(ranking: dict | None, previous_record: dict | None) -> tuple[list[dict], object]:
+    previous_history = ((previous_record or {}).get("baseline_history") or {}).get("ranking_history")
+    timeline = [dict(row) for row in previous_history] if isinstance(previous_history, list) else []
+    if not ranking:
+        return timeline, UNKNOWN
+    observation = {
+        "observed_at_utc": ranking.get("retrieved_at_utc") or UNKNOWN,
+        "rank": ranking.get("current_rank") or UNKNOWN,
+        "points": ranking.get("ranking_points") or UNKNOWN,
+        "tour": ranking.get("tour") or UNKNOWN,
+        "source": ranking.get("source") or UNKNOWN,
+    }
+    if not timeline or timeline[-1] != observation:
+        timeline.append(observation)
+    previous_rank = next(
+        (row.get("rank") for row in reversed(timeline[:-1]) if isinstance(row.get("rank"), int)),
+        None,
+    )
+    current_rank = observation["rank"] if isinstance(observation["rank"], int) else None
+    movement = ({
+        "previous_rank": previous_rank,
+        "current_rank": current_rank,
+        "positions_improved": previous_rank - current_rank,
+        "interpretation": "POSITIVE_MEANS_IMPROVED",
+    } if previous_rank is not None and current_rank is not None else UNKNOWN)
+    return timeline, movement
 
 
 def load_rankings(paths: list[str]) -> tuple[dict[str, list[dict]], list[dict]]:
@@ -237,6 +305,7 @@ def load_rankings(paths: list[str]) -> tuple[dict[str, list[dict]], list[dict]]:
                     "ranking_name": name,
                     "tour": row.get("tour") or UNKNOWN,
                     "source": payload.get("source") or UNKNOWN,
+                    "retrieved_at_utc": payload.get("retrieved_at_utc") or UNKNOWN,
                     "match_method": "EXACT_NORMALIZED_TOKEN_SET_NAME",
                 })
         sources.append({
@@ -334,8 +403,88 @@ def load_previous_history(path: str | None) -> dict[str, dict]:
     return {str(row["provider_player_id"]): row for row in payload.get("players") or []}
 
 
+def load_prior_system_decisions(root: str | None, before_date_moscow: str | None) -> dict[str, dict]:
+    if not root:
+        return {}
+    if not before_date_moscow:
+        raise ValueError("--card-date-moscow is required with --prior-system-diagnostics-root")
+    directory = Path(root)
+    if not directory.exists():
+        return {}
+    by_id: dict[str, dict] = {}
+    for path in sorted(directory.glob("*-intermediate.json")):
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+        date_moscow = str(payload.get("date_moscow") or "")
+        if not date_moscow or date_moscow >= before_date_moscow:
+            continue
+        checked_at = payload.get("checked_at") or UNKNOWN
+        for row in payload.get("results") or []:
+            population = str(row.get("population") or "")
+            if population not in {"BET", "SUBSTANTIVE_PASS"}:
+                continue
+            decision_id = str(row.get("decision_id") or "").strip()
+            selected_player = str(row.get("selection") or "").strip()
+            if not decision_id or not selected_player:
+                continue
+            compact = {
+                "decision_id": decision_id,
+                "date_moscow": date_moscow,
+                "population": population,
+                "event_id": str(row.get("event_id") or UNKNOWN),
+                "event": row.get("event") or UNKNOWN,
+                "competition": row.get("competition") or UNKNOWN,
+                "selected_player": selected_player,
+                "captured_odds": row.get("captured_odds") if row.get("captured_odds") is not None else UNKNOWN,
+                "result": row.get("result") or UNKNOWN,
+                "profit_units": row.get("profit_units") if row.get("profit_units") is not None else UNKNOWN,
+                "start_time": row.get("start_time") or UNKNOWN,
+                "last_checked_at": checked_at,
+                "source_file": path.name,
+            }
+            old = by_id.get(decision_id)
+            if old is None or str(old.get("last_checked_at")) <= str(checked_at):
+                by_id[decision_id] = compact
+    grouped: defaultdict[str, list[dict]] = defaultdict(list)
+    for row in by_id.values():
+        grouped[normalise(row["selected_player"])].append(row)
+    output = {}
+    terminal = {"WIN", "LOSS", "PUSH", "HALF_WIN", "HALF_LOSS", "VOID"}
+    for key, rows in grouped.items():
+        streams = {}
+        for population in ("BET", "SUBSTANTIVE_PASS"):
+            stream_rows = sorted(
+                (row for row in rows if row["population"] == population),
+                key=lambda row: (row["date_moscow"], row["decision_id"]),
+            )
+            result_counts = Counter(str(row["result"]) for row in stream_rows)
+            known_profit = [
+                float(row["profit_units"]) for row in stream_rows
+                if isinstance(row.get("profit_units"), (int, float))
+            ]
+            streams[population] = {
+                "decisions": len(stream_rows),
+                "resolved": sum(str(row["result"]) in terminal for row in stream_rows),
+                "results": dict(sorted(result_counts.items())),
+                "known_price_count": sum(isinstance(row.get("captured_odds"), (int, float)) for row in stream_rows),
+                "known_profit_units_total": round(sum(known_profit), 4) if known_profit else UNKNOWN,
+                "records": stream_rows,
+            }
+        output[key] = {
+            "match_method": "EXACT_NORMALIZED_SELECTED_PLAYER_NAME",
+            "source_scope": "AVAILABLE_CHECK_ONLY_INTERMEDIATE_FILES_BEFORE_CARD_DATE",
+            "regime_homogeneity": UNKNOWN,
+            "policy": {
+                "bet_and_substantive_pass_are_separate_streams": True,
+                "combined_performance_is_not_computed": True,
+            },
+            "streams": streams,
+        }
+    return output
+
+
 def history_fingerprint(
-    player: dict, matches: list[dict], ranking: dict | None, profile: dict | None
+    player: dict, matches: list[dict], ranking: dict | None, profile: dict | None,
+    prior_system_decisions: dict | None = None,
 ) -> str:
     stable_profile = ({
         "status": profile.get("status"),
@@ -344,11 +493,13 @@ def history_fingerprint(
         "fields": profile.get("fields"),
     } if profile else None)
     source = {
+        "dossier_feature_schema_version": DOSSIER_FEATURE_SCHEMA_VERSION,
         "provider_player_id": player["provider_player_id"],
         "canonical_name": player["canonical_name"],
         "provider_country_code": player["provider_country_code"],
         "ranking": ranking,
         "static_profile": stable_profile,
+        "prior_system_decisions": prior_system_decisions,
         "matches": [
             [row["match_id"], row["date_utc"], row["vainqueur_id"], row["score"],
              row["closing_odds_1"], row["closing_odds_2"]]
@@ -368,6 +519,8 @@ def build_history_record(
     cutoff: datetime,
     fingerprint: str,
     profile: dict | None,
+    previous_record: dict | None = None,
+    prior_system_decisions: dict | None = None,
 ) -> dict:
     key = normalise(player["canonical_name"])
     opponent_elos = [
@@ -382,6 +535,7 @@ def build_history_record(
     surface: defaultdict[str, list[int]] = defaultdict(lambda: [0, 0])
     retirements = 0
     score_rows = []
+    score_matches = []
     price_stats: defaultdict[str, dict] = defaultdict(
         lambda: {"matches": 0, "wins": 0, "losses": 0, "profit_units_flat_stake": 0.0}
     )
@@ -394,6 +548,7 @@ def build_history_record(
         if sets:
             oriented = sets if key == normalise(row["joueur1"]) else [(b, a) for a, b in sets]
             score_rows.append(oriented)
+            score_matches.append((result, oriented))
         odds = closing_odds_for(row, key)
         if odds:
             band = price_stats[price_band(odds)]
@@ -409,11 +564,57 @@ def build_history_record(
         )
     genders = Counter(row["gender"] for row in matches if row["gender"] != UNKNOWN)
     latest = parse_stamp(matches[0]["date_utc"]) if matches else None
-    week = sum((cutoff - parse_stamp(row["date_utc"])).days <= 7 for row in matches)
-    month = sum((cutoff - parse_stamp(row["date_utc"])).days <= 30 for row in matches)
     tiebreak_sets = sum(sum({a, b} == {6, 7} for a, b in sets) for sets in score_rows)
     deciding = [sets for sets in score_rows if len(sets) >= 3]
-    deciding_wins = sum(sum(a > b for a, b in sets) > sum(a < b for a, b in sets) for sets in deciding)
+    deciding_wins = sum(sets[-1][0] > sets[-1][1] for sets in deciding)
+    sets_won = sum(a > b for sets in score_rows for a, b in sets)
+    sets_lost = sum(a < b for sets in score_rows for a, b in sets)
+    games_won = sum(a for sets in score_rows for a, _ in sets)
+    games_lost = sum(b for sets in score_rows for _, b in sets)
+    tiebreak_sets_won = sum(
+        a > b for sets in score_rows for a, b in sets if {a, b} == {6, 7}
+    )
+    clean_wins = sum(result == "W" and all(a > b for a, b in sets) for result, sets in score_matches)
+    clean_losses = sum(result == "L" and all(a < b for a, b in sets) for result, sets in score_matches)
+    recent = matches[:20]
+    strength_rows = []
+    for row in recent:
+        result, opponent = result_for(row, key)
+        player_elo = player_pre_elo_for(row, key)
+        opponent_elo = opponent_pre_elo_for(row, key)
+        if player_elo is not None and opponent_elo is not None:
+            strength_rows.append((result, opponent, round(opponent_elo - player_elo, 1)))
+    ranking_history, ranking_movement = ranking_timeline(ranking, previous_record)
+    recent_by_surface: dict[str, dict] = {}
+    for surface_name in sorted({row["surface"] for row in recent if row["surface"] != UNKNOWN}):
+        surface_rows = [row for row in recent if row["surface"] == surface_name]
+        wins = sum(result_for(row, key)[0] == "W" for row in surface_rows)
+        recent_by_surface[surface_name] = {
+            "matches": len(surface_rows), "wins": wins, "losses": len(surface_rows) - wins,
+            "detail": compact_matches(surface_rows, key, len(surface_rows))["detail"],
+        }
+    quality = {
+        "historical_matches": len(matches),
+        "last_20_rows": len(recent),
+        "last_20_with_score": sum(bool(score_sets(row["score"])) for row in recent),
+        "last_20_with_duration": len(known_durations),
+        "last_20_with_opponent_archive_elo": len(opponent_elos),
+        "ranking_available": ranking is not None,
+        "static_profile_resolved": (profile or {}).get("status") == "RESOLVED",
+        "latest_completed_match_utc": iso(latest),
+        "source_freshness_at_cutoff_days": (
+            (cutoff.date() - latest.date()).days if latest else UNKNOWN
+        ),
+        "limitations": sorted({
+            *([] if ranking else ["CURRENT_RANKING_UNRESOLVED"]),
+            *([] if matches else ["NO_ARCHIVE_MATCH_HISTORY"]),
+            *([] if known_durations else ["NO_KNOWN_MATCH_DURATION_IN_LAST_20"]),
+            *([] if (profile or {}).get("status") == "RESOLVED" else ["STATIC_PROFILE_UNRESOLVED"]),
+            "SERVE_RETURN_POINT_DATA_NOT_IN_ARCHIVE",
+            "CURRENT_HEALTH_REQUIRES_SOURCED_EVENT_RESEARCH",
+            "TRAVEL_TIME_ZONE_NOT_COMPUTED",
+        }),
+    }
 
     return {
         **player,
@@ -434,16 +635,18 @@ def build_history_record(
         "baseline_history": {
             "ranking_and_movement": ({
                 **ranking,
-                "ranking_movement": UNKNOWN,
+                "ranking_movement": ranking_movement,
                 "source": ranking.get("source") or UNKNOWN,
             } if ranking else UNKNOWN),
+            "ranking_history": ranking_history or UNKNOWN,
             "ranking_reason": (
-                "EXACT_NAME_MATCH_IN_COMPLETE_ATP_WTA_SNAPSHOT; MOVEMENT_NOT_PROVIDED"
+                "EXACT_NAME_MATCH_IN_COMPLETE_ATP_WTA_SNAPSHOT; MOVEMENT_DERIVED_FROM_PERSISTED_OBSERVATIONS_WHEN_AVAILABLE"
                 if ranking else player.get("ranking_resolution_reason")
             ),
             "last_5": compact_matches(matches, key, 5),
             "last_10": compact_matches(matches, key, 10),
             "last_20": compact_matches(matches, key, 20),
+            "last_20_by_surface": recent_by_surface or UNKNOWN,
             "surface_record": {
                 name: {"wins": values[0], "losses": values[1], "matches": sum(values)}
                 for name, values in sorted(surface.items())
@@ -459,14 +662,32 @@ def build_history_record(
                     round(sum(opponent_elos) / len(opponent_elos), 1) if opponent_elos else UNKNOWN
                 ),
                 "last_20_opponents_with_archive_elo": len(opponent_elos),
+                "last_20_matches_with_both_pre_match_elos": len(strength_rows),
+                "last_20_wins_over_higher_rated_opponents": sum(
+                    result == "W" and difference > 0 for result, _, difference in strength_rows
+                ),
+                "last_20_losses_to_lower_rated_opponents": sum(
+                    result == "L" and difference < 0 for result, _, difference in strength_rows
+                ),
+                "last_20_average_opponent_minus_player_elo": (
+                    round(sum(row[2] for row in strength_rows) / len(strength_rows), 1)
+                    if strength_rows else UNKNOWN
+                ),
                 "role": "STRENGTH_PROXY_NOT_OFFICIAL_RANKING",
             } if matches else UNKNOWN),
             "score_derived_metrics": ({
                 "matches_with_score": len(score_rows),
                 "tiebreak_sets_played": tiebreak_sets,
+                "tiebreak_sets_won": tiebreak_sets_won,
                 "deciding_sets_played": len(deciding),
                 "deciding_sets_won": deciding_wins,
                 "deciding_set_win_pct": round(100.0 * deciding_wins / len(deciding), 1) if deciding else UNKNOWN,
+                "sets_won": sets_won,
+                "sets_lost": sets_lost,
+                "games_won": games_won,
+                "games_lost": games_lost,
+                "wins_without_losing_a_set": clean_wins,
+                "losses_without_winning_a_set": clean_losses,
                 "serve_points_and_hold_rate": UNKNOWN,
                 "return_points_and_break_rate": UNKNOWN,
             } if score_rows else UNKNOWN),
@@ -475,10 +696,15 @@ def build_history_record(
                 "supported_injury_information": UNKNOWN,
             },
             "workload_and_rest": {
-                "matches_previous_7_days": week,
-                "matches_previous_30_days": month,
+                "calendar_windows": {
+                    str(days): descriptive_window(matches, key, cutoff, days)
+                    for days in (3, 7, 14, 30)
+                },
+                "matches_previous_7_days": descriptive_window(matches, key, cutoff, 7)["matches"],
+                "matches_previous_30_days": descriptive_window(matches, key, cutoff, 30)["matches"],
                 "latest_completed_match_utc": iso(latest),
                 "calendar_days_rest_at_frozen_cutoff": ((cutoff.date() - latest.date()).days if latest else UNKNOWN),
+                "latest_consecutive_match_days": latest_consecutive_match_days(matches),
                 "last_20_known_duration_count": len(known_durations),
                 "last_20_known_duration_total_minutes": (
                     round(sum(known_durations), 1) if known_durations else UNKNOWN
@@ -489,6 +715,9 @@ def build_history_record(
                 ),
                 "latest_known_tournament": matches[0]["tournament"] if matches else UNKNOWN,
                 "latest_known_surface": matches[0]["surface"] if matches else UNKNOWN,
+                "last_20_tournament_sequence": list(dict.fromkeys(
+                    row["tournament"] for row in matches[:20] if row["tournament"] != UNKNOWN
+                )),
                 "travel_and_time_zone": UNKNOWN,
             },
             "sample_stability": {
@@ -502,7 +731,8 @@ def build_history_record(
                 } if known_dates else UNKNOWN),
             },
             "historical_performance_by_price_band": dict(sorted(price_stats.items())) or UNKNOWN,
-            "prior_system_decisions": UNKNOWN,
+            "prior_system_decisions": prior_system_decisions or UNKNOWN,
+            "data_quality": quality,
         },
     }
 
@@ -545,6 +775,8 @@ def main() -> None:
     parser.add_argument("--ranking-snapshots", nargs="+", required=True)
     parser.add_argument("--profile-snapshot", required=True)
     parser.add_argument("--previous-player-history")
+    parser.add_argument("--prior-system-diagnostics-root")
+    parser.add_argument("--card-date-moscow")
     parser.add_argument("--history-output", required=True)
     parser.add_argument("--snapshot-output", required=True)
     parser.add_argument("--match-context-output", required=True)
@@ -595,6 +827,9 @@ def main() -> None:
     rankings, ranking_sources = load_rankings(args.ranking_snapshots)
     profiles, profile_source = load_profiles(args.profile_snapshot)
     previous = load_previous_history(args.previous_player_history)
+    prior_system_index = load_prior_system_decisions(
+        args.prior_system_diagnostics_root, args.card_date_moscow
+    )
     merged = dict(previous)
     current_records = []
     reused = rebuilt = 0
@@ -612,22 +847,26 @@ def main() -> None:
         player["historical_resolution_method"] = history_resolution
         ranking, ranking_reason = resolve_ranking(player, rankings)
         profile = profiles.get(player_id)
+        prior_system_decisions = prior_system_index.get(normalise(player["canonical_name"]))
         player["ranking_resolution_reason"] = ranking_reason
-        fingerprint = history_fingerprint(player, matches, ranking, profile)
+        fingerprint = history_fingerprint(
+            player, matches, ranking, profile, prior_system_decisions
+        )
         old = previous.get(player_id)
         if old and old.get("source_fingerprint") == fingerprint:
             record = old
             reused += 1
         else:
             record = build_history_record(
-                player, matches, ranking, global_elo, surface_elo, cutoff, fingerprint, profile
+                player, matches, ranking, global_elo, surface_elo, cutoff, fingerprint, profile,
+                old, prior_system_decisions,
             )
             rebuilt += 1
         merged[player_id] = record
         current_records.append(record)
 
     history_registry = {
-        "schema_version": 2,
+        "schema_version": 3,
         "stage": "BASELINE_PLAYER_HISTORY_REGISTRY",
         "status": "BASELINE_ONLY_NOT_FULL_MULTI_SOURCE",
         "updated_at_utc": iso(materialized_at),
@@ -640,7 +879,7 @@ def main() -> None:
         "players": sorted(merged.values(), key=lambda row: (normalise(row["canonical_name"]), row["provider_player_id"])),
     }
     daily_snapshot = {
-        "schema_version": 2,
+        "schema_version": 3,
         "stage": "BASELINE_PLAYER_HISTORY_SNAPSHOT",
         "status": "BASELINE_ONLY_NOT_FULL_MULTI_SOURCE",
         "frozen_data_cutoff_utc": iso(cutoff),
@@ -674,6 +913,24 @@ def main() -> None:
             "players_with_handedness": sum(
                 row["identity"]["handedness"] != UNKNOWN for row in current_records
             ),
+            "players_with_ranking_history": sum(
+                row["baseline_history"].get("ranking_history") != UNKNOWN for row in current_records
+            ),
+            "players_with_comparable_opponent_strength": sum(
+                isinstance(row["baseline_history"].get("archive_strength_context"), dict)
+                and row["baseline_history"]["archive_strength_context"].get(
+                    "last_20_matches_with_both_pre_match_elos", 0
+                ) > 0
+                for row in current_records
+            ),
+            "players_with_known_duration_in_last_20": sum(
+                row["baseline_history"]["data_quality"]["last_20_with_duration"] > 0
+                for row in current_records
+            ),
+            "players_with_prior_system_decisions": sum(
+                row["baseline_history"].get("prior_system_decisions") != UNKNOWN
+                for row in current_records
+            ),
             "persistent_records_reused": reused,
             "persistent_records_rebuilt": rebuilt,
             "archive_matches_processed_before_cutoff": len(archive_rows),
@@ -682,7 +939,7 @@ def main() -> None:
         "players": current_records,
     }
     match_context = {
-        "schema_version": 2,
+        "schema_version": 3,
         "stage": "MATCH_SPECIFIC_DOSSIER_CONTEXT",
         "status": "EVENT_VIEW_PREMATCH_SAFE_FIELDS_ONLY",
         "materialized_at_utc": iso(materialized_at),
@@ -701,7 +958,7 @@ def main() -> None:
         match_context["events"].append(context)
 
     manifest = {
-        "schema_version": 2,
+        "schema_version": 3,
         "stage": "BASELINE_PLAYER_DOSSIER_MANIFEST",
         "status": "READY",
         "classification": "BASELINE_DOSSIER_NOT_FULL_MULTI_SOURCE",

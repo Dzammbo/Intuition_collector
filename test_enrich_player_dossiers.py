@@ -46,6 +46,9 @@ class EnrichmentTests(unittest.TestCase):
         self.assertEqual(home["surface_form"]["archive_surface_key"], "DUR")
         self.assertEqual(home["opponent_quality"]["current_opponent_archive_elo"], 1550.0)
         self.assertIn("SERVE_AND_HOLD", home["research_gaps"])
+        self.assertIn("PRIOR_SYSTEM_DECISIONS_NOT_INDEXED", home["research_gaps"])
+        self.assertIn("ranking_trajectory", home)
+        self.assertIn("data_quality", home)
         self.assertTrue(event["policy"]["non_scoring"])
         self.assertNotIn("decision", event)
 

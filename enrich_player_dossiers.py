@@ -156,16 +156,19 @@ def workload_view(history: dict[str, Any]) -> dict[str, Any]:
     qualifying = [row for row in rows if re.search(r"(^|[^A-Z])Q(?:[1-9]|F)?($|[^A-Z])|QUAL", str(row.get("round") or "").upper())]
     latest = rows[0] if rows else {}
     return {
+        "calendar_windows": (workload or {}).get("calendar_windows", UNKNOWN),
         "matches_previous_7_days": (workload or {}).get("matches_previous_7_days", UNKNOWN),
         "matches_previous_30_days": (workload or {}).get("matches_previous_30_days", UNKNOWN),
         "latest_completed_match_utc": (workload or {}).get("latest_completed_match_utc", UNKNOWN),
         "calendar_days_rest_at_frozen_cutoff": (workload or {}).get("calendar_days_rest_at_frozen_cutoff", UNKNOWN),
+        "latest_consecutive_match_days": (workload or {}).get("latest_consecutive_match_days", UNKNOWN),
         "last_20_known_duration_count": len(durations),
         "last_20_known_duration_total_minutes": round(sum(durations), 1) if durations else UNKNOWN,
         "last_20_known_duration_average_minutes": round(sum(durations) / len(durations), 1) if durations else UNKNOWN,
         "archive_rows_marked_as_qualifying": qualifying,
         "latest_known_tournament": latest.get("tournament", UNKNOWN),
         "latest_known_match_surface": latest.get("surface", UNKNOWN),
+        "last_20_tournament_sequence": (workload or {}).get("last_20_tournament_sequence", UNKNOWN),
         "status": "AVAILABLE" if workload or durations or rows else "UNAVAILABLE",
     }
 
@@ -225,6 +228,8 @@ def enrich_player(
         gaps.append("RETURN_AND_BREAK")
     if external["status"] == "NOT_COLLECTED":
         gaps.extend(["HEALTH_AND_READINESS", "CURRENT_NEWS"])
+    if not known(history.get("prior_system_decisions")):
+        gaps.append("PRIOR_SYSTEM_DECISIONS_NOT_INDEXED")
     if not known((venue or {}).get("city")) or not known(workload.get("latest_known_tournament")):
         gaps.append("TRAVEL_AND_TIME_ZONE")
     else:
@@ -235,6 +240,10 @@ def enrich_player(
         "canonical_name": player.get("canonical_name") or UNKNOWN,
         "baseline_source_fingerprint": player.get("source_fingerprint") or UNKNOWN,
         "surface_form": exact_surface_view(history, event.get("surface")),
+        "ranking_trajectory": {
+            "current": history.get("ranking_and_movement", UNKNOWN),
+            "history": history.get("ranking_history", UNKNOWN),
+        },
         "opponent_quality": opponent_quality_view(history, opponent_history),
         "serve_return": score_metrics or UNKNOWN,
         "workload_qualification_and_duration": workload,
@@ -254,6 +263,8 @@ def enrich_player(
             "archive_evidence": retirement or UNKNOWN,
             "current_external_evidence": external,
         },
+        "data_quality": history.get("data_quality", UNKNOWN),
+        "prior_system_evidence": history.get("prior_system_decisions", UNKNOWN),
         "research_gaps": sorted(set(gaps)),
     }
 
