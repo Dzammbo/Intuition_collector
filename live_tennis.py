@@ -186,7 +186,7 @@ def collect(args):
     with cf.ThreadPoolExecutor(max_workers=args.workers) as executor:
         futures = {}
         for eid in records:
-            futures[executor.submit(client.fetch, "/v2/event/odds", event_id=eid, source="bet365", odds_market="1")] = (eid, "odds")
+            futures[executor.submit(client.fetch, "/v2/event/odds", event_id=eid, source="bet365")] = (eid, "odds")
         for eid in history_fetch:
             futures[executor.submit(client.fetch, "/v1/event/history", event_id=eid, qty=20)] = (eid, "history")
         for future in cf.as_completed(futures):
