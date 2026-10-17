@@ -20,6 +20,10 @@ on:
       - 'test_validate_holistic_decision_contract.py'
       - 'collect_tennis_rankings.py'
       - 'test_dossier_pipeline.py'
+      - 'live_tennis.py'
+      - 'build_live_handoffs.py'
+      - 'test_live_tennis.py'
+      - 'migrate_live_tennis.py'
       - 'config/**'
       - 'triggers/run-validation.txt'
 
@@ -93,7 +97,7 @@ jobs:
               "finalize-league-registry.yml",
               "check-final-card-settlement.yml", "daily-settlement.yml",
               "assessment-price-refresh.yml", "bet365-trial-probe.yml",
-              "rerender-results.yml", "tennis-architecture-test.yml",
+              "rerender-results.yml", "tennis-architecture-test.yml", "live-tennis.yml",
               "telegram-native-publish.yml", "capture-bet365-closing.yml", "recover-bet365-closing.yml", "build-player-dossiers.yml", "build-pre-deep-enrichment.yml", "run-deep-research-timing-check.yml", "probe-official-rankings.yml", "prepare-tennis-day.yml", "prepare-price-blind-sporting-inputs.yml", "validate-price-blind-freeze.yml", "validate.yml",
           }
           present = {p.name for p in workflows.glob("*.yml")}
@@ -122,6 +126,7 @@ jobs:
           cd ops
           python3 -m unittest -v test_capture_bet365_closing.py
           python3 -m unittest -v test_dossier_pipeline.py
+          python3 -m unittest -v test_live_tennis.py
           python3 -m unittest -v test_validate_holistic_decision_contract.py
       - name: Verify private repository write permission
         working-directory: state

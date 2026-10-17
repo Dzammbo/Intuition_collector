@@ -1,0 +1,83 @@
+name: Manual Intuition Live Tennis
+on:
+  workflow_dispatch:
+    inputs:
+      event_ids:
+        description: Optional comma-separated BetsAPI event ids for final refresh
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths: ['triggers/run-live-tennis.json']
+permissions:
+  contents: read
+concurrency:
+  group: intuition-live-tennis
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BETSAPI_TOKEN: ${{ secrets.BETS_API }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/Scaner
+          path: scanner
+      - name: Verify and complete legacy migration
+        run: python3 migrate_live_tennis.py --scanner-root scanner --state-root state
+      - name: Build immutable prematch handoffs
+        run: python3 build_live_handoffs.py --state-root state
+      - name: Resolve optional event refresh
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            IDS=$(python3 -c 'import json; print(",".join(str(x) for x in json.load(open("triggers/run-live-tennis.json")).get("event_ids", [])))')
+          else
+            IDS='${{ inputs.event_ids }}'
+          fi
+          echo "ids=$IDS" >> "$GITHUB_OUTPUT"
+      - name: Collect live evidence packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARGS=()
+          IFS=',' read -ra IDS <<< '${{ steps.request.outputs.ids }}'
+          for ID in "${IDS[@]}"; do
+            ID="${ID//[[:space:]]/}"
+            if [ -n "$ID" ]; then [[ "$ID" =~ ^[0-9]+$ ]]; ARGS+=(--event-id "$ID"); fi
+          done
+          python3 live_tennis.py --state-root state --output live-tennis-snapshot.json "${ARGS[@]}"
+      - name: Test live tennis contracts
+        run: python3 -m unittest -v test_live_tennis.py
+      - name: Persist handoffs, dossier updates and immutable snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          ID="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "state/live_tennis/snapshots"
+          cp live-tennis-snapshot.json "state/live_tennis/snapshots/$ID.json"
+          cd state
+          git config user.name "Jarvis Intuition Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add live_tennis/prematch_handoffs live_tennis/dossiers live_tennis/snapshots live_tennis/migration
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Collect live tennis snapshot $ID"
+          git pull --rebase origin main
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-tennis-${{ github.run_id }}-${{ github.run_attempt }}
+          path: live-tennis-snapshot.json
+          if-no-files-found: error
+          retention-days: 7
