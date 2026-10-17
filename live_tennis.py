@@ -14,6 +14,7 @@ import re
 import time
 import urllib.parse
 import urllib.request
+import urllib.error
 
 VERSION = "intuition-live-tennis-2026-10-17-v1"
 QUOTE_MAX_AGE_SECONDS = 90
@@ -48,6 +49,19 @@ class Client:
             with urllib.request.urlopen(url, timeout=self.timeout) as response:
                 data = json.load(response)
             return {"data": data, "observed_at": time.time(), "elapsed": time.time() - started}
+        except urllib.error.HTTPError as exc:
+            # Preserve diagnostic codes without URLs, credentials or response headers.
+            detail = {}
+            try:
+                body = json.loads(exc.read(8192).decode("utf-8", errors="replace"))
+                if isinstance(body, dict):
+                    for key in ("error", "error_code", "error_detail", "message"):
+                        if key in body and isinstance(body[key], (str, int, float, bool)):
+                            detail[key] = str(body[key]).replace(self.token, "[REDACTED]")[:500]
+            except (ValueError, OSError):
+                pass
+            return {"error": "HTTPError", "http_status": exc.code, "provider_error": detail,
+                    "observed_at": time.time(), "elapsed": time.time() - started}
         except Exception as exc:
             return {"error": type(exc).__name__, "observed_at": time.time(), "elapsed": time.time() - started}
 
