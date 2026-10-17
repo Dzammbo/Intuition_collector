@@ -1,5 +1,7 @@
 {
-  "requested_at_utc": "2026-10-17T19:03:58.831Z",
-  "event_ids": [],
-  "probe_bet365": false
+  "requested_at_utc": "2026-10-17T19:07:15.440Z",
+  "event_ids": [
+    "13307356"
+  ],
+  "probe_bet365": true
 }
