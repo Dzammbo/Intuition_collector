@@ -110,6 +110,43 @@ def load_handoffs(root):
     return rows
 
 
+def totals_evidence(event, odds_payload, now):
+    """Descriptive evidence, never a fitted probability or automatic selection."""
+    results = odds_payload.get("results") or {}
+    markets = results.get("odds") or {}
+    latest = {}
+    for key, rows in markets.items():
+        if not isinstance(rows, list) or not rows:
+            continue
+        row = max(rows, key=lambda r: number(r.get("add_time")) or 0)
+        quoted = number(row.get("add_time"))
+        checked = number((results.get("stats", {}).get("odds_update") or {}).get(key))
+        latest[key] = {"raw_latest": row, "quote_age_seconds": now - quoted if quoted else None,
+                       "check_age_seconds": now - checked if checked else None,
+                       "market_scope": "UNVERIFIED", "publication_allowed": False}
+    games = []
+    for item in event.get("events") or []:
+        text = item.get("text", "")
+        match = re.fullmatch(r"Game (\d+) - (.+) - (holds|breaks) to (.+)", text)
+        if match:
+            games.append({"game_number": int(match[1]), "winner": match[2],
+                          "outcome": match[3], "ending": match[4]})
+    games = list({g["game_number"]: g for g in games}.values())
+    games.sort(key=lambda g: g["game_number"])
+    return {"status": "EXPERIMENTAL_EVIDENCE_ONLY", "probability": "UNKNOWN", "edge": "UNKNOWN",
+            "match_score": event.get("ss"), "points": event.get("points"),
+            "server_indicator": event.get("playing_indicator"),
+            "completed_games_in_log": len(games), "holds_in_log": sum(g["outcome"] == "holds" for g in games),
+            "breaks_in_log": sum(g["outcome"] == "breaks" for g in games), "game_sequence": games,
+            "available_market_keys": sorted(markets), "market_inventory": latest,
+            "match_total": {"status": "REQUIRES_VERIFIED_SCOPE_LINE_AND_RULES"},
+            "set_total": {"status": "REQUIRES_VERIFIED_SCOPE_SET_NUMBER_LINE_AND_RULES"},
+            "gaps": ["Serve-point sample denominators and second-serve/return coverage may be absent",
+                     "No calibrated total distribution exists", "Do not equate an odds update marker with an available quote",
+                     "Market IDs alone do not prove games versus sets or current-set scope",
+                     "No historical quote may be presented as a simultaneous alternative line"]}
+
+
 def history_cache_path(root, event_id):
     return root / "live_tennis" / "dossiers" / "history_cache" / f"event-{event_id}.json"
 
@@ -212,6 +249,7 @@ def collect(args):
         record["prematch"] = handoffs.get(event_id) or {"status": "PREMATCH_OPINION_NOT_FROZEN",
             "note": "No immutable prematch opinion exists for this event; no opinion was reconstructed after start."}
         record["winner_prices"] = parse_prices((record.get("odds") or {}).get("data") or {}, event, time.time())
+        record["totals_evidence"] = totals_evidence(event, (record.get("odds") or {}).get("data") or {}, time.time())
         record["score_quote_consistency_requires_expert_review"] = True
     with_stats = sum(bool(row["event"].get("stats") or {}) for row in records.values())
     fresh = sum(row["winner_prices"].get("status") == "FRESH_NEEDS_SCORE_REVIEW" for row in records.values())
@@ -225,6 +263,11 @@ def collect(args):
         "selection_constraints": {"maximum_published": 10, "strict_minimum_odds": 1.30,
             "fill_to_ten": False, "sporting_case_before_price": True,
             "numeric_probability_without_calibration": "FORBIDDEN"}}
+    if getattr(args, "probe_bet365", False):
+        probe_id = next((r["event"].get("bet365_id") for r in records.values() if r["event"].get("bet365_id")), None)
+        snapshot["bet365_access_probe"] = client.fetch("/v1/bet365/event", FI=probe_id) if probe_id else {"status": "NO_EVENT_ID"}
+        snapshot["request_count"] = client.calls
+        snapshot["request_formula"] += " + one explicitly requested Bet365 access probe"
     snapshot["sha256_without_self"] = hashlib.sha256(json.dumps(snapshot, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -241,8 +284,10 @@ def parser():
     out.add_argument("--event-id", action="append", default=[])
     out.add_argument("--workers", type=int, default=12)
     out.add_argument("--timeout", type=int, default=12)
+    out.add_argument("--probe-bet365", action="store_true", help="One explicit subscription access check, no retries")
     return out
 
 
 if __name__ == "__main__":
     collect(parser().parse_args())
+
