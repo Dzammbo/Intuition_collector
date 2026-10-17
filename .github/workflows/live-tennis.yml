@@ -56,6 +56,7 @@ jobs:
             ID="${ID//[[:space:]]/}"
             if [ -n "$ID" ]; then [[ "$ID" =~ ^[0-9]+$ ]]; ARGS+=(--event-id "$ID"); fi
           done
+          if [ "${{ github.event_name }}" = "push" ] && python3 -c 'import json,sys; sys.exit(0 if json.load(open("triggers/run-live-tennis.json")).get("probe_bet365") is True else 1)'; then ARGS+=(--probe-bet365); fi
           python3 live_tennis.py --state-root state --output live-tennis-snapshot.json "${ARGS[@]}"
       - name: Test live tennis contracts
         run: python3 -m unittest -v test_live_tennis.py
