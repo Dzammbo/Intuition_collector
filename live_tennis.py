@@ -17,7 +17,7 @@ import urllib.request
 import urllib.error
 
 VERSION = "intuition-live-tennis-2026-10-17-v1"
-QUOTE_MAX_AGE_SECONDS = 90
+QUOTE_MAX_AGE_SECONDS = None  # User-managed quote recency; no age gate.
 HISTORY_TTL_SECONDS = 7 * 24 * 60 * 60
 REAL_EXCLUSION = re.compile(r"virtual|esport|simulated|cyber|table tennis|padel", re.I)
 
@@ -92,7 +92,10 @@ def parse_prices(payload, event, now):
     quoted = number(row.get("add_time"))
     direction = str(stats.get("matching_dir"))
     out = {"status": "UNVERIFIED", "market": "13_1", "source": "bet365", "raw_latest": row,
-           "checked_at_epoch": checked, "quoted_at_epoch": quoted, "matching_dir": direction}
+           "checked_at_epoch": checked, "quoted_at_epoch": quoted, "matching_dir": direction,
+           "quote_age_seconds": now - quoted if quoted is not None else None,
+           "check_age_seconds": now - checked if checked is not None else None,
+           "quote_recency_policy": "USER_MANAGED_NO_AGE_GATE"}
     if direction not in {"1", "-1"}:
         return out
     home, away = number(row.get("home_od")), number(row.get("away_od"))
@@ -101,12 +104,10 @@ def parse_prices(payload, event, now):
     out.update(home=home, away=away)
     if not home or not away or min(home, away) <= 1:
         out["status"] = "SUSPENDED"
-    elif not quoted or not checked or not (0 <= now - quoted <= QUOTE_MAX_AGE_SECONDS) or not (0 <= now - checked <= QUOTE_MAX_AGE_SECONDS):
-        out["status"] = "STALE_OR_UNKNOWN"
     elif str(event.get("time_status")) != "1":
         out["status"] = "NOT_LIVE"
     else:
-        out["status"] = "FRESH_NEEDS_SCORE_REVIEW"
+        out["status"] = "AVAILABLE_NEEDS_SCORE_REVIEW"
     return out
 
 
@@ -266,11 +267,11 @@ def collect(args):
         record["totals_evidence"] = totals_evidence(event, (record.get("odds") or {}).get("data") or {}, time.time())
         record["score_quote_consistency_requires_expert_review"] = True
     with_stats = sum(bool(row["event"].get("stats") or {}) for row in records.values())
-    fresh = sum(row["winner_prices"].get("status") == "FRESH_NEEDS_SCORE_REVIEW" for row in records.values())
+    available = sum(row["winner_prices"].get("status") == "AVAILABLE_NEEDS_SCORE_REVIEW" for row in records.values())
     snapshot = {"schema_version": 1, "version": VERSION, "mode": "EXPERT_DECISION_AFTER_COLLECTION",
         "observed_at_utc": utc_iso(started), "finished_at_utc": utc_iso(), "source": "BetsAPI Events",
         "quote_source": "bet365 via Events odds endpoint", "quote_max_age_seconds": QUOTE_MAX_AGE_SECONDS,
-        "pool_count": len(records), "with_live_stats_count": with_stats, "with_fresh_price_count": fresh,
+        "pool_count": len(records), "with_live_stats_count": with_stats, "with_available_price_count": available,
         "request_count": client.calls, "request_formula": "1 pool + N view + N odds + H stale/missing history",
         "history_fetched_count": len(history_fetch), "history_reused_count": len(records) - len(history_fetch),
         "dossier_updates": dossier_updates, "records": records,
@@ -286,7 +287,7 @@ def collect(args):
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("LIVE_TENNIS_SUMMARY=" + json.dumps({"output": str(output), "pool": len(records),
-        "with_stats": with_stats, "fresh_prices": fresh, "requests": client.calls,
+        "with_stats": with_stats, "available_prices": available, "requests": client.calls,
         "history_fetched": len(history_fetch)}, ensure_ascii=False))
     return snapshot
 
