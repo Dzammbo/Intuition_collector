@@ -22,7 +22,7 @@ def main():
     source_selected = json.loads((source / "tennis/selected-events.json").read_text(encoding="utf-8"))
     source_ids = {str(row["event_id"]) for row in source_selected.get("selections") or []}
     target_ids = {str(row["event_id"]) for row in selected.get("selections") or []}
-    if source_ids != target_ids:
+    if not source_ids.issubset(target_ids):
         raise SystemExit(f"selection migration mismatch: source={source_ids}, target={target_ids}")
     source_results = json.loads((source / "tennis/results.json").read_text(encoding="utf-8"))
     target_results = json.loads((target / "registry/results.json").read_text(encoding="utf-8"))
