@@ -25,7 +25,7 @@ SOURCE_NAME = "VALUEBETENNIS_OPEN_ATP_WTA_SINGLES_ARCHIVE"
 UNKNOWN = "UNKNOWN"
 ELO_START = 1500.0
 ELO_K = 24.0
-DOSSIER_FEATURE_SCHEMA_VERSION = 3
+DOSSIER_FEATURE_SCHEMA_VERSION = 4
 
 
 def normalise(value: object) -> str:
@@ -522,7 +522,9 @@ def build_history_record(
     previous_record: dict | None = None,
     prior_system_decisions: dict | None = None,
 ) -> dict:
-    key = normalise(player["canonical_name"])
+    key = player.get("archive_name_key") or normalise(player["canonical_name"])
+    if any(key not in {normalise(row["joueur1"]), normalise(row["joueur2"])} for row in matches):
+        raise ValueError("resolved archive identity is absent from a supplied history row")
     opponent_elos = [
         value for row in matches[:20]
         if (value := opponent_pre_elo_for(row, key)) is not None
@@ -844,6 +846,7 @@ def main() -> None:
             player["canonical_name"], archive_names
         )
         matches = by_name.get(archive_key, []) if archive_key else []
+        player["archive_name_key"] = archive_key
         player["historical_resolution_method"] = history_resolution
         ranking, ranking_reason = resolve_ranking(player, rankings)
         profile = profiles.get(player_id)
@@ -992,3 +995,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
