@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
-  "requested_at_utc": "2026-10-19T02:25:49.671Z",
-  "requested_by": "user_explicit_prematch_full_pipeline_to_card",
+  "requested_at_utc": "2026-10-19T13:41:56.255Z",
+  "requested_by": "user_explicit_restart_invalidating_morning_attempt",
   "date_moscow": "2026-10-19",
-  "card_key": "2026-10-19",
+  "card_key": "2026-10-19-rerun-001",
   "window_mode": "ROLLING_24H_FROM_RUN_START",
   "exclude_universe_ref": "",
   "exclude_final_portfolio_ref": "",
   "authorization_scope": "ALL_INTERNAL_CARD_STAGES_THROUGH_FREEZE",
   "telegram_authorized": false,
-  "settlement_authorized": false
+  "settlement_authorized": false,
+  "supersedes_card_key": "2026-10-19"
 }
