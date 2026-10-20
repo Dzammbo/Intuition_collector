@@ -1,0 +1,54 @@
+name: Import Reviewed Card Artifacts
+on:
+  push:
+    branches: [main]
+    paths: ['triggers/import-card-artifacts.json']
+permissions:
+  contents: read
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Dzammbo/jarvis-intuition
+          token: ${{ secrets.JARVIS_PRIVATE_REPO_TOKEN }}
+          path: state
+      - name: Verify and import reviewed artifacts
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib,json,tarfile
+          from pathlib import Path
+          t=json.loads(Path('triggers/import-card-artifacts.json').read_text())
+          assert t['card_key']=='2026-10-20'
+          archive=Path('state')/t['archive_ref']
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==t['archive_sha256']
+          allowed=('price_blind_inputs/2026-10-20/','price_blind_assessments/2026-10-20/','research_sources/2026-10-20/','audits/2026-10-20/','final_decisions/2026-10-20/','final_portfolios/2026-10-20/','price_reveals/2026-10-20/')
+          with tarfile.open(archive) as a:
+              for member in a.getmembers():
+                  assert member.isfile() and '..' not in Path(member.name).parts
+                  assert member.name.startswith(allowed) or member.name in ('status/current-run.json','status/final-portfolio-2026-10-20.json')
+              a.extractall('state',filter='data')
+          print({'imported_stage':t['stage'],'card_key':t['card_key']})
+          PYTHON
+          if [ "$(python3 -c 'import json;print(json.load(open("triggers/import-card-artifacts.json"))["stage"])')" = "PHASE_A" ]; then
+            cd state
+            python3 scripts/validate_price_blind_sporting_freeze.py --root . --manifest price_blind_assessments/2026-10-20/manifest.json
+          else
+            cd state
+            python3 scripts/validate_final_portfolio.py --root . --portfolio final_portfolios/2026-10-20/final-portfolio.json
+          fi
+      - name: Persist verified import
+        run: |
+          cd state
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add price_blind_inputs/2026-10-20 price_blind_assessments/2026-10-20 research_sources/2026-10-20 audits/2026-10-20
+          for path in final_decisions/2026-10-20 final_portfolios/2026-10-20 price_reveals/2026-10-20 status/current-run.json status/final-portfolio-2026-10-20.json; do
+            if [ -e "$path" ]; then git add "$path"; fi
+          done
+          git commit -m "Import reviewed 20.10 card artifacts with validation"
+          git pull --rebase origin main
+          git push origin HEAD:main
