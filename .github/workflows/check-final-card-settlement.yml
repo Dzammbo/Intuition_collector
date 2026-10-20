@@ -54,7 +54,7 @@ jobs:
         run: python3 ops/validate_holistic_decision_contract.py state
       - name: Check final card
         working-directory: state
-        run: python3 scripts/check_final_card_settlement.py --date-moscow "${{ steps.request.outputs.date }}"
+        run: python3 scripts/check_final_card_settlement.py --date-moscow "${{ steps.request.outputs.date }}" --only-requested-date
       - name: Commit diagnostic to private state repository
         working-directory: state
         run: |
