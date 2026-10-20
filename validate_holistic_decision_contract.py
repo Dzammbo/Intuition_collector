@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from underdog_gate import FINAL_DECISION_CONTRACT, REGIME_ID as UNDERDOG_REGIME, expected_card_decision, validate_gate
+
 CONTRACT = "2026-10-09-holistic-deep-research-v1"
 EFFECTIVE_AT = datetime(2026, 10, 9, 11, 34, tzinfo=timezone.utc)
 DECISIONS = {"BET", "PASS", "NO_DATA"}
@@ -54,8 +56,12 @@ def validate_row(row: dict[str, Any]) -> None:
     )
     if decided < EFFECTIVE_AT:
         return
-    if row.get("decision_method_contract") != CONTRACT:
-        raise ValueError("new decision lacks the holistic deep-research contract")
+    method = row.get("decision_method_contract")
+    underdog_mode = method == FINAL_DECISION_CONTRACT
+    if method not in {CONTRACT, FINAL_DECISION_CONTRACT}:
+        raise ValueError("new decision lacks a supported holistic contract")
+    if underdog_mode and row.get("regime_id") != UNDERDOG_REGIME:
+        raise ValueError("underdog-only final decision has wrong regime_id")
     if row.get("decision_frozen_before_price") is not True:
         raise ValueError("decision must be frozen before price reveal")
 
@@ -63,7 +69,7 @@ def validate_row(row: dict[str, Any]) -> None:
     if not isinstance(judgment, dict):
         raise ValueError("deep_research_judgment is required")
     if str(judgment.get("research_decision") or "").upper() != status:
-        raise ValueError("final status differs from frozen research decision")
+        raise ValueError("research status differs from frozen sporting decision")
     nonempty_list(judgment.get("source_refs"), "source_refs")
     nonempty_list(judgment.get("uncertainties"), "uncertainties")
     if not str(judgment.get("evidence_weighing") or "").strip():
@@ -79,6 +85,37 @@ def validate_row(row: dict[str, Any]) -> None:
         nonempty_list(judgment.get("reasons_for_pass"), "reasons_for_pass")
     if status == "NO_DATA":
         nonempty_list(judgment.get("sporting_data_gaps"), "sporting_data_gaps")
+
+    if underdog_mode:
+        card_decision = str(row.get("card_decision") or "").upper()
+        if card_decision not in DECISIONS:
+            raise ValueError("underdog-only record requires card_decision")
+        if status == "NO_DATA":
+            expected = "NO_DATA"
+        elif status == "PASS":
+            expected = "PASS"
+        else:
+            gate = row.get("underdog_gate")
+            if isinstance(gate, dict):
+                target = row.get("evaluated_target") or {}
+                selected_side = judgment.get("selected_side")
+                gate_result = validate_gate(gate, selected_side, target.get("captured_odds"))
+                expected = expected_card_decision(status, gate_result["market_role"])
+            else:
+                price_status = str((row.get("price_reveal") or {}).get("price_status") or "").upper()
+                if price_status == "PRICE_CAPTURED":
+                    raise ValueError("captured two-sided price requires underdog_gate")
+                expected = "PASS"
+        if card_decision != expected:
+            raise ValueError("card_decision does not match research decision and underdog gate")
+        if card_decision == "BET" and (row.get("underdog_gate") or {}).get("market_role") != "UNDERDOG":
+            raise ValueError("final BET is not a verified underdog")
+        if status == "BET" and card_decision == "PASS":
+            target = row.get("evaluated_target") or {}
+            if str(target.get("target_status") or "").upper() != "RECORDED":
+                raise ValueError("demoted sporting BET must remain an exact PASS control")
+        if not str(row.get("card_reason_code") or "").strip():
+            raise ValueError("underdog-only record requires card_reason_code")
 
     reason = str(row.get("reason_code") or "").upper()
     if any(token in reason for token in FORBIDDEN_REASON_TOKENS):

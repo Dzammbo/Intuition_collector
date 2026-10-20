@@ -39,7 +39,7 @@ Operational workflows run on public GitHub-hosted runners, check out the private
 
 ## Decision methodology
 
-New tennis decisions follow the [holistic deep-research decision contract](docs/HOLISTIC_DECISION_CONTRACT.md). The exact side and `BET`/`PASS`/`NO_DATA` status are frozen from player-specific research before any bookmaker price is inspected. Price and EV-like fields are post-decision diagnostics only and cannot change the decision.
+New tennis decisions preserve the price-blind sporting side and research `BET`/`PASS`/`NO_DATA` status. Under the active private `intuition-v2-2026-10-20-tennis-underdog-only` regime, the later two-sided Bet365 Match Winner quote derives a separate `card_decision`: only a research BET whose frozen side is strictly higher-priced than its opponent remains final BET. Favorites, even prices and unverifiable two-sided quotes become PASS controls. Price cannot promote PASS/NO_DATA or switch sides.
 
 ## Required Actions secrets
 

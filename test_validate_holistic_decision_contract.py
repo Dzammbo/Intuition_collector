@@ -51,6 +51,49 @@ class HolisticDecisionContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "reasons_for_pass"):
             validate_row(row)
 
+    def test_accepts_verified_underdog_final_bet(self):
+        row = valid_row("BET")
+        row.update({
+            "regime_id": "intuition-v2-2026-10-20-tennis-underdog-only",
+            "decision_method_contract": "2026-10-20-underdog-only-final-card-v1",
+            "card_decision": "BET",
+            "card_reason_code": "VERIFIED_UNDERDOG",
+            "evaluated_target": {"target_status": "RECORDED", "side": "HOME", "captured_odds": 2.30},
+            "underdog_gate": {
+                "policy_version": "2026-10-20-underdog-only-v1",
+                "classification_method": "TWO_SIDED_BET365_MATCH_WINNER_COMPARISON",
+                "selected_side": "HOME",
+                "home_odds": 2.30,
+                "away_odds": 1.60,
+                "market_role": "UNDERDOG",
+                "captured_at_utc": "2026-10-09T11:36:00Z",
+            },
+        })
+        validate_row(row)
+
+    def test_favorite_sporting_bet_must_be_pass_control(self):
+        row = valid_row("BET")
+        row.update({
+            "regime_id": "intuition-v2-2026-10-20-tennis-underdog-only",
+            "decision_method_contract": "2026-10-20-underdog-only-final-card-v1",
+            "card_decision": "PASS",
+            "card_reason_code": "FAVORITE_CONTROL",
+            "evaluated_target": {"target_status": "RECORDED", "side": "HOME", "captured_odds": 1.60},
+            "underdog_gate": {
+                "policy_version": "2026-10-20-underdog-only-v1",
+                "classification_method": "TWO_SIDED_BET365_MATCH_WINNER_COMPARISON",
+                "selected_side": "HOME",
+                "home_odds": 1.60,
+                "away_odds": 2.30,
+                "market_role": "FAVORITE",
+                "captured_at_utc": "2026-10-09T11:36:00Z",
+            },
+        })
+        validate_row(row)
+        row["card_decision"] = "BET"
+        with self.assertRaisesRegex(ValueError, "card_decision"):
+            validate_row(row)
+
 
 if __name__ == "__main__":
     unittest.main()
