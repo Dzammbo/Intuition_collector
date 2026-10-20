@@ -1,3 +1,3 @@
 2026-10-19
-requested_at=2026-10-20T03:48:45.185Z
-purpose=user-requested-card-results-update
+requested_at=2026-10-20T03:51:19.443Z
+purpose=apply-verified-retirement-overrides-and-reconcile
