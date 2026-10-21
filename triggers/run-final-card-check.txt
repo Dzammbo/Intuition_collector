@@ -1,3 +1,3 @@
 2026-10-20
-requested_at=2026-10-21T18:02:56.063Z
-purpose=user-authorized-results-refresh-underdog-card
+requested_at=2026-10-21T18:12:30.651Z
+purpose=apply-verified-results-october20
