@@ -3,5 +3,6 @@
   "stage": "PHASE_A",
   "archive_ref": "audits/2026-10-20/transport/phase-a.tar.xz",
   "archive_sha256": "8edb4bdc3678b1554f4c3ee6abf02b2b28beefd740d512ede90beab2205dddaf",
-  "requested_at_utc": "2026-10-20T21:27:55.442Z"
+  "requested_at_utc": "2026-10-21T03:41:13.457Z",
+  "reason": "restore-scratch-from-durable-verified-main-before-final-selection"
 }
