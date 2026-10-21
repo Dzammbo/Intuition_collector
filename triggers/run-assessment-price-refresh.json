@@ -1,10 +1,10 @@
 {
-  "date_moscow": "2026-10-19",
-  "card_key": "2026-10-19-rerun-001",
+  "date_moscow": "2026-10-20",
+  "card_key": "2026-10-20",
   "batch": 1,
-  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-19-rerun-001/manifest.json",
-  "compact_batch_dir": "price_blind_inputs/2026-10-19-rerun-001/compact-batches",
+  "sporting_freeze_manifest_ref": "price_blind_assessments/2026-10-20/manifest.json",
+  "compact_batch_dir": "price_blind_inputs/2026-10-20/compact-batches",
   "events": [],
-  "requested_at_utc": "2026-10-19T15:24:41.417Z",
-  "reason": "user-authorized-post-freeze-price-capture"
+  "requested_at_utc": "2026-10-21T03:39:26.879Z",
+  "reason": "user-authorized-underdog-only-final-selection-after-immutable-freeze"
 }
