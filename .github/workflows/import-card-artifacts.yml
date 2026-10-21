@@ -38,7 +38,7 @@ jobs:
             python3 scripts/validate_price_blind_sporting_freeze.py --root . --manifest price_blind_assessments/2026-10-20/manifest.json
           else
             cd state
-            python3 scripts/validate_final_portfolio.py --root . --portfolio final_portfolios/2026-10-20/final-portfolio.json
+            python3 scripts/validate_final_portfolio.py final_portfolios/2026-10-20/final-portfolio.json
           fi
       - name: Persist verified import
         run: |
@@ -49,6 +49,14 @@ jobs:
           for path in final_decisions/2026-10-20 final_portfolios/2026-10-20 price_reveals/2026-10-20 status/current-run.json status/final-portfolio-2026-10-20.json; do
             if [ -e "$path" ]; then git add "$path"; fi
           done
-          git commit -m "Import reviewed 20.10 card artifacts with validation"
+          if ! git diff --cached --quiet; then git commit -m "Import reviewed 20.10 card artifacts with validation"; fi
           git pull --rebase origin main
           git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-card-20-recovery
+          path: |
+            state/audits/2026-10-20/transport/phase-a.tar.xz
+            state/player_dossiers/2026-10-20/baseline-history-snapshot.json
+            state/player_dossiers/2026-10-20/match-context-snapshots.json
+          retention-days: 7
