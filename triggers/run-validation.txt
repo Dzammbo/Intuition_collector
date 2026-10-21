@@ -1,4 +1,4 @@
-2026-10-12T16:27:56.213Z
-reason=validate-rolling-24h-additive-card-pass-counterfactual-repair
-card_key=2026-10-12-combined
-stages=collector-unit-tests,repository,holistic,coverage,portfolio,pass-counterfactuals
+2026-10-21T03:46:30.211Z
+reason=validate-completed-20.10-underdog-card-after-final-state-commit
+card_key=2026-10-20
+stages=workflow-contracts,repository,holistic,unit-tests
